@@ -63,7 +63,7 @@ const Home = () => {
   });
   const [formattedProducts, setFormattedProducts] = useState([]);
   const swiperRef = useRef(null);
-  const [progress] = useState(0);
+  // const [progress] = useState(0);
 
   const {
     data: products,

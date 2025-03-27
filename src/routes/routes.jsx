@@ -24,7 +24,9 @@ const ResetSuccess = lazy(() => import('../pages/ResetPassword/Reset-Success'));
 const EmailVerification = lazy(() => import('../pages/EmailVerif'));
 const Congratulations = lazy(() => import('../pages/Congratulations'));
 const Company = lazy(() => import('../pages/Company'));
-
+const AdminDashboard = lazy(
+  () => import('../components/Dashboard/Admin/AdminDashboard')
+);
 const AppRoutes = () => {
   return (
     <Suspense fallback={<LoadingRoute />}>
@@ -44,6 +46,7 @@ const AppRoutes = () => {
         <Route path="/reset-success" element={<ResetSuccess />} />
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/congratulations" element={<Congratulations />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/company" element={<Company />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>

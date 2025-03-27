@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import userData from '../user.json';
+// import userData from '../user.json';
 import './styles/custom-button.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import InputField from '../components/Form/Input';
 import GoogleSignInButton from '../components/Form/GG';
 import React from 'react';
@@ -13,7 +13,7 @@ export default function LoginForm() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
-
+  const navigate = useNavigate();
   const errorMessages = {
     emailRequired: { message: '* Email is required', color: 'red' },
     emailInvalid: { message: '* Email is invalid', color: 'red' },
@@ -28,7 +28,7 @@ export default function LoginForm() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let valid = true;
 
@@ -41,29 +41,61 @@ export default function LoginForm() {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError(errorMessages.emailInvalid.message);
       valid = false;
-    } else {
-      const userExists = userData.some((user) => user.email === email);
-      if (!userExists) {
-        setEmailError(errorMessages.emailNotExist.message);
-        valid = false;
-      }
     }
 
     if (!password) {
       setPasswordError(errorMessages.passwordRequired.message);
       valid = false;
-    } else if (valid) {
-      const user = userData.find(
-        (user) => user.email === email && user.password === password
-      );
-      if (!user) {
-        setPasswordError(errorMessages.incorrectPassword.message);
-        valid = false;
-      }
     }
 
-    if (valid) {
-      console.log('Logging in with:', { email, password });
+    if (!valid) return;
+
+    try {
+      const response = await fetch(
+        'https://localhost:3000/api/accounts/login',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+
+      let data;
+      const text = await response.text();
+
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.error('Invalid JSON response:', text);
+        throw new Error('Server returned an invalid response');
+      }
+
+      if (response.status === 401) {
+        if (data.error === 'Email does not exist') {
+          setEmailError(errorMessages.emailNotExist.message);
+        } else if (data.error === 'Incorrect password') {
+          setPasswordError(errorMessages.incorrectPassword.message);
+        } else {
+          setPasswordError('* Invalid email or password');
+        }
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || `Error: ${response.status}`);
+      }
+
+      console.log('Login successful:', data);
+      if (data.role === 'admin') {
+        navigate('/admin/dashboard'); // Chuyển hướng đến Admin Dashboard
+      } else if (data.role === 'sales') {
+        navigate('/sales/dashboard'); // Chuyển hướng đến Sales Dashboard (nếu có)
+      } else {
+        console.error('Unauthorized role:', data.role);
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      setPasswordError('Something went wrong. Please try again.');
     }
   };
 
