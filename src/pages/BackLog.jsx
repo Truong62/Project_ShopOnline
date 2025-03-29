@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-// import userData from '../user.json';
 import './styles/custom-button.css';
 import { Link, useNavigate } from 'react-router-dom';
 import InputField from '../components/Form/Input';
-import GoogleSignInButton from '../components/Form/GG';
+// import GoogleSignInButton from '../components/Form/GG';
 import React from 'react';
 import ChatPopup from '../components/Chat/ChatPopup';
 export default function LoginForm() {
@@ -52,7 +51,7 @@ export default function LoginForm() {
 
     try {
       const response = await fetch(
-        // 'https://localhost:3000/api/accounts/login',
+        'https://localhost:3000/api/accounts/login',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -148,18 +147,9 @@ export default function LoginForm() {
       <div
         className={`p-8 rounded-lg w-full max-w-[556px] h-auto shadow-lg z-10 flex flex-col items-center ${isDarkMode ? 'bg-[rgba(28,28,36,1)] text-white' : 'bg-white text-black'}`}
       >
-        <h2 className="text-2xl font-bold text-center ">Welcome Back!</h2>
-        <p
-          className="text-center mb-2"
-          style={{ color: 'rgba(128, 129, 145, 1)' }}
-        >
-          Don{'  '}t have an account?{' '}
-          <Link to="/signup" className="text-green-500">
-            Sign up
-          </Link>
-        </p>
+        <h2 className="text-2xl font-bold text-center ">Dashboard Sign In !</h2>
 
-        <GoogleSignInButton />
+        {/* <GoogleSignInButton /> */}
 
         <form
           onSubmit={handleSubmit}
@@ -200,12 +190,6 @@ export default function LoginForm() {
             </div>
           </div>
 
-          <div className="mb-2 w-full flex justify-end">
-            <Link to="/forgotpassword" className="text-green-500">
-              Forgot Password?
-            </Link>
-          </div>
-
           <button
             type="submit"
             className="w-full custom-button text-white py-3 rounded-lg hover:bg-green-700"
@@ -218,7 +202,6 @@ export default function LoginForm() {
             Sign in
           </button>
         </form>
-        <ChatPopup />
       </div>
     </div>
   );

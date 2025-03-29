@@ -12,6 +12,7 @@ const PageNotFound = lazy(
 const CartPage = lazy(() => import('../pages/Cart'));
 const CheckoutPage = lazy(() => import('../pages/Checkout'));
 const LoginForm = lazy(() => import('../pages/Login'));
+const BackLog = lazy(() => import('../pages/BackLog'));
 const SignUpForm = lazy(() => import('../pages/Signup'));
 const ForgotPassword = lazy(
   () => import('../pages/ResetPassword/Forgot-password')
@@ -40,6 +41,7 @@ const AppRoutes = () => {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/signup" element={<SignUpForm />} />
         <Route path="/login" element={<LoginForm />} />
+        <Route path="/backlog" element={<BackLog />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/enter-otp" element={<EnterOtp />} />
         <Route path="/create-new-password" element={<CreateNewPassword />} />
