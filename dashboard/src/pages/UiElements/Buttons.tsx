@@ -1,8 +1,8 @@
-import ComponentCard from "../../components/common/ComponentCard";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import PageMeta from "../../components/common/PageMeta";
-import Button from "../../components/ui/button/Button";
-import { BoxIcon } from "../../icons";
+import ComponentCard from '../../components/common/ComponentCard';
+import PageBreadcrumb from '../../components/common/PageBreadCrumb';
+import PageMeta from '../../components/common/PageMeta';
+import Button from '../../components/ui/button/Button';
+import { BoxIcon } from '../../icons';
 
 export default function Buttons() {
   return (
@@ -92,7 +92,7 @@ export default function Buttons() {
               Button Text
             </Button>
           </div>
-        </ComponentCard>{" "}
+        </ComponentCard>{' '}
         {/* Outline Button with Start Icon */}
         <ComponentCard title="Outline Button with Right Icon">
           <div className="flex items-center gap-5">

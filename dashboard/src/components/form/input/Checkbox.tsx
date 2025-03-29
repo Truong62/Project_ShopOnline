@@ -1,26 +1,15 @@
-import type React from "react";
-
-interface CheckboxProps {
-  label?: string;
-  checked: boolean;
-  className?: string;
-  id?: string;
-  onChange: (checked: boolean) => void;
-  disabled?: boolean;
-}
-
-const Checkbox: React.FC<CheckboxProps> = ({
+const Checkbox = ({
   label,
   checked,
   id,
   onChange,
-  className = "",
+  className = '',
   disabled = false,
 }) => {
   return (
     <label
       className={`flex items-center space-x-3 group cursor-pointer ${
-        disabled ? "cursor-not-allowed opacity-60" : ""
+        disabled ? 'cursor-not-allowed opacity-60' : ''
       }`}
     >
       <div className="relative w-5 h-5">

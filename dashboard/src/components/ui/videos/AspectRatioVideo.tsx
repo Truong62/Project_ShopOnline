@@ -1,13 +1,7 @@
-type AspectRatioVideoProps = {
-  videoUrl: string; // URL of the video
-  aspectRatio?: string; // Aspect ratio in the format "width/height", default is "16/9"
-  title?: string; // Video title, default is "Embedded Video"
-};
-
-const AspectRatioVideo: React.FC<AspectRatioVideoProps> = ({
+const AspectRatioVideo = ({
   videoUrl,
-  aspectRatio = "video", // Default aspect ratio
-  title = "Embedded Video",
+  aspectRatio = 'video', // Default aspect ratio
+  title = 'Embedded Video',
 }) => {
   return (
     <div className={`aspect-${aspectRatio} overflow-hidden rounded-lg`}>

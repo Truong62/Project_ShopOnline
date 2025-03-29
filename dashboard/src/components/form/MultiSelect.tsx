@@ -1,35 +1,33 @@
-import type React from "react";
-import { useState } from "react";
+import { useState } from 'react';
 
-interface Option {
-  value: string;
-  text: string;
-}
+// interface Option {
+//   value: string;
+//   text: string;
+// }
+//
+// interface MultiSelectProps {
+//   label: string;
+//   options: Option[];
+//   defaultSelected?: string[];
+//   onChange?: (selected: string[]) => void;
+//   disabled?: boolean;
+// }
 
-interface MultiSelectProps {
-  label: string;
-  options: Option[];
-  defaultSelected?: string[];
-  onChange?: (selected: string[]) => void;
-  disabled?: boolean;
-}
-
-const MultiSelect: React.FC<MultiSelectProps> = ({
+const MultiSelect = ({
   label,
   options,
   defaultSelected = [],
   onChange,
   disabled = false,
 }) => {
-  const [selectedOptions, setSelectedOptions] =
-    useState<string[]>(defaultSelected);
+  const [selectedOptions, setSelectedOptions] = useState(defaultSelected);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
     if (!disabled) setIsOpen((prev) => !prev);
   };
 
-  const handleSelect = (optionValue: string) => {
+  const handleSelect = (optionValue) => {
     const newSelectedOptions = selectedOptions.includes(optionValue)
       ? selectedOptions.filter((value) => value !== optionValue)
       : [...selectedOptions, optionValue];
@@ -38,14 +36,14 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     onChange?.(newSelectedOptions);
   };
 
-  const removeOption = (value: string) => {
+  const removeOption = (value) => {
     const newSelectedOptions = selectedOptions.filter((opt) => opt !== value);
     setSelectedOptions(newSelectedOptions);
     onChange?.(newSelectedOptions);
   };
 
   const selectedValuesText = selectedOptions.map(
-    (value) => options.find((option) => option.value === value)?.text || ""
+    (value) => options.find((option) => option.value === value)?.text || ''
   );
 
   return (
@@ -108,7 +106,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   className="w-5 h-5 text-gray-700 outline-hidden cursor-pointer focus:outline-hidden dark:text-gray-400"
                 >
                   <svg
-                    className={`stroke-current ${isOpen ? "rotate-180" : ""}`}
+                    className={`stroke-current ${isOpen ? 'rotate-180' : ''}`}
                     width="20"
                     height="20"
                     viewBox="0 0 20 20"
@@ -143,8 +141,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                     <div
                       className={`relative flex w-full items-center p-2 pl-2 ${
                         selectedOptions.includes(option.value)
-                          ? "bg-primary/10"
-                          : ""
+                          ? 'bg-primary/10'
+                          : ''
                       }`}
                     >
                       <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">

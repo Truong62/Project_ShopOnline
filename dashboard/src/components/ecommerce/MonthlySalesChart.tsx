@@ -1,16 +1,16 @@
-import Chart from "react-apexcharts";
-import { ApexOptions } from "apexcharts";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { MoreDotIcon } from "../../icons";
-import { useState } from "react";
+import Chart from 'react-apexcharts';
+import { ApexOptions } from 'apexcharts';
+import { Dropdown } from '../ui/dropdown/Dropdown';
+import { DropdownItem } from '../ui/dropdown/DropdownItem';
+import { MoreDotIcon } from '../../icons';
+import { useState } from 'react';
 
 export default function MonthlySalesChart() {
-  const options: ApexOptions = {
-    colors: ["#465fff"],
+  const options = {
+    colors: ['#465fff'],
     chart: {
-      fontFamily: "Outfit, sans-serif",
-      type: "bar",
+      fontFamily: 'Outfit, sans-serif',
+      type: 'bar',
       height: 180,
       toolbar: {
         show: false,
@@ -19,9 +19,9 @@ export default function MonthlySalesChart() {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "39%",
+        columnWidth: '39%',
         borderRadius: 5,
-        borderRadiusApplication: "end",
+        borderRadiusApplication: 'end',
       },
     },
     dataLabels: {
@@ -30,22 +30,22 @@ export default function MonthlySalesChart() {
     stroke: {
       show: true,
       width: 4,
-      colors: ["transparent"],
+      colors: ['transparent'],
     },
     xaxis: {
       categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
       ],
       axisBorder: {
         show: false,
@@ -56,9 +56,9 @@ export default function MonthlySalesChart() {
     },
     legend: {
       show: true,
-      position: "top",
-      horizontalAlign: "left",
-      fontFamily: "Outfit",
+      position: 'top',
+      horizontalAlign: 'left',
+      fontFamily: 'Outfit',
     },
     yaxis: {
       title: {
@@ -81,13 +81,13 @@ export default function MonthlySalesChart() {
         show: false,
       },
       y: {
-        formatter: (val: number) => `${val}`,
+        formatter: (val) => `${val}`,
       },
     },
   };
   const series = [
     {
-      name: "Sales",
+      name: 'Sales',
       data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
     },
   ];

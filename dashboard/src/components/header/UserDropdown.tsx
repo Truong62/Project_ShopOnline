@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { Link } from "react-router";
+import { useState } from 'react';
+import { DropdownItem } from '../ui/dropdown/DropdownItem';
+import { Dropdown } from '../ui/dropdown/Dropdown';
+import { Link } from 'react-router';
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +13,7 @@ export default function UserDropdown() {
   function closeDropdown() {
     setIsOpen(false);
   }
+
   return (
     <div className="relative">
       <button
@@ -26,7 +27,7 @@ export default function UserDropdown() {
         <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
+            isOpen ? 'rotate-180' : ''
           }`}
           width="18"
           height="20"

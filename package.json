@@ -9,7 +9,6 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@reduxjs/toolkit": "^2.3.0",
-    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tanstack/react-query": "^5.53.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -47,7 +46,25 @@
     "vite": "6.0.9",
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/list": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
+    "@fullcalendar/timegrid": "^6.1.15",
+    "@react-jvectormap/core": "^1.0.4",
+    "@react-jvectormap/world": "^1.1.2",
+    "apexcharts": "^4.1.0",
+    "clsx": "^2.1.1",
+    "flatpickr": "^4.6.13",
+    "react-apexcharts": "^1.7.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dropzone": "^14.3.5",
+    "react-helmet-async": "^2.0.5",
+    "react-router": "^7.1.5",
+    "tailwind-merge": "^3.0.1"
   },
   "scripts": {
     "dev": "npm run checkType && vite",
@@ -57,7 +74,7 @@
     "lint": "eslint . --ext .js,.jsx",
     "format": "prettier --write .",
     "checkType": "npm run lint && npm run format",
-    "start": "npm run checkType && vite",
+    "start": "vite",
     "backend": "npm run devBE --prefix ./BE-demo"
   },
   "eslintConfig": {
@@ -91,13 +108,37 @@
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-tailwindcss": "^3.17.5",
     "postcss": "^8.4.44",
     "prettier": "^3.3.3",
     "sass": "^1.77.8",
     "sass-loader": "^16.0.1",
     "source-map-loader": "^5.0.0",
     "style-loader": "^4.0.0",
-    "tailwindcss": "^3.4.14"
+    "@eslint/js": "^9.19.0",
+    "@tailwindcss/postcss": "^4.0.8",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.18",
+    "globals": "^15.14.0",
+    "tailwindcss": "^4.0.8",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.22.0",
+    "vite": "^6.1.0",
+    "vite-plugin-svgr": "^4.3.0"
+  },
+  "overrides": {
+    "react-helmet-async": {
+      "react": "^16.8.0 || ^17 || ^18 || ^19"
+    },
+    "@react-jvectormap/core": {
+      "react": "^16.8.0 || ^17 || ^18 || ^19",
+      "react-dom": "^16.8.0 || ^17 || ^18 || ^19"
+    },
+    "@react-jvectormap/world": {
+      "react": "^16.8.0 || ^17 || ^18 || ^19",
+      "react-dom": "^16.8.0 || ^17 || ^18 || ^19"
+    }
   }
 }

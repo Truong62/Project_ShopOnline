@@ -1,20 +1,20 @@
-import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
-import Label from "../Label";
-import Input from "../input/InputField";
-import Select from "../Select";
-import { EyeCloseIcon, EyeIcon, TimeIcon } from "../../../icons";
-import DatePicker from "../date-picker.tsx";
+import { useState } from 'react';
+import ComponentCard from '../../common/ComponentCard';
+import Label from '../Label';
+import Input from '../input/InputField';
+import Select from '../Select';
+import { EyeCloseIcon, EyeIcon, TimeIcon } from '../../../icons';
+import DatePicker from '../date-picker.tsx';
 
 export default function DefaultInputs() {
   const [showPassword, setShowPassword] = useState(false);
   const options = [
-    { value: "marketing", label: "Marketing" },
-    { value: "template", label: "Template" },
-    { value: "development", label: "Development" },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'template', label: 'Template' },
+    { value: 'development', label: 'Development' },
   ];
-  const handleSelectChange = (value: string) => {
-    console.log("Selected value:", value);
+  const handleSelectChange = (value) => {
+    console.log('Selected value:', value);
   };
 
   return (
@@ -41,7 +41,7 @@ export default function DefaultInputs() {
           <Label>Password Input</Label>
           <div className="relative">
             <Input
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               placeholder="Enter your password"
             />
             <button
