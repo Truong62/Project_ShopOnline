@@ -9,7 +9,7 @@ const navItems = [
   {
     icon: <i className="pi pi-th-large" />, // Grid icon
     name: 'Dashboard',
-    subItems: [{ name: 'Ecommerce', path: '/', pro: false }],
+    path: '/admin',
   },
   {
     icon: <i className="pi pi-calendar" />, // Calendar icon

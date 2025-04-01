@@ -3,9 +3,10 @@ import { Modal } from '../ui/modal';
 import Button from '../ui/button/Button';
 import Input from '../form/input/InputField';
 import Label from '../form/Label';
+import React from 'react';
 
 export default function UserInfoCard() {
-  const { isOpen, openModal, closeModal } = useModal();
+  const { isOpen, openModal, closeModal } = useModal(false);
   const handleSave = () => {
     // Handle save logic here
     console.log('Saving changes...');
@@ -109,29 +110,67 @@ export default function UserInfoCard() {
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div>
-                    <Label>Facebook</Label>
+                    <Label htmlFor="facebook" className="text-sm font-medium text-gray-700">Facebook</Label>
                     <Input
+                      id="facebook"
+                      name="facebook"
+                      placeholder="Enter Facebook URL"
                       type="text"
                       value="https://www.facebook.com/PimjoHQ"
+                      onChange={() => { }}
+                      min={undefined}
+                      max={undefined}
+                      step={undefined}
+                      hint={undefined}
                     />
                   </div>
 
                   <div>
-                    <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" />
+                    <Label htmlFor="x-com" className="text-sm font-medium text-gray-700">X.com</Label>
+                    <Input
+                      id="x-com"
+                      name="x-com"
+                      placeholder="Enter X.com URL"
+                      type="text"
+                      value="https://x.com/PimjoHQ"
+                      onChange={() => {}}
+                      min={undefined}
+                      max={undefined}
+                      step={undefined}
+                      hint={undefined}
+                    />
                   </div>
 
                   <div>
-                    <Label>Linkedin</Label>
+                    <Label htmlFor="linkedin" className="text-sm font-medium text-gray-700">Linkedin</Label>
                     <Input
+                      id="linkedin"
+                      name="linkedin"
+                      placeholder="Enter LinkedIn URL"
                       type="text"
                       value="https://www.linkedin.com/company/pimjo"
+                      onChange={() => {}}
+                      min={undefined}
+                      max={undefined}
+                      step={undefined}
+                      hint={undefined}
                     />
                   </div>
 
                   <div>
-                    <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" />
+                    <Label htmlFor="instagram" className="text-sm font-medium text-gray-700">Instagram</Label>
+                    <Input
+                      id="instagram"
+                      name="instagram"
+                      placeholder="Enter Instagram URL"
+                      type="text"
+                      value="https://instagram.com/PimjoHQ"
+                      onChange={() => {}}
+                      min={undefined}
+                      max={undefined}
+                      step={undefined}
+                      hint={undefined}
+                    />
                   </div>
                 </div>
               </div>
@@ -142,37 +181,92 @@ export default function UserInfoCard() {
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name</Label>
-                    <Input type="text" value="Musharof" />
+                    <Label htmlFor="first-name" className="text-sm font-medium text-gray-700">First Name</Label>
+                    <Input
+                      id="first-name"
+                      name="firstName"
+                      placeholder="Enter First Name"
+                      type="text"
+                      value="Musharof"
+                      onChange={() => {}}
+                      min={undefined}
+                      max={undefined}
+                      step={undefined}
+                      hint={undefined}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name</Label>
-                    <Input type="text" value="Chowdhury" />
+                    <Label htmlFor="last-name" className="text-sm font-medium text-gray-700">Last Name</Label>
+                    <Input
+                      id="last-name"
+                      name="lastName"
+                      placeholder="Enter Last Name"
+                      type="text"
+                      value="Chowdhury"
+                      onChange={() => {}}
+                      min={undefined}
+                      max={undefined}
+                      step={undefined}
+                      hint={undefined}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Email Address</Label>
-                    <Input type="text" value="randomuser@pimjo.com" />
+                    <Label htmlFor="email-address" className="text-sm font-medium text-gray-700">Email Address</Label>
+                    <Input
+                      id="email-address"
+                      name="email"
+                      placeholder="Enter Email Address"
+                      type="text"
+                      value="randomuser@pimjo.com"
+                      onChange={() => {}}
+                      min={undefined}
+                      max={undefined}
+                      step={undefined}
+                      hint={undefined}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Phone</Label>
-                    <Input type="text" value="+09 363 398 46" />
+                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      placeholder="Enter Phone Number"
+                      type="text"
+                      value="+09 363 398 46"
+                      onChange={() => {}}
+                      min={undefined}
+                      max={undefined}
+                      step={undefined}
+                      hint={undefined}
+                    />
                   </div>
 
                   <div className="col-span-2">
-                    <Label>Bio</Label>
-                    <Input type="text" value="Team Manager" />
+                    <Label htmlFor="bio" className="text-sm font-medium text-gray-700">Bio</Label>
+                    <Input
+                      id="bio"
+                      name="bio"
+                      placeholder="Enter Bio"
+                      type="text"
+                      value="Team Manager"
+                      onChange={() => {}}
+                      min={0}
+                      max={100}
+                      step={1}
+                      hint={undefined}
+                    />
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
+              <Button size="sm" variant="outline" onClick={closeModal} startIcon={null} endIcon={null}>
                 Close
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <Button size="sm" onClick={handleSave} startIcon={null} endIcon={null}>
                 Save Changes
               </Button>
             </div>

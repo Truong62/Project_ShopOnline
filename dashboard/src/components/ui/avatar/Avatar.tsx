@@ -5,6 +5,8 @@
 //   status?: "online" | "offline" | "busy" | "none"; // Status indicator
 // }
 
+import React from "react";
+
 const sizeClasses = {
   xsmall: 'h-6 w-6 max-w-6',
   small: 'h-8 w-8 max-w-8',

@@ -5,6 +5,7 @@ import { useSidebar } from '../context/SidebarContext';
 import { ThemeToggleButton } from '../components/common/ThemeToggleButton';
 import NotificationDropdown from '../components/header/NotificationDropdown';
 import UserDropdown from '../components/header/UserDropdown';
+import React from 'react';
 
 const AppHeader = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -23,7 +24,7 @@ const AppHeader = () => {
     setApplicationMenuOpen(!isApplicationMenuOpen);
   };
 
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event) => {

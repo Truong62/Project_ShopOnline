@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function OneIsToOne() {
   return (
     <div className="overflow-hidden rounded-lg aspect-square">

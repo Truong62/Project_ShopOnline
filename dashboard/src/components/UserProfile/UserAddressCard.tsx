@@ -3,9 +3,10 @@ import { Modal } from '../ui/modal';
 import Button from '../ui/button/Button';
 import Input from '../form/input/InputField';
 import Label from '../form/Label';
+import React from 'react';
 
 export default function UserAddressCard() {
-  const { isOpen, openModal, closeModal } = useModal();
+  const { isOpen, openModal, closeModal } = useModal(false); // Pass initialState as false or the desired default value
   const handleSave = () => {
     // Handle save logic here
     console.log('Saving changes...');
@@ -96,31 +97,75 @@ export default function UserAddressCard() {
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <div>
-                  <Label>Country</Label>
-                  <Input type="text" value="United States" />
+                  <Label htmlFor="country" className="text-sm font-medium text-gray-700">Country</Label>
+                  <Input
+                    type="text"
+                    id="country"
+                    name="country"
+                    placeholder="Enter your country"
+                    value="United States"
+                    onChange={() => {}}
+                    min={undefined}
+                    max={undefined}
+                    step={undefined}
+                    hint={undefined}
+                  />
                 </div>
 
                 <div>
-                  <Label>City/State</Label>
-                  <Input type="text" value="Arizona, United States." />
+                  <Label htmlFor="cityState" className="text-sm font-medium text-gray-700">City/State</Label>
+                  <Input
+                    type="text"
+                    id="cityState"
+                    name="cityState"
+                    placeholder="Enter your city/state"
+                    value="Arizona, United States."
+                    onChange={() => {}}
+                    min={undefined}
+                    max={undefined}
+                    step={undefined}
+                    hint={undefined}
+                  />
                 </div>
 
                 <div>
-                  <Label>Postal Code</Label>
-                  <Input type="text" value="ERT 2489" />
+                  <Label htmlFor="postalCode" className="text-sm font-medium text-gray-700">Postal Code</Label>
+                  <Input
+                    type="text"
+                    id="postalCode"
+                    name="postalCode"
+                    placeholder="Enter your postal code"
+                    value="ERT 2489"
+                    onChange={() => {}}
+                    min={undefined}
+                    max={undefined}
+                    step={undefined}
+                    hint={undefined}
+                  />
                 </div>
 
                 <div>
-                  <Label>TAX ID</Label>
-                  <Input type="text" value="AS4568384" />
+                  <Label htmlFor="taxId" className="text-sm font-medium text-gray-700">TAX ID</Label>
+                  <Input
+                    type="text"
+                    id="taxId"
+                    name="taxId"
+                    placeholder="Enter your TAX ID"
+                    value="AS4568384"
+                    onChange={() => {}}
+                    min={undefined}
+                    max={undefined}
+                    step={undefined}
+                    hint={undefined}
+                  />
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
+              <Button size="sm" variant="outline" onClick={closeModal} startIcon={null} endIcon={null}>
                 Close
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <Button size="sm" onClick={handleSave} startIcon={null} endIcon={null}>
                 Save Changes
               </Button>
             </div>

@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import ComponentCard from '../../common/ComponentCard';
-import { Dropdown } from 'primereact/dropdown';
-import { MultiSelect } from 'primereact/multiselect';
-import React from 'react';
+import { useState } from "react";
+import ComponentCard from "../../common/ComponentCard";
+import Label from "../Label";
+import Select from "../Select";
+import MultiSelect from "../MultiSelect";
+import React from "react";
 
 export default function SelectInputs() {
   const options = [
@@ -25,22 +26,22 @@ export default function SelectInputs() {
     { value: '5', label: 'Option 5' },
   ];
 
+  const [singleSelectValue, setSingleSelectValue] = useState(options[0]); // Default value
+
   return (
     <ComponentCard title="Select Inputs">
       <div className="space-y-6">
         <div>
-          <label htmlFor="singleSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">
+          <Label htmlFor="singleSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">
             Select Input
-          </label>
-          <Dropdown
-            id="singleSelect"
-            value={null}
+          </Label>
+          <Select
             options={options}
-            onChange={handleSelectChange}
+            onChange={(e) => setSingleSelectValue(e)}
             placeholder="Select Option"
-            optionLabel="label"
             className="w-full"
           />
+
         </div>
 
         <div>
@@ -48,13 +49,9 @@ export default function SelectInputs() {
             Multiple Select Options
           </label>
           <MultiSelect
-            id="multiSelect"
-            value={selectedValues}
+            label="Multiple Select Options"
             options={multiOptions}
             onChange={(e) => setSelectedValues(e.value)}
-            optionLabel="label"
-            placeholder="Select Options"
-            className="w-full"
           />
           <p className="sr-only">Selected Values: {selectedValues.join(', ')}</p>
         </div>

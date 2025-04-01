@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { Chart } from 'primereact/chart';
-import { Dropdown } from 'primereact/dropdown'; // Use PrimeReact's Dropdown
+import Chart from "react-apexcharts";
+import { ApexOptions } from "apexcharts";
+import React, { useState } from "react";
+import { Dropdown } from "../ui/dropdown/Dropdown";
+import { DropdownItem } from "../ui/dropdown/DropdownItem";
 
 export default function MonthlyTarget() {
   const series = [75.55];
-  const options = {
-    colors: ['#465FFF'],
+  const options: ApexOptions = {
+    colors: ["#465FFF"],
     chart: {
-      fontFamily: 'Outfit, sans-serif',
-      type: 'radialBar',
+      fontFamily: "Outfit, sans-serif",
+      type: "radialBar",
       height: 330,
       sparkline: {
         enabled: true,
@@ -19,11 +21,11 @@ export default function MonthlyTarget() {
         startAngle: -85,
         endAngle: 85,
         hollow: {
-          size: '80%',
+          size: "80%",
         },
         track: {
-          background: '#E4E7EC',
-          strokeWidth: '100%',
+          background: "#E4E7EC",
+          strokeWidth: "100%",
           margin: 5, // margin is in pixels
         },
         dataLabels: {
@@ -31,27 +33,26 @@ export default function MonthlyTarget() {
             show: false,
           },
           value: {
-            fontSize: '36px',
-            fontWeight: '600',
+            fontSize: "36px",
+            fontWeight: "600",
             offsetY: -40,
-            color: '#1D2939',
+            color: "#1D2939",
             formatter: function (val) {
-              return val + '%';
+              return val + "%";
             },
           },
         },
       },
     },
     fill: {
-      type: 'solid',
-      colors: ['#465FFF'],
+      type: "solid",
+      colors: ["#465FFF"],
     },
     stroke: {
-      lineCap: 'round',
+      lineCap: "round",
     },
-    labels: ['Progress'],
+    labels: ["Progress"],
   };
-
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
@@ -61,19 +62,6 @@ export default function MonthlyTarget() {
   function closeDropdown() {
     setIsOpen(false);
   }
-
-  // Dropdown options
-  const dropdownOptions = [
-    { label: 'View More', value: 'view_more' },
-    { label: 'Delete', value: 'delete' },
-  ];
-
-  // Handle dropdown item selection
-  const handleDropdownChange = (e: { value: string }) => {
-    console.log(e.value); // Handle the selected action (e.g., 'view_more', 'delete')
-    closeDropdown(); // Close the dropdown after selection
-  };
-
   return (
     <div className="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="px-5 pt-5 bg-white shadow-default rounded-2xl pb-11 dark:bg-gray-900 sm:px-6 sm:pt-6">
@@ -88,25 +76,40 @@ export default function MonthlyTarget() {
           </div>
           <div className="relative inline-block">
             <button className="dropdown-toggle" onClick={toggleDropdown}>
-              <i className=" pi-ellipsis-v text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
+              <i className="pi pi-ellipsis-v text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-xl"></i>
             </button>
             <Dropdown
-              value={null} // You can use a state variable to manage the selected value if needed
-              options={dropdownOptions}
-              onChange={handleDropdownChange}
-              placeholder="Actions"
+              isOpen={isOpen}
+              onClose={closeDropdown}
               className="w-40 p-2"
-              panelClassName="p-2"
-            />
+            >
+              <DropdownItem
+                to="#"
+                onClick={closeDropdown}
+                onItemClick={closeDropdown}
+                className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+              >
+                View More
+              </DropdownItem>
+
+              <DropdownItem
+                to="#"
+                onClick={closeDropdown}
+                onItemClick={closeDropdown}
+                className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+              >
+                Delete
+              </DropdownItem>
+            </Dropdown>
           </div>
         </div>
         <div className="relative ">
           <div className="max-h-[330px]" id="chartDarkStyle">
             <Chart
               options={options}
-              data={{ series }}
+              series={series}
               type="radialBar"
-              height="330"
+              height={330}
             />
           </div>
 

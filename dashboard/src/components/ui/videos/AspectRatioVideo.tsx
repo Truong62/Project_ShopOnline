@@ -1,3 +1,5 @@
+import React from "react";
+
 const AspectRatioVideo = ({
   videoUrl,
   aspectRatio = 'video', // Default aspect ratio
