@@ -1,7 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import React, { lazy, Suspense } from 'react';
 import LoadingRoute from '../components/LoadingRoute/LoadingRoute';
-
 const HomePage = lazy(() => import('../pages/HomePage'));
 const Blogs = lazy(() => import('../pages/Blogs'));
 const Product = lazy(() => import('../pages/Product'));
@@ -47,7 +46,7 @@ const AppRoutes = () => {
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/congratulations" element={<Congratulations />} />
         <Route path="/company" element={<Company />} />
-        <Route path="*" element={<PageNotFound />} />
+        <Route path="/" element={<PageNotFound />} />
       </Routes>
     </Suspense>
   );
