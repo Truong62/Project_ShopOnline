@@ -18,6 +18,7 @@ import Blank from './pages/Blank';
 import AppLayout from './layout/AppLayout';
 import { ScrollToTop } from './components/common/ScrollToTop';
 import Home from './pages/Dashboard/Home';
+import React from 'react';
 
 export default function App() {
   return (

@@ -1,5 +1,6 @@
 import { VectorMap } from '@react-jvectormap/core';
 import { worldMill } from '@react-jvectormap/world';
+import React from 'react';
 
 const CountryMap = ({ mapColor }) => {
   return (
@@ -9,7 +10,7 @@ const CountryMap = ({ mapColor }) => {
       markerStyle={{
         initial: {
           fill: '#465FFF',
-          r: 4, // Custom radius for markers
+          transform: 'scale(1.5)', // Adjust marker size using transform
         }, // Type assertion to bypass strict CSS property checks
       }}
       markersSelectable={true}

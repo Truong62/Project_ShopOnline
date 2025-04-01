@@ -9,6 +9,8 @@
 //   disabled?: boolean; // Optional disabled state for the radio button
 // }
 
+import React from "react";
+
 const Radio = ({
   id,
   name,

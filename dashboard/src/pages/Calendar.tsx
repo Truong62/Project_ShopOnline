@@ -7,16 +7,20 @@ import { DateSelectArg } from '@fullcalendar/core';
 import { Modal } from '../components/ui/modal';
 import { useModal } from '../hooks/useModal';
 import PageMeta from '../components/common/PageMeta';
+import React from 'react';
 
 const Calendar = () => {
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState<{ id: string; title: string; start: string; end?: string; extendedProps: { calendar: string } } | null>(null);
   const [eventTitle, setEventTitle] = useState('');
   const [eventStartDate, setEventStartDate] = useState('');
   const [eventEndDate, setEventEndDate] = useState('');
   const [eventLevel, setEventLevel] = useState('');
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<
+    { id: string; title: string; start: string; end?: string; extendedProps: { calendar: string } }[]
+  >([]);
   const calendarRef = useRef(null);
-  const { isOpen, openModal, closeModal } = useModal();
+  const initialState = false; // Define the initial state for the modal
+  const { isOpen, openModal, closeModal } = useModal(initialState);
 
   const calendarsEvents = {
     Danger: 'danger',

@@ -1,59 +1,39 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router';
-
-// Assume these icons are imported from an icon library
-import {
-  BoxCubeIcon,
-  CalenderIcon,
-  ChevronDownIcon,
-  GridIcon,
-  HorizontaLDots,
-  ListIcon,
-  PageIcon,
-  PieChartIcon,
-  PlugInIcon,
-  TableIcon,
-  UserCircleIcon,
-} from '../icons';
 import { useSidebar } from '../context/SidebarContext';
 import SidebarWidget from './SidebarWidget';
-//
-// type NavItem = {
-//   name: string;
-//   icon: React.ReactNode;
-//   path?: string;
-//   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
-// };
+import React from 'react';
 
+// Replace these icon imports with your icon class names.
 const navItems = [
   {
-    icon: <GridIcon />,
+    icon: <i className="pi pi-th-large" />, // Grid icon
     name: 'Dashboard',
     subItems: [{ name: 'Ecommerce', path: '/', pro: false }],
   },
   {
-    icon: <CalenderIcon />,
+    icon: <i className="pi pi-calendar" />, // Calendar icon
     name: 'Calendar',
     path: '/calendar',
   },
   {
-    icon: <UserCircleIcon />,
+    icon: <i className="pi pi-user-circle" />, // User Profile icon
     name: 'User Profile',
     path: '/profile',
   },
   {
     name: 'Forms',
-    icon: <ListIcon />,
+    icon: <i className="pi pi-list" />, // List icon
     subItems: [{ name: 'Form Elements', path: '/form-elements', pro: false }],
   },
   {
     name: 'Tables',
-    icon: <TableIcon />,
+    icon: <i className="pi pi-table" />, // Table icon
     subItems: [{ name: 'Basic Tables', path: '/basic-tables', pro: false }],
   },
   {
     name: 'Pages',
-    icon: <PageIcon />,
+    icon: <i className="pi pi-file" />, // Page icon
     subItems: [
       { name: 'Blank Page', path: '/blank', pro: false },
       { name: '404 Error', path: '/error-404', pro: false },
@@ -63,7 +43,7 @@ const navItems = [
 
 const othersItems = [
   {
-    icon: <PieChartIcon />,
+    icon: <i className="pi pi-chart-line" />, // Pie chart icon
     name: 'Charts',
     subItems: [
       { name: 'Line Chart', path: '/line-chart', pro: false },
@@ -71,7 +51,7 @@ const othersItems = [
     ],
   },
   {
-    icon: <BoxCubeIcon />,
+    icon: <i className="pi pi-box" />, // Box cube icon
     name: 'UI Elements',
     subItems: [
       { name: 'Alerts', path: '/alerts', pro: false },
@@ -83,7 +63,7 @@ const othersItems = [
     ],
   },
   {
-    icon: <PlugInIcon />,
+    icon: <i className="pi pi-plug" />, // Plug-in icon
     name: 'Authentication',
     subItems: [
       { name: 'Sign In', path: '/signin', pro: false },
@@ -93,14 +73,14 @@ const othersItems = [
 ];
 
 const AppSidebar = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar()!;
   const location = useLocation();
 
-  const [openSubmenu, setOpenSubmenu] = useState(null);
+  type OpenSubmenuState = { type: string; index: number } | null;
+  const [openSubmenu, setOpenSubmenu] = useState<OpenSubmenuState>(null);
   const [subMenuHeight, setSubMenuHeight] = useState({});
   const subMenuRefs = useRef({});
 
-  // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
     (path) => location.pathname === path,
     [location.pathname]
@@ -184,16 +164,6 @@ const AppSidebar = () => {
               {(isExpanded || isHovered || isMobileOpen) && (
                 <span className="menu-item-text">{nav.name}</span>
               )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? 'rotate-180 text-brand-500'
-                      : ''
-                  }`}
-                />
-              )}
             </button>
           ) : (
             nav.path && (
@@ -243,30 +213,6 @@ const AppSidebar = () => {
                       }`}
                     >
                       {subItem.name}
-                      <span className="flex items-center gap-1 ml-auto">
-                        {subItem.new && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? 'menu-dropdown-badge-active'
-                                : 'menu-dropdown-badge-inactive'
-                            } menu-dropdown-badge`}
-                          >
-                            new
-                          </span>
-                        )}
-                        {subItem.pro && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? 'menu-dropdown-badge-active'
-                                : 'menu-dropdown-badge-inactive'
-                            } menu-dropdown-badge`}
-                          >
-                            pro
-                          </span>
-                        )}
-                      </span>
                     </Link>
                   </li>
                 ))}
@@ -285,8 +231,8 @@ const AppSidebar = () => {
           isExpanded || isMobileOpen
             ? 'w-[290px]'
             : isHovered
-              ? 'w-[290px]'
-              : 'w-[90px]'
+            ? 'w-[290px]'
+            : 'w-[90px]'
         }
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0`}
@@ -340,7 +286,7 @@ const AppSidebar = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   'Menu'
                 ) : (
-                  <HorizontaLDots className="size-6" />
+                  <i className="pi pi-ellipsis-h" />
                 )}
               </h2>
               {renderMenuItems(navItems, 'main')}
@@ -356,7 +302,7 @@ const AppSidebar = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   'Others'
                 ) : (
-                  <HorizontaLDots />
+                  <i className="pi pi-ellipsis-h" />
                 )}
               </h2>
               {renderMenuItems(othersItems, 'others')}

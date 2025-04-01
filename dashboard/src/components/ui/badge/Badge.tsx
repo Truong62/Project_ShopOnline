@@ -18,6 +18,8 @@
 //   children: React.ReactNode; // Badge content
 // }
 
+import React from "react";
+
 const Badge = ({
   variant = 'light',
   color = 'primary',

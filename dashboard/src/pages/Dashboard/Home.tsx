@@ -5,6 +5,7 @@ import MonthlyTarget from '../../components/ecommerce/MonthlyTarget';
 import RecentOrders from '../../components/ecommerce/RecentOrders';
 import DemographicCard from '../../components/ecommerce/DemographicCard';
 import PageMeta from '../../components/common/PageMeta';
+import React from 'react';
 
 export default function Home() {
   return (

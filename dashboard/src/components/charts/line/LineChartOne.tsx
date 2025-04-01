@@ -1,7 +1,8 @@
+import React from 'react';
 import Chart from 'react-apexcharts';
 
 export default function LineChartOne() {
-  const options = {
+  const options: ApexCharts.ApexOptions = {
     legend: {
       show: false, // Hide legend
       position: 'top',
@@ -11,7 +12,7 @@ export default function LineChartOne() {
     chart: {
       fontFamily: 'Outfit, sans-serif',
       height: 310,
-      type: 'line', // Set the chart type to 'line'
+      type: 'line', // Ensure type is 'line'
       toolbar: {
         show: false, // Hide chart toolbar
       },
@@ -20,7 +21,6 @@ export default function LineChartOne() {
       curve: 'straight', // Define the line style (straight, smooth, or step)
       width: [2, 2], // Line width for each dataset
     },
-
     fill: {
       type: 'gradient',
       gradient: {
@@ -109,10 +109,11 @@ export default function LineChartOne() {
       data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
     },
   ];
+
   return (
     <div className="max-w-full overflow-x-auto custom-scrollbar">
       <div id="chartEight" className="min-w-[1000px]">
-        <Chart options={options} series={series} type="area" height={310} />
+        <Chart options={options} series={series} type="line" height={310} />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { ThemeToggleButton } from '../common/ThemeToggleButton';
 import NotificationDropdown from './NotificationDropdown';
 import UserDropdown from './UserDropdown';
 import { Link } from 'react-router';
+import React from 'react';
 
 // // Define the interface for the props
 // interface HeaderProps {

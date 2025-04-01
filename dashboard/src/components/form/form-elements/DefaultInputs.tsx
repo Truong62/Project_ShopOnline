@@ -1,92 +1,102 @@
 import { useState } from 'react';
+import { InputText } from 'primereact/inputtext';
+import { Password } from 'primereact/password';
+import { Dropdown } from 'primereact/dropdown';
+import { Calendar } from 'primereact/calendar';
 import ComponentCard from '../../common/ComponentCard';
-import Label from '../Label';
-import Input from '../input/InputField';
-import Select from '../Select';
-import { EyeCloseIcon, EyeIcon, TimeIcon } from '../../../icons';
-import DatePicker from '../date-picker.tsx';
+import React from 'react';
+import { PiEyeClosed, PiEye, PiClock } from 'react-icons/pi';  // Importing PrimeIcons from react-icons/pi
 
 export default function DefaultInputs() {
   const [showPassword, setShowPassword] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [date, setDate] = useState<Date | null>(null);
+
   const options = [
     { value: 'marketing', label: 'Marketing' },
     { value: 'template', label: 'Template' },
     { value: 'development', label: 'Development' },
   ];
-  const handleSelectChange = (value) => {
-    console.log('Selected value:', value);
+
+  const handleSelectChange = (e) => {
+    console.log('Selected value:', e.value);
+    setSelectedOption(e.value);
   };
 
   return (
     <ComponentCard title="Default Inputs">
       <div className="space-y-6">
         <div>
-          <Label htmlFor="input">Input</Label>
-          <Input type="text" id="input" />
+          <label htmlFor="input" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Input</label>
+          <InputText id="input" />
         </div>
         <div>
-          <Label htmlFor="inputTwo">Input with Placeholder</Label>
-          <Input type="text" id="inputTwo" placeholder="info@gmail.com" />
+          <label htmlFor="inputTwo" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Input with Placeholder</label>
+          <InputText id="inputTwo" placeholder="info@gmail.com" />
         </div>
         <div>
-          <Label>Select Input</Label>
-          <Select
+          <label htmlFor="dropdown" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Select Input</label>
+          <Dropdown
+            value={selectedOption}
             options={options}
-            placeholder="Select an option"
             onChange={handleSelectChange}
+            placeholder="Select an option"
             className="dark:bg-dark-900"
+            id="dropdown"
           />
         </div>
         <div>
-          <Label>Password Input</Label>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Password Input</label>
           <div className="relative">
-            <Input
-              type={showPassword ? 'text' : 'password'}
+            <Password
+              id="password"
+              value={showPassword ? 'text' : 'password'}
               placeholder="Enter your password"
+              toggleMask
+              onToggle={() => setShowPassword((prev) => !prev)}
             />
             <button
               onClick={() => setShowPassword(!showPassword)}
               className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
             >
               {showPassword ? (
-                <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                <PiEye className="fill-gray-500 dark:fill-gray-400 size-5" />
               ) : (
-                <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                <PiEyeClosed className="fill-gray-500 dark:fill-gray-400 size-5" />
               )}
             </button>
           </div>
         </div>
 
         <div>
-          <DatePicker
+          <label htmlFor="date-picker" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Date Picker Input</label>
+          <Calendar
             id="date-picker"
-            label="Date Picker Input"
+            value={date}
+            onChange={(e) => setDate(e.value ?? null)}
             placeholder="Select a date"
-            onChange={(dates, currentDateString) => {
-              // Handle your logic
-              console.log({ dates, currentDateString });
-            }}
           />
         </div>
 
         <div>
-          <Label htmlFor="tm">Time Picker Input</Label>
+          <label htmlFor="tm" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Time Picker Input</label>
           <div className="relative">
-            <Input
+            <InputText
               type="time"
               id="tm"
               name="tm"
               onChange={(e) => console.log(e.target.value)}
             />
             <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-              <TimeIcon className="size-6" />
+              <PiClock className="size-6" />
             </span>
           </div>
         </div>
         <div>
-          <Label htmlFor="tm">Input with Payment</Label>
+          <label htmlFor="payment" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Input with Payment</label>
           <div className="relative">
-            <Input
+            <InputText
+              id="payment"
               type="text"
               placeholder="Card number"
               className="pl-[62px]"

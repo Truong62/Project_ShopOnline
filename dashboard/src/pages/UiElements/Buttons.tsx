@@ -1,8 +1,8 @@
+import React from 'react';
 import ComponentCard from '../../components/common/ComponentCard';
 import PageBreadcrumb from '../../components/common/PageBreadCrumb';
 import PageMeta from '../../components/common/PageMeta';
 import Button from '../../components/ui/button/Button';
-import { BoxIcon } from '../../icons';
 
 export default function Buttons() {
   return (
@@ -16,10 +16,10 @@ export default function Buttons() {
         {/* Primary Button */}
         <ComponentCard title="Primary Button">
           <div className="flex items-center gap-5">
-            <Button size="sm" variant="primary">
+            <Button size="sm" variant="primary" startIcon={null} endIcon={null} onClick={() => {}}>
               Button Text
             </Button>
-            <Button size="md" variant="primary">
+            <Button size="md" variant="primary" startIcon={null} endIcon={null} onClick={() => {}}>
               Button Text
             </Button>
           </div>
@@ -30,14 +30,18 @@ export default function Buttons() {
             <Button
               size="sm"
               variant="primary"
-              startIcon={<BoxIcon className="size-5" />}
+              startIcon={<i className=" pi-box size-5" />}
+              endIcon={null}
+              onClick={() => {}}
             >
               Button Text
             </Button>
             <Button
               size="md"
               variant="primary"
-              startIcon={<BoxIcon className="size-5" />}
+              startIcon={<i className=" pi-box size-5" />}
+              endIcon={null}
+              onClick={() => {}}
             >
               Button Text
             </Button>
@@ -49,14 +53,18 @@ export default function Buttons() {
             <Button
               size="sm"
               variant="primary"
-              endIcon={<BoxIcon className="size-5" />}
+              startIcon={null}
+              endIcon={<i className="pi-box size-5" />}
+              onClick={() => {}}
             >
               Button Text
             </Button>
             <Button
               size="md"
               variant="primary"
-              endIcon={<BoxIcon className="size-5" />}
+              startIcon={null}
+              endIcon={<i className=" pi-box size-5" />}
+              onClick={() => {}}
             >
               Button Text
             </Button>
@@ -66,10 +74,10 @@ export default function Buttons() {
         <ComponentCard title="Secondary Button">
           <div className="flex items-center gap-5">
             {/* Outline Button */}
-            <Button size="sm" variant="outline">
+            <Button size="sm" variant="outline" startIcon={null} endIcon={null} onClick={() => {}}>
               Button Text
             </Button>
-            <Button size="md" variant="outline">
+            <Button size="md" variant="outline" startIcon={null} endIcon={null} onClick={() => {}}>
               Button Text
             </Button>
           </div>
@@ -80,14 +88,18 @@ export default function Buttons() {
             <Button
               size="sm"
               variant="outline"
-              startIcon={<BoxIcon className="size-5" />}
+              startIcon={<i className=" pi-box size-5" />}
+              endIcon={null}
+              onClick={() => {}}
             >
               Button Text
             </Button>
             <Button
               size="md"
               variant="outline"
-              startIcon={<BoxIcon className="size-5" />}
+              startIcon={<i className=" pi-box size-5" />}
+              endIcon={null}
+              onClick={() => {}}
             >
               Button Text
             </Button>
@@ -99,14 +111,18 @@ export default function Buttons() {
             <Button
               size="sm"
               variant="outline"
-              endIcon={<BoxIcon className="size-5" />}
+              startIcon={null}
+              endIcon={<i className=" pi-box size-5" />}
+              onClick={() => {}}
             >
               Button Text
             </Button>
             <Button
               size="md"
               variant="outline"
-              endIcon={<BoxIcon className="size-5" />}
+              startIcon={null}
+              endIcon={<i className=" pi-box size-5" />}
+              onClick={() => {}}
             >
               Button Text
             </Button>

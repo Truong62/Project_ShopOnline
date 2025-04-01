@@ -3,6 +3,7 @@ import UserMetaCard from '../components/UserProfile/UserMetaCard';
 import UserInfoCard from '../components/UserProfile/UserInfoCard';
 import UserAddressCard from '../components/UserProfile/UserAddressCard';
 import PageMeta from '../components/common/PageMeta';
+import React from 'react';
 
 export default function UserProfiles() {
   return (

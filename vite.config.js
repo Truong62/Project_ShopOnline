@@ -13,7 +13,7 @@ export default defineConfig({
     tsconfigRaw: {
       compilerOptions: {
         skipLibCheck: true,
-        jsx: "react-jsx",
+        jsx: 'react-jsx',
         esModuleInterop: true,
         allowSyntheticDefaultImports: true,
       },
