@@ -1,21 +1,23 @@
 import { useEffect, useRef } from 'react';
+import React from 'react';
 
-// interface DropdownProps {
-//   isOpen: boolean;
-//   onClose: () => void;
-//   children: React.ReactNode;
-//   className?: string;
-// }
+interface DropdownProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  className?: string;
+}
 
-export const Dropdown = ({ isOpen, onClose, children, className = '' }) => {
-  const dropdownRef = useRef(null);
+export const Dropdown: React.FC<DropdownProps> = ({ isOpen, onClose, children, className = '' }) => {
+  // 🔹 Định nghĩa kiểu dữ liệu của ref
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        !event.target.closest('.dropdown-toggle')
+        !dropdownRef.current.contains(event.target as Node) &&
+        !(event.target as HTMLElement).closest('.dropdown-toggle')
       ) {
         onClose();
       }
@@ -32,7 +34,7 @@ export const Dropdown = ({ isOpen, onClose, children, className = '' }) => {
   return (
     <div
       ref={dropdownRef}
-      className={`absolute z-40  right-0 mt-2  rounded-xl border border-gray-200 bg-white  shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark ${className}`}
+      className={`absolute z-40 right-0 mt-2 rounded-xl border border-gray-200 bg-white shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark ${className}`}
     >
       {children}
     </div>

@@ -3,26 +3,24 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { EventInput, DateSelectArg, EventClickArg } from '@fullcalendar/core';
+import { DateSelectArg } from '@fullcalendar/core';
 import { Modal } from '../components/ui/modal';
 import { useModal } from '../hooks/useModal';
 import PageMeta from '../components/common/PageMeta';
-
-// interface CalendarEvent extends EventInput {
-//   extendedProps: {
-//     calendar: string;
-//   };
-// }
+import React from 'react';
 
 const Calendar = () => {
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState<{ id: string; title: string; start: string; end?: string; extendedProps: { calendar: string } } | null>(null);
   const [eventTitle, setEventTitle] = useState('');
   const [eventStartDate, setEventStartDate] = useState('');
   const [eventEndDate, setEventEndDate] = useState('');
   const [eventLevel, setEventLevel] = useState('');
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<
+    { id: string; title: string; start: string; end?: string; extendedProps: { calendar: string } }[]
+  >([]);
   const calendarRef = useRef(null);
-  const { isOpen, openModal, closeModal } = useModal();
+  const initialState = false; // Define the initial state for the modal
+  const { isOpen, openModal, closeModal } = useModal(initialState);
 
   const calendarsEvents = {
     Danger: 'danger',
@@ -56,7 +54,7 @@ const Calendar = () => {
     ]);
   }, []);
 
-  const handleDateSelect = (selectInfo) => {
+  const handleDateSelect = (selectInfo: DateSelectArg) => {
     resetModalFields();
     setEventStartDate(selectInfo.startStr);
     setEventEndDate(selectInfo.endStr || selectInfo.startStr);
@@ -119,7 +117,7 @@ const Calendar = () => {
         title="React.js Calendar Dashboard | TailAdmin - Next.js Admin Dashboard Template"
         description="This is React.js Calendar Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <div className="rounded-2xl border  border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+      <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="custom-calendar">
           <FullCalendar
             ref={calendarRef}
@@ -154,8 +152,7 @@ const Calendar = () => {
                 {selectedEvent ? 'Edit Event' : 'Add Event'}
               </h5>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Plan your next big moment: schedule or edit an event to stay on
-                track
+                Plan your next big moment: schedule or edit an event to stay on track
               </p>
             </div>
             <div className="mt-8">

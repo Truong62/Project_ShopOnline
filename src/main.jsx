@@ -6,6 +6,7 @@ import { store } from './redux/store';
 import App from './App';
 import './index.css';
 import DashboardMain from '../dashboard/src/main';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Get the root element from your HTML
 const container = document.getElementById('root');
@@ -17,10 +18,12 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <App />
-        <DashboardMain />
-      </BrowserRouter>
+      <HelmetProvider>
+        <BrowserRouter>
+          <App />
+          <DashboardMain />
+        </BrowserRouter>
+      </HelmetProvider>
     </Provider>
   </React.StrictMode>
 );

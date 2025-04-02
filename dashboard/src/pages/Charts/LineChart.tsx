@@ -2,6 +2,7 @@ import PageBreadcrumb from '../../components/common/PageBreadCrumb';
 import ComponentCard from '../../components/common/ComponentCard';
 import LineChartOne from '../../components/charts/line/LineChartOne';
 import PageMeta from '../../components/common/PageMeta';
+import React from 'react';
 
 export default function LineChart() {
   return (

@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { Dropdown } from '../ui/dropdown/Dropdown';
-import { DropdownItem } from '../ui/dropdown/DropdownItem';
-import { MoreDotIcon } from '../../icons';
-import CountryMap from './CountryMap';
+import React, { useState } from "react";
+import { Dropdown } from "../ui/dropdown/Dropdown";
+import { DropdownItem } from "../ui/dropdown/DropdownItem";
+import CountryMap from "./CountryMap";
 
 export default function DemographicCard() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +13,6 @@ export default function DemographicCard() {
   function closeDropdown() {
     setIsOpen(false);
   }
-
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
       <div className="flex justify-between">
@@ -28,7 +26,7 @@ export default function DemographicCard() {
         </div>
         <div className="relative inline-block">
           <button className="dropdown-toggle" onClick={toggleDropdown}>
-            <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
+            <i className="pi pi-ellipsis-v text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-xl"></i>
           </button>
           <Dropdown
             isOpen={isOpen}
@@ -36,12 +34,17 @@ export default function DemographicCard() {
             className="w-40 p-2"
           >
             <DropdownItem
+              to="#"
+              onClick={closeDropdown}
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
               View More
             </DropdownItem>
+
             <DropdownItem
+              to="#"
+              onClick={closeDropdown}
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
@@ -55,7 +58,7 @@ export default function DemographicCard() {
           id="mapOne"
           className="mapOne map-btn -mx-4 -my-6 h-[212px] w-[252px] 2xsm:w-[307px] xsm:w-[358px] sm:-mx-6 md:w-[668px] lg:w-[634px] xl:w-[393px] 2xl:w-[554px]"
         >
-          <CountryMap mapColor={undefined} />
+          <CountryMap mapColor="defaultColor" />
         </div>
       </div>
 
@@ -63,11 +66,11 @@ export default function DemographicCard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="items-center w-full rounded-full max-w-8">
-              <img src="./images/country/country-01.svg" alt="usa" />
+              <img src="https://img.icons8.com/?size=100&id=2egPD0I7yi4-&format=png&color=000000" alt="vie" />
             </div>
             <div>
               <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
-                USA
+                VIE
               </p>
               <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
                 2,379 Customers

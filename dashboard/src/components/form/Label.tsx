@@ -1,5 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 import { clsx } from 'clsx';
+import React from 'react';
 
 const Label = ({ htmlFor, children, className }) => {
   return (

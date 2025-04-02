@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import Label from './Label';
-import { CalenderIcon } from '../../icons';
+import React from 'react';
 //
 // type PropsType = {
 //   id: string;
@@ -40,7 +40,7 @@ export default function DatePicker({
 
   return (
     <div>
-      {label && <Label htmlFor={id}>{label}</Label>}
+      {label && <Label htmlFor={id} className="label-class">{label}</Label>}
 
       <div className="relative">
         <input
@@ -50,7 +50,7 @@ export default function DatePicker({
         />
 
         <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-          <CalenderIcon className="size-6" />
+          <i className=" pi-calendar size-6" />
         </span>
       </div>
     </div>

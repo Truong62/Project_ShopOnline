@@ -1,10 +1,5 @@
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  BoxIconLine,
-  GroupIcon,
-} from '../../icons';
-import Badge from '../ui/badge/Badge';
+import React from 'react';
+import { Badge } from 'primereact/badge';
 
 export default function EcommerceMetrics() {
   return (
@@ -12,7 +7,7 @@ export default function EcommerceMetrics() {
       {/* <!-- Metric Item Start --> */}
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
         <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-          <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
+          <i className="pi pi-users text-gray-800 text-3xl dark:text-white/90" /> {/* Group Icon */}
         </div>
 
         <div className="flex items-end justify-between mt-5">
@@ -24,10 +19,11 @@ export default function EcommerceMetrics() {
               3,782
             </h4>
           </div>
-          <Badge color="success">
-            <ArrowUpIcon />
-            11.01%
-          </Badge>
+          <Badge
+            value="11.01%"
+            severity="success" // 'success', 'info', 'warning', 'danger'
+            className="p-2"
+          />
         </div>
       </div>
       {/* <!-- Metric Item End --> */}
@@ -35,7 +31,7 @@ export default function EcommerceMetrics() {
       {/* <!-- Metric Item Start --> */}
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
         <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-          <BoxIconLine className="text-gray-800 size-6 dark:text-white/90" />
+          <i className="pi pi-box text-gray-800 text-3xl dark:text-white/90" /> {/* Box Icon */}
         </div>
         <div className="flex items-end justify-between mt-5">
           <div>
@@ -47,10 +43,11 @@ export default function EcommerceMetrics() {
             </h4>
           </div>
 
-          <Badge color="error">
-            <ArrowDownIcon />
-            9.05%
-          </Badge>
+          <Badge
+            value="9.05%"
+            severity="danger" // 'success', 'info', 'warning', 'danger'
+            className="p-2"
+          />
         </div>
       </div>
       {/* <!-- Metric Item End --> */}

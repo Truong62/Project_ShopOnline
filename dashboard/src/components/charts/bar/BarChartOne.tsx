@@ -1,3 +1,4 @@
+import React from 'react';
 import Chart from 'react-apexcharts';
 
 export default function BarChartOne() {
@@ -5,7 +6,7 @@ export default function BarChartOne() {
     colors: ['#465fff'],
     chart: {
       fontFamily: 'Outfit, sans-serif',
-      type: 'bar',
+      type: 'bar' as 'bar',
       height: 180,
       toolbar: {
         show: false,
@@ -16,7 +17,7 @@ export default function BarChartOne() {
         horizontal: false,
         columnWidth: '39%',
         borderRadius: 5,
-        borderRadiusApplication: 'end',
+        borderRadiusApplication: 'end' as 'end' | 'around' | undefined,  // Ensure valid value
       },
     },
     dataLabels: {
@@ -51,8 +52,8 @@ export default function BarChartOne() {
     },
     legend: {
       show: true,
-      position: 'top',
-      horizontalAlign: 'left',
+      position: 'top' as 'top',
+      horizontalAlign: 'left' as 'left' | 'right' | 'center',
       fontFamily: 'Outfit',
     },
     yaxis: {

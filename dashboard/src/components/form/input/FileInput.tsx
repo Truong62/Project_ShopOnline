@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React from 'react';
 
 const FileInput = ({ className, onChange }) => {
   return (

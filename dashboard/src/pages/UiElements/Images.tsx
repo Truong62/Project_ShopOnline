@@ -4,6 +4,7 @@ import TwoColumnImageGrid from '../../components/ui/images/TwoColumnImageGrid';
 import ThreeColumnImageGrid from '../../components/ui/images/ThreeColumnImageGrid';
 import ComponentCard from '../../components/common/ComponentCard';
 import PageMeta from '../../components/common/PageMeta';
+import React from 'react';
 
 export default function Images() {
   return (

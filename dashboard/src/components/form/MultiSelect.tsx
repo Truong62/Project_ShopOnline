@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 
 // interface Option {
@@ -20,7 +21,7 @@ const MultiSelect = ({
   onChange,
   disabled = false,
 }) => {
-  const [selectedOptions, setSelectedOptions] = useState(defaultSelected);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(defaultSelected);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {

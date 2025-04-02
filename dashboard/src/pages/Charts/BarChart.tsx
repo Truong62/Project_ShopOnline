@@ -2,6 +2,7 @@ import PageBreadcrumb from '../../components/common/PageBreadCrumb';
 import ComponentCard from '../../components/common/ComponentCard';
 import BarChartOne from '../../components/charts/bar/BarChartOne';
 import PageMeta from '../../components/common/PageMeta';
+import React from 'react';
 
 export default function BarChart() {
   return (

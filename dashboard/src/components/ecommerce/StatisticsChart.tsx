@@ -1,9 +1,10 @@
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import ChartTab from '../common/ChartTab';
+import React from 'react';
 
 export default function StatisticsChart() {
-  const options = {
+  const options: ApexOptions = {
     legend: {
       show: false, // Hide legend
       position: 'top',
