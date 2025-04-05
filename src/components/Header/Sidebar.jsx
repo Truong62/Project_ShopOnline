@@ -38,7 +38,7 @@ const SidebarContainer = ({ visibleRight, setVisibleRight, activeLink }) => {
           <Link to="/login">
             <Button className="p-button-text  font-semibold">Log In</Button>
           </Link>
-          <Link to="/signup">
+          <Link to="/register">
             <Button className="p-button-rounded text-gray-700 p-button-primary font-semibold">
               Sign Up
             </Button>
