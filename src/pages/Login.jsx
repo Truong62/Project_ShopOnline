@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router';
-import Label from '../form/Label';
-import Input from '../form/input/InputField';
-import Checkbox from '../form/input/Checkbox';
-import Button from '../ui/button/Button';
+import { Link } from 'react-router-dom';
+import Label from '../../dashboard/src/components/form/Label';
+import Input from '../../dashboard/src/components/form/input/InputField';
+import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
+import Button from '../../dashboard/src/components/ui/button/Button';
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({
@@ -157,7 +157,6 @@ export default function SignInForm() {
                 checked={isChecked}
                 onChange={setIsChecked}
               />
-              <span>Keep me logged in</span>
               <Link
                 to="/reset-password"
                 className="text-sm text-brand-500 hover:text-brand-600"

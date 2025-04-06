@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Label from '../form/Label';
-import Input from '../form/input/InputField';
-import Checkbox from '../form/input/Checkbox';
-import Button from '../ui/button/Button';
+import Label from '../../dashboard/src/components/form/Label';
+import Input from '../../dashboard/src/components/form/input/InputField';
+import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
+import Button from '../../dashboard/src/components/ui/button/Button';
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({
