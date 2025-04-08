@@ -76,21 +76,21 @@ const AppRoutes = () => {
         <Route path="/company" element={<Company />} />
 
         {/* Dashboard Routes */}
-        <Route element={<AppLayout />}>
-          <Route path="/admin" element={<DashboardHome />} />
-          <Route path="/profile" element={<UserProfiles />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/blank" element={<Blank />} />
-          <Route path="/form-elements" element={<FormElements />} />
-          <Route path="/basic-tables" element={<BasicTables />} />
-          <Route path="/alerts" element={<Alerts />} />
-          <Route path="/avatars" element={<Avatars />} />
-          <Route path="/badge" element={<Badges />} />
-          <Route path="/buttons" element={<Buttons />} />
-          <Route path="/images" element={<Images />} />
-          <Route path="/videos" element={<Videos />} />
-          <Route path="/line-chart" element={<LineChart />} />
-          <Route path="/bar-chart" element={<BarChart />} />
+        <Route path="/admin" element={<AppLayout />}>
+          <Route index element={<DashboardHome />} />{' '}
+          <Route path="profile" element={<UserProfiles />} />{' '}
+          <Route path="calendar" element={<Calendar />} />
+          <Route path="blank" element={<Blank />} />
+          <Route path="form-elements" element={<FormElements />} />
+          <Route path="basic-tables" element={<BasicTables />} />
+          <Route path="alerts" element={<Alerts />} />
+          <Route path="avatars" element={<Avatars />} />
+          <Route path="badge" element={<Badges />} />
+          <Route path="buttons" element={<Buttons />} />
+          <Route path="images" element={<Images />} />
+          <Route path="videos" element={<Videos />} />
+          <Route path="line-chart" element={<LineChart />} />
+          <Route path="bar-chart" element={<BarChart />} />
         </Route>
 
         {/* Dashboard Auth */}

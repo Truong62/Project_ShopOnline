@@ -13,29 +13,29 @@ const navItems = [
   {
     icon: <i className="pi pi-calendar" />, // Calendar icon
     name: 'Calendar',
-    path: '/calendar',
+    path: '/admin/calendar',
   },
   {
     icon: <i className="pi pi-user" />, // User Profile icon
     name: 'User Profile',
-    path: '/profile',
+    path: '/admin/profile',
   },
   {
     name: 'Forms',
     icon: <i className="pi pi-list" />, // List icon
-    subItems: [{ name: 'Form Elements', path: '/form-elements', pro: false }],
+    subItems: [{ name: 'Form Elements', path: '/admin/form-elements', pro: false }],
   },
   {
     name: 'Tables',
     icon: <i className="pi pi-table" />, // Table icon
-    subItems: [{ name: 'Basic Tables', path: '/basic-tables', pro: false }],
+    subItems: [{ name: 'Basic Tables', path: '/admin/basic-tables', pro: false }],
   },
   {
     name: 'Pages',
     icon: <i className="pi pi-file" />, // Page icon
     subItems: [
-      { name: 'Blank Page', path: '/blank', pro: false },
-      { name: '404 Error', path: '/error-404', pro: false },
+      { name: 'Blank Page', path: '/admin/blank', pro: false },
+      { name: '404 Error', path: '/admin/error-404', pro: false },
     ],
   },
 ];
@@ -45,20 +45,20 @@ const othersItems = [
     icon: <i className="pi pi-chart-line" />, // Pie chart icon
     name: 'Charts',
     subItems: [
-      { name: 'Line Chart', path: '/line-chart', pro: false },
-      { name: 'Bar Chart', path: '/bar-chart', pro: false },
+      { name: 'Line Chart', path: '/admin/line-chart', pro: false },
+      { name: 'Bar Chart', path: '/admin/bar-chart', pro: false },
     ],
   },
   {
     icon: <i className="pi pi-box" />, // Box cube icon
     name: 'UI Elements',
     subItems: [
-      { name: 'Alerts', path: '/alerts', pro: false },
-      { name: 'Avatar', path: '/avatars', pro: false },
-      { name: 'Badge', path: '/badge', pro: false },
-      { name: 'Buttons', path: '/buttons', pro: false },
-      { name: 'Images', path: '/images', pro: false },
-      { name: 'Videos', path: '/videos', pro: false },
+      { name: 'Alerts', path: '/admin/alerts', pro: false },
+      { name: 'Avatar', path: '/admin/avatars', pro: false },
+      { name: 'Badge', path: '/admin/badge', pro: false },
+      { name: 'Buttons', path: '/admin/buttons', pro: false },
+      { name: 'Images', path: '/admin/images', pro: false },
+      { name: 'Videos', path: '/admin/videos', pro: false },
     ],
   },
   {
