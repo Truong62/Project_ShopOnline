@@ -89,7 +89,7 @@ const Header = () => {
                   Log In
                 </Button>
               </Link>
-              <Link to="/signup">
+              <Link to="/register">
                 <Button className="p-button-rounded p-button-primary font-semibold">
                   Sign Up
                 </Button>

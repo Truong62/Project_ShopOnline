@@ -1,192 +1,187 @@
-import { useState, useEffect } from 'react';
-import userData from '../user.json';
-import './styles/custom-button.css';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import InputField from '../components/Form/Input';
-import GoogleSignInButton from '../components/Form/GG';
-import React from 'react';
-import ChatPopup from '../components/Chat/ChatPopup';
-export default function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(false);
+import Label from '../../dashboard/src/components/form/Label';
+import Input from '../../dashboard/src/components/form/input/InputField';
+import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
+import Button from '../../dashboard/src/components/ui/button/Button';
 
-  const errorMessages = {
-    emailRequired: { message: '* Email is required', color: 'red' },
-    emailInvalid: { message: '* Email is invalid', color: 'red' },
-    emailNotExist: { message: '* Email does not exist', color: 'red' },
-    passwordRequired: { message: '* Password is required', color: 'red' },
-    incorrectPassword: { message: '* Incorrect Password', color: 'red' },
+export default function SignInForm() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
   };
 
-  const handleFocus = (field) => {
-    if (field === 'email') {
-      setEmailError('');
+  const validateForm = () => {
+    let newErrors = { email: '', password: '' };
+    let isValid = true;
+
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Invalid email format';
+      isValid = false;
     }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+      isValid = false;
+    } else if (formData.password.length > 30) {
+      newErrors.password = 'Password must be less than 30 characters';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: '',
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let valid = true;
-
-    setEmailError('');
-    setPasswordError('');
-
-    if (!email) {
-      setEmailError(errorMessages.emailRequired.message);
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError(errorMessages.emailInvalid.message);
-      valid = false;
-    } else {
-      const userExists = userData.some((user) => user.email === email);
-      if (!userExists) {
-        setEmailError(errorMessages.emailNotExist.message);
-        valid = false;
-      }
+    if (validateForm()) {
+      console.log('Submitting', formData);
     }
-
-    if (!password) {
-      setPasswordError(errorMessages.passwordRequired.message);
-      valid = false;
-    } else if (valid) {
-      const user = userData.find(
-        (user) => user.email === email && user.password === password
-      );
-      if (!user) {
-        setPasswordError(errorMessages.incorrectPassword.message);
-        valid = false;
-      }
-    }
-
-    if (valid) {
-      console.log('Logging in with:', { email, password });
-    }
-  };
-
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDarkMode(mediaQuery.matches);
-
-    const handleChange = (e) => {
-      setIsDarkMode(e.matches);
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
   };
 
   return (
-    <div
-      className={`relative flex flex-col items-center justify-center min-h-screen ${isDarkMode ? 'bg-[rgba(19,19,26,1)]' : 'bg-white'}`}
-      style={{
-        padding: '24px',
-        gap: '10px',
-        opacity: '1',
-      }}
-    >
-      <div className="absolute top-4 right-4">
-        <i
-          className={`pi pi-lightbulb cursor-pointer ${isDarkMode ? 'text-yellow-500' : 'text-gray-800'}`}
-          style={{ fontSize: '2rem' }}
-          onClick={toggleDarkMode}
-        ></i>
-      </div>
-      <div
-        className="absolute w-full h-full bottom-0 transform translate-y-1/2"
-        style={{
-          background: 'url(/images/Ellipse65.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      ></div>
-      <div
-        className={`p-8 rounded-lg w-full max-w-[556px] h-auto shadow-lg z-10 flex flex-col items-center ${isDarkMode ? 'bg-[rgba(28,28,36,1)] text-white' : 'bg-white text-black'}`}
-      >
-        <h2 className="text-2xl font-bold text-center ">Welcome Back!</h2>
-        <p
-          className="text-center mb-2"
-          style={{ color: 'rgba(128, 129, 145, 1)' }}
+    <div className="flex flex-col flex-1">
+      <div className="w-full max-w-md pt-10 mx-auto">
+        <Link
+          to="/"
+          className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700"
         >
-          Don{'  '}t have an account?{' '}
-          <Link to="/signup" className="text-green-500">
-            Sign up
-          </Link>
+          <i className="pi pi-chevron-left size-5" />
+          Back to dashboard
+        </Link>
+      </div>
+      <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
+        <h1 className="mb-2 font-semibold text-gray-800 text-title-sm sm:text-title-md">
+          Sign In
+        </h1>
+        <p className="text-sm text-gray-500">
+          Enter your email and password to sign in!
         </p>
 
-        <GoogleSignInButton />
-
-        <form
-          onSubmit={handleSubmit}
-          className="w-full flex flex-col items-center gap-y-3"
-          style={{ fontFamily: 'Epilogue' }}
-        >
-          <div className="w-full flex flex-col items-center">
-            <InputField
-              label="Email *"
-              type="text"
-              value={email}
-              placeholder="example@gmail.com"
-              onChange={(e) => setEmail(e.target.value)}
-              onFocus={() => handleFocus('email')}
-              className={`w-full p-2 rounded-md mb-2 ${emailError ? 'border-red-500 text-red-500' : 'border-gray-300'}`}
-              isDarkMode={isDarkMode}
-            />
-            <div className="text-red-500 text-sm text-left w-full min-h-[24px] pl-7">
-              {emailError || '\u00A0'}
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="email" className="">
+                Email <span className="text-error-500">*</span>
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+                className=""
+                error={!!errors.email}
+                min={0}
+                max={100}
+                step={1}
+                hint=""
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
             </div>
-          </div>
 
-          <div className="w-full flex flex-col items-center">
-            <InputField
-              label="Password *"
-              type="password"
-              value={password}
-              placeholder="Enter password"
-              onChange={(e) => setPassword(e.target.value)}
-              onFocus={() => handleFocus('password')}
-              showPassword={showPassword}
-              togglePasswordVisibility={() => setShowPassword(!showPassword)}
-              className={`w-full p-2 rounded-md mb-2 ${passwordError ? 'border-red-500 text-red-500' : 'border-gray-300'}`}
-              isDarkMode={isDarkMode}
-            />
-            <div className="text-red-500 text-sm text-left w-full min-h-[24px] pl-7">
-              {passwordError || '\u00A0'}
+            <div>
+              <Label htmlFor="password" className="">
+                Password <span className="text-error-500">*</span>
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                  min={0}
+                  max={100}
+                  step={1}
+                  hint=""
+                />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/5 cursor-pointer"
+                >
+                  {showPassword ? (
+                    <i className="pi pi-eye" />
+                  ) : (
+                    <i className="pi pi-eye-slash" />
+                  )}
+                </span>
+              </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
             </div>
-          </div>
 
-          <div className="mb-2 w-full flex justify-end">
-            <Link to="/forgotpassword" className="text-green-500">
-              Forgot Password?
-            </Link>
-          </div>
+            <div className="flex items-center justify-between">
+              <Checkbox
+                id="keep-logged-in"
+                label="Keep me logged in"
+                checked={isChecked}
+                onChange={setIsChecked}
+              />
+              <Link
+                to="/reset-password"
+                className="text-sm text-brand-500 hover:text-brand-600"
+              >
+                Forgot password?
+              </Link>
+            </div>
 
-          <button
-            type="submit"
-            className="w-full custom-button text-white py-3 rounded-lg hover:bg-green-700"
-            style={{
-              height: '52px',
-              opacity: '1',
-              backgroundColor: 'rgba(29, 192, 113, 1)',
-            }}
-          >
-            Sign in
-          </button>
+            <Button
+              onClick={handleSubmit}
+              className="w-full"
+              startIcon={null}
+              endIcon={null}
+            >
+              Sign in
+            </Button>
+          </div>
         </form>
-        <ChatPopup />
+
+        <p className="text-sm text-center mt-5">
+          Don&apos;t have an account?{' '}
+          <Link to="/Signup" className="text-brand-500 hover:text-brand-600">
+            Sign Up
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
@@ -42,7 +42,7 @@ export default function SignInForm() {
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
       isValid = false;
-    } else if  (formData.password.length > 30) {
+    } else if (formData.password.length > 30) {
       newErrors.password = "Password must be less than 30 characters";
       isValid = false;
     }
@@ -59,13 +59,11 @@ export default function SignInForm() {
       [name]: value,
     }));
 
-    // Reset lỗi khi user nhập lại dữ liệu
     setErrors((prev) => ({
       ...prev,
-      [name]: "", // Xóa lỗi khi user nhập lại
+      [name]: "",
     }));
   };
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,7 +86,6 @@ export default function SignInForm() {
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
-            {/* Email */}
             <div>
               <Label htmlFor="email" className="">Email <span className="text-error-500">*</span></Label>
               <Input
@@ -98,7 +95,7 @@ export default function SignInForm() {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                className=""  // Kiểm tra xem class này có xuất hiện không
+                className=""
                 error={!!errors.email}
                 min={0}
                 max={100}
@@ -108,7 +105,6 @@ export default function SignInForm() {
               {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
             </div>
 
-            {/* Password */}
             <div>
               <Label htmlFor="password" className="">Password <span className="text-error-500">*</span></Label>
               <div className="relative">
@@ -119,6 +115,7 @@ export default function SignInForm() {
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange}
+                  className={`${errors.password ? "border-red-500" : "border-gray-300"}`}
                   min={0}
                   max={100}
                   step={1}
@@ -131,19 +128,16 @@ export default function SignInForm() {
               {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
             </div>
 
-            {/* Checkbox */}
             <div className="flex items-center justify-between">
               <Checkbox id="keep-logged-in" label="Keep me logged in" checked={isChecked} onChange={setIsChecked} />
-              <span>Keep me logged in</span>
               <Link to="/reset-password" className="text-sm text-brand-500 hover:text-brand-600">Forgot password?</Link>
             </div>
 
-            {/* Submit Button */}
             <Button onClick={handleSubmit} className="w-full" startIcon={null} endIcon={null}>Sign in</Button>
           </div>
         </form>
 
-        <p className="text-sm text-center mt-5">Don&apos;t have an account? <Link to="/Signup" className="text-brand-500 hover:text-brand-600">Sign Up</Link></p>
+        <p className="text-sm text-center mt-5">Don't have an account? <Link to="/Signup" className="text-brand-500 hover:text-brand-600">Sign Up</Link></p>
       </div>
     </div>
   );
