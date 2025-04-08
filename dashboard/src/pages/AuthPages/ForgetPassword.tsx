@@ -1,9 +1,9 @@
 import PageMeta from '../../components/common/PageMeta';
 import AuthLayout from './AuthPageLayout';
-import SignInForm from '../../components/auth/SignInForm';
+import ResetPasswordForm from '../../components/auth/ResetPassForm';
 import React from 'react';
 
-export default function SignIn() {
+export default function ForgetPassword() {
   return (
     <>
       <PageMeta
@@ -11,7 +11,7 @@ export default function SignIn() {
         description="This is React.js SignIn Tables Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
       {/* <AuthLayout> */}
-        <SignInForm />
+        <ResetPasswordForm />
       {/* </AuthLayout> */}
     </>
   );

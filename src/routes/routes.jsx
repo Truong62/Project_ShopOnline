@@ -11,6 +11,7 @@ import NotFound from '../../dashboard/src/pages/OtherPage/NotFound';
 // Dashboard pages
 import SignIn from '../../dashboard/src/pages/AuthPages/SignIn';
 import SignUp from '../../dashboard/src/pages/AuthPages/SignUp';
+import ForgetPassword from '../../dashboard/src/pages/AuthPages/ForgetPassword';
 import UserProfiles from '../../dashboard/src/pages/UserProfiles';
 import AppLayout from '../../dashboard/src/layout/AppLayout';
 import Videos from '../../dashboard/src/pages/UiElements/Videos';
@@ -96,6 +97,7 @@ const AppRoutes = () => {
         {/* Dashboard Auth */}
         <Route path="/Signin" element={<SignIn />} />
         <Route path="/Signup" element={<SignUp />} />
+        <Route path="/reset-password" element={<ForgetPassword />} />
 
         {/* Fallback */}
         <Route path="*" element={<NotFound />} />
