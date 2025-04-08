@@ -23,7 +23,8 @@ const navItems = [
   {
     name: 'Forms',
     icon: <i className="pi pi-list" />, // List icon
-    subItems: [{ name: 'Form Elements', path: '/form-elements', pro: false }],
+    subItems: [{ name: 'Form Elements', path: '/form-elements', pro: false },
+    { name: 'Product Features', path: '/', pro: false }],
   },
   {
     name: 'Tables',

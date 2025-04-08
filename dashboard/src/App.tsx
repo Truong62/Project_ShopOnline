@@ -57,9 +57,6 @@ export default function App() {
           {/* Auth Layout */}
           <Route path="/Signin" element={<SignIn />} />
           <Route path="/Signup" element={<SignUp />} />
-
-          {/* Fallback Route */}
-          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </>

@@ -20,7 +20,7 @@ root.render(
     <Provider store={store}>
       <HelmetProvider>
         <BrowserRouter>
-          <App />
+          {/* <App /> */}
           <DashboardMain />
         </BrowserRouter>
       </HelmetProvider>

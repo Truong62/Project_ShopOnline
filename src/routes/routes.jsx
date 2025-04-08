@@ -46,7 +46,10 @@ const AppRoutes = () => {
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/congratulations" element={<Congratulations />} />
         <Route path="/company" element={<Company />} />
-        <Route path="/" element={<PageNotFound />} />
+
+
+        
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Suspense>
   );

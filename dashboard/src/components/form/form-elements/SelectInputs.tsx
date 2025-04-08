@@ -1,9 +1,9 @@
-import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
-import Label from "../Label";
-import Select from "../Select";
-import MultiSelect from "../MultiSelect";
-import React from "react";
+import { useState } from 'react';
+import ComponentCard from '../../common/ComponentCard';
+import Label from '../Label';
+import Select from '../Select';
+import MultiSelect from '../MultiSelect';
+import React from 'react';
 
 export default function SelectInputs() {
   const options = [
@@ -11,49 +11,42 @@ export default function SelectInputs() {
     { value: 'template', label: 'Template' },
     { value: 'development', label: 'Development' },
   ];
-
-  const handleSelectChange = (e) => {
-    console.log('Selected value:', e.value);
+  const handleSelectChange = (value: string) => {
+    console.log('Selected value:', value);
   };
-
   const [selectedValues, setSelectedValues] = useState([]);
 
   const multiOptions = [
-    { value: '1', label: 'Option 1' },
-    { value: '2', label: 'Option 2' },
-    { value: '3', label: 'Option 3' },
-    { value: '4', label: 'Option 4' },
-    { value: '5', label: 'Option 5' },
+    { value: '1', text: 'Option 1', selected: false },
+    { value: '2', text: 'Option 2', selected: false },
+    { value: '3', text: 'Option 3', selected: false },
+    { value: '4', text: 'Option 4', selected: false },
+    { value: '5', text: 'Option 5', selected: false },
   ];
-
-  const [singleSelectValue, setSingleSelectValue] = useState(options[0]); // Default value
-
   return (
     <ComponentCard title="Select Inputs">
       <div className="space-y-6">
         <div>
-          <Label htmlFor="singleSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">
+          <Label htmlFor="inputId" className="">
             Select Input
           </Label>
           <Select
             options={options}
-            onChange={(e) => setSingleSelectValue(e)}
             placeholder="Select Option"
-            className="w-full"
+            onChange={handleSelectChange}
+            className="dark:bg-dark-900"
           />
-
         </div>
-
         <div>
-          <label htmlFor="multiSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">
-            Multiple Select Options
-          </label>
           <MultiSelect
             label="Multiple Select Options"
             options={multiOptions}
-            onChange={(e) => setSelectedValues(e.value)}
+            onChange={(values) => setSelectedValues(values)}
           />
-          <p className="sr-only">Selected Values: {selectedValues.join(', ')}</p>
+          ;
+          <p className="sr-only">
+            Selected Values: {selectedValues.join(', ')}
+          </p>
         </div>
       </div>
     </ComponentCard>

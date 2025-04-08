@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import ComponentCard from '../../common/ComponentCard';
-import { InputText } from 'primereact/inputtext';
-import { Message } from 'primereact/message';
+import Input from '../input/InputField';
+import Label from '../Label';
 import React from 'react';
-
 export default function InputStates() {
   const [email, setEmail] = useState('');
   const [emailTwo, setEmailTwo] = useState('');
   const [error, setError] = useState(false);
 
   // Simulate a validation check
-  const validateEmail = (value) => {
+  const validateEmail = (value: string) => {
     const isValidEmail =
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
     setError(!isValidEmail);
@@ -27,7 +26,6 @@ export default function InputStates() {
     setEmailTwo(value);
     validateEmail(value);
   };
-
   return (
     <ComponentCard
       title="Input States"
@@ -36,52 +34,48 @@ export default function InputStates() {
       <div className="space-y-5 sm:space-y-6">
         {/* Error Input */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-400">
+          <Label htmlFor="inputEmail" className="">
             Email
-          </label>
-          <InputText
-            id="email"
-            type="email"
-            value={email}
-            onChange={handleEmailChange}
+          </Label>
+          <Input
+            type="string"
+            name="email"
+            value={''}
+            error={true}
+            onChange={(e) =>{console.log(e)}}
             placeholder="Enter your email"
-            className={`w-full ${error ? 'p-invalid' : ''}`}
-          />
-          {error && (
-            <Message severity="error" text="This is an invalid email address." />
-          )}
+            min={0}
+            max={100}
+            step={1}
+            hint={error ? 'This is an invalid email address.' : ''}
+          ></Input>
         </div>
 
         {/* Success Input */}
         <div>
-          <label htmlFor="emailTwo" className="block text-sm font-medium text-gray-700 dark:text-gray-400">
+          <Label htmlFor="inputEmailEmail" className="">
             Email
-          </label>
-          <InputText
-            id="emailTwo"
+          </Label>
+          <Input
             type="email"
             value={emailTwo}
+            success={!error}
             onChange={handleEmailTwoChange}
             placeholder="Enter your email"
-            className={`w-full ${!error ? 'p-success' : ''}`}
+            hint={!error ? 'This is an success message.' : ''}
           />
-          {!error && (
-            <Message severity="success" text="This is a success message." />
-          )}
         </div>
 
         {/* Disabled Input */}
         <div>
-          <label htmlFor="disabledEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-400">
+          <Label htmlFor="inputId" className="">
             Email
-          </label>
-          <InputText
-            id="disabledEmail"
+          </Label>
+          <Input
             type="text"
             value="disabled@example.com"
-            disabled
+            disabled={true}
             placeholder="Disabled email"
-            className="w-full"
           />
         </div>
       </div>
