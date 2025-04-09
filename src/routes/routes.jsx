@@ -5,28 +5,62 @@ import LoadingRoute from '../components/LoadingRoute/LoadingRoute';
 // Layouts
 // import AppLayout from '../layout/AppLayout';
 
-// Components
-import NotFound from '../../dashboard/src/pages/OtherPage/NotFound';
+// Lazy import
+const NotFound = React.lazy(
+  () => import('../../dashboard/src/pages/OtherPage/NotFound')
+);
 
 // Dashboard pages
-import SignIn from '../../dashboard/src/pages/AuthPages/SignIn';
-import SignUp from '../../dashboard/src/pages/AuthPages/SignUp';
-import ForgetPassword from '../../dashboard/src/pages/AuthPages/ForgetPassword';
-import UserProfiles from '../../dashboard/src/pages/UserProfiles';
-import AppLayout from '../../dashboard/src/layout/AppLayout';
-import Videos from '../../dashboard/src/pages/UiElements/Videos';
-import Images from '../../dashboard/src/pages/UiElements/Images';
-import Alerts from '../../dashboard/src/pages/UiElements/Alerts';
-import Badges from '../../dashboard/src/pages/UiElements/Badges';
-import Avatars from '../../dashboard/src/pages/UiElements/Avatars';
-import Buttons from '../../dashboard/src/pages/UiElements/Buttons';
-import LineChart from '../../dashboard/src/pages/Charts/LineChart';
-import BarChart from '../../dashboard/src/pages/Charts/BarChart';
-import Calendar from '../../dashboard/src/pages/Calendar';
-import BasicTables from '../../dashboard/src/pages/Tables/BasicTables';
-import FormElements from '../../dashboard/src/pages/Forms/FormElements';
-import Blank from '../../dashboard/src/pages/Blank';
-import DashboardHome from '../../dashboard/src/pages/Dashboard/Home';
+const SignIn = React.lazy(
+  () => import('../../dashboard/src/pages/AuthPages/SignIn')
+);
+const SignUp = React.lazy(
+  () => import('../../dashboard/src/pages/AuthPages/SignUp')
+);
+const ResetPassword = React.lazy(
+  () => import('../../dashboard/src/pages/AuthPages/ForgetPassword')
+);
+const UserProfiles = React.lazy(
+  () => import('../../dashboard/src/pages/UserProfiles')
+);
+const AppLayout = React.lazy(
+  () => import('../../dashboard/src/layout/AppLayout')
+);
+const Videos = React.lazy(
+  () => import('../../dashboard/src/pages/UiElements/Videos')
+);
+const Images = React.lazy(
+  () => import('../../dashboard/src/pages/UiElements/Images')
+);
+const Alerts = React.lazy(
+  () => import('../../dashboard/src/pages/UiElements/Alerts')
+);
+const Badges = React.lazy(
+  () => import('../../dashboard/src/pages/UiElements/Badges')
+);
+const Avatars = React.lazy(
+  () => import('../../dashboard/src/pages/UiElements/Avatars')
+);
+const Buttons = React.lazy(
+  () => import('../../dashboard/src/pages/UiElements/Buttons')
+);
+const LineChart = React.lazy(
+  () => import('../../dashboard/src/pages/Charts/LineChart')
+);
+const BarChart = React.lazy(
+  () => import('../../dashboard/src/pages/Charts/BarChart')
+);
+const Calendar = React.lazy(() => import('../../dashboard/src/pages/Calendar'));
+const BasicTables = React.lazy(
+  () => import('../../dashboard/src/pages/Tables/BasicTables')
+);
+const FormElements = React.lazy(
+  () => import('../../dashboard/src/pages/Forms/FormElements')
+);
+const Blank = React.lazy(() => import('../../dashboard/src/pages/Blank'));
+const DashboardHome = React.lazy(
+  () => import('../../dashboard/src/pages/Dashboard/Home')
+);
 
 // Frontend pages (lazy load)
 const HomePage = lazy(() => import('../pages/HomePage'));
@@ -49,9 +83,6 @@ const ResetSuccess = lazy(() => import('../pages/ResetPassword/Reset-Success'));
 const EmailVerification = lazy(() => import('../pages/EmailVerif'));
 const Congratulations = lazy(() => import('../pages/Congratulations'));
 const Company = lazy(() => import('../pages/Company'));
-// const PageNotFound = lazy(
-//   () => import('../components/404NotFound/_404PageNotFound')
-// );
 
 const AppRoutes = () => {
   return (
@@ -78,8 +109,8 @@ const AppRoutes = () => {
 
         {/* Dashboard Routes */}
         <Route path="/admin" element={<AppLayout />}>
-          <Route index element={<DashboardHome />} />{' '}
-          <Route path="profile" element={<UserProfiles />} />{' '}
+          <Route index element={<DashboardHome />} />
+          <Route path="profile" element={<UserProfiles />} />
           <Route path="calendar" element={<Calendar />} />
           <Route path="blank" element={<Blank />} />
           <Route path="form-elements" element={<FormElements />} />
@@ -97,7 +128,7 @@ const AppRoutes = () => {
         {/* Dashboard Auth */}
         <Route path="/Signin" element={<SignIn />} />
         <Route path="/Signup" element={<SignUp />} />
-        <Route path="/reset-password" element={<ForgetPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Fallback */}
         <Route path="*" element={<NotFound />} />

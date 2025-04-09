@@ -63,7 +63,6 @@ const Home = () => {
   });
   const [formattedProducts, setFormattedProducts] = useState([]);
   const swiperRef = useRef(null);
-  ``;
   const {
     data: products,
     loading,
@@ -126,35 +125,35 @@ const Home = () => {
     setIsLoaded(true);
   }, []);
 
-  let isScrolling = false;
+  // let isScrolling = false;
 
-  document.addEventListener(
-    'wheel',
-    (event) => {
-      if (isScrolling) return;
-      isScrolling = true;
-
-      const divs = Array.from(document.querySelectorAll("div[id='scrollPro']"));
-      if (divs.length === 0) return;
-
-      let currentIndex = divs.findIndex(
-        (div) => div.getBoundingClientRect().top >= 0
-      );
-
-      if (event.deltaY > 0 && currentIndex < divs.length - 1) {
-        event.preventDefault();
-        divs[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
-      } else if (event.deltaY < 0 && currentIndex > 0) {
-        event.preventDefault();
-        divs[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
-      }
-
-      setTimeout(() => {
-        isScrolling = false;
-      }, 500);
-    },
-    { passive: false }
-  );
+  // document.addEventListener(
+  //   'wheel',
+  //   (event) => {
+  //     if (isScrolling) return;
+  //     isScrolling = true;
+  //
+  //     const divs = Array.from(document.querySelectorAll("div[id='scrollPro']"));
+  //     if (divs.length === 0) return;
+  //
+  //     let currentIndex = divs.findIndex(
+  //       (div) => div.getBoundingClientRect().top >= 0
+  //     );
+  //
+  //     if (event.deltaY > 0 && currentIndex < divs.length - 1) {
+  //       event.preventDefault();
+  //       divs[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+  //     } else if (event.deltaY < 0 && currentIndex > 0) {
+  //       event.preventDefault();
+  //       divs[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+  //     }
+  //
+  //     setTimeout(() => {
+  //       isScrolling = false;
+  //     }, 500);
+  //   },
+  //   { passive: false }
+  // );
 
   return (
     <React.Fragment>
@@ -403,7 +402,7 @@ const Home = () => {
           <HotProducts />
         </div>
         <div id="scrollPro">
-          <section className="py-16 md:py-24 bg-white">
+          <section className="py-16 md:py-24 ">
             <div className="container mx-auto px-4 md:px-6">
               <div className="text-center mb-12 md:mb-16">
                 <h2 className="text-sm uppercase tracking-wider text-stone-500 font-medium mb-2">
