@@ -24,6 +24,7 @@ import BarChart from '../../dashboard/src/pages/Charts/BarChart';
 import Calendar from '../../dashboard/src/pages/Calendar';
 import BasicTables from '../../dashboard/src/pages/Tables/BasicTables';
 import FormElements from '../../dashboard/src/pages/Forms/FormElements';
+import ProductFeatures from '../../dashboard/src/pages/ProductFeatures';
 import Blank from '../../dashboard/src/pages/Blank';
 import DashboardHome from '../../dashboard/src/pages/Dashboard/Home';
 
@@ -82,6 +83,7 @@ const AppRoutes = () => {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/blank" element={<Blank />} />
           <Route path="/form-elements" element={<FormElements />} />
+          <Route path="/product-features" element={<ProductFeatures />} />
           <Route path="/basic-tables" element={<BasicTables />} />
           <Route path="/alerts" element={<Alerts />} />
           <Route path="/avatars" element={<Avatars />} />
