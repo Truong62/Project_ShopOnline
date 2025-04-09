@@ -3,6 +3,14 @@ layer(base);
 
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+
+}
+body {
+  background-color: white !important;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {

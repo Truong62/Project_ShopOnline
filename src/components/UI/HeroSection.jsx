@@ -82,7 +82,7 @@ const HeroSection = () => {
               </div>
             </div>
 
-            <div className="absolute -top-5 -right-5 md:top-10 md:right-10 bg-white rounded-xl p-4 shadow-lg glassmorphism animate-fade-up delay-300">
+            <div className="absolute -top-5 -right-5 md:top-10 md:right-10 rounded-xl p-4 shadow-lg glassmorphism animate-fade-up delay-300">
               <div className="flex flex-col items-center">
                 <div className="flex">
                   {[1, 2, 3, 4, 5].map((i) => (
