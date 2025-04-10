@@ -23,7 +23,7 @@ const navItems = [
   {
     name: 'Forms',
     icon: <i className="pi pi-list" />, // List icon
-    subItems: [{ name: 'Form Elements', path: '/admin/form-elements', pro: false }],
+    subItems: [{ name: 'Form Elements', path: '/admin/form-elements', pro: false }, { name: 'Order Management', path: '/admin/order-management', pro: false }],
   },
   {
     name: 'Tables',
@@ -142,8 +142,8 @@ const AppSidebar = () => {
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
               className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? 'menu-item-active'
-                  : 'menu-item-inactive'
+                ? 'menu-item-active'
+                : 'menu-item-inactive'
                 } cursor-pointer ${!isExpanded && !isHovered
                   ? 'lg:justify-center'
                   : 'lg:justify-start'
@@ -151,8 +151,8 @@ const AppSidebar = () => {
             >
               <span
                 className={`menu-item-icon-size  ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? 'menu-item-icon-active'
-                    : 'menu-item-icon-inactive'
+                  ? 'menu-item-icon-active'
+                  : 'menu-item-icon-inactive'
                   }`}
               >
                 {nav.icon}
@@ -170,8 +170,8 @@ const AppSidebar = () => {
               >
                 <span
                   className={`menu-item-icon-size ${isActive(nav.path)
-                      ? 'menu-item-icon-active'
-                      : 'menu-item-icon-inactive'
+                    ? 'menu-item-icon-active'
+                    : 'menu-item-icon-inactive'
                     }`}
                 >
                   {nav.icon}
@@ -201,8 +201,8 @@ const AppSidebar = () => {
                     <Link
                       to={subItem.path}
                       className={`menu-dropdown-item ${isActive(subItem.path)
-                          ? 'menu-dropdown-item-active'
-                          : 'menu-dropdown-item-inactive'
+                        ? 'menu-dropdown-item-active'
+                        : 'menu-dropdown-item-inactive'
                         }`}
                     >
                       {subItem.name}
@@ -269,8 +269,8 @@ const AppSidebar = () => {
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                    ? 'lg:justify-center'
-                    : 'justify-start'
+                  ? 'lg:justify-center'
+                  : 'justify-start'
                   }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
@@ -284,8 +284,8 @@ const AppSidebar = () => {
             <div className="">
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                    ? 'lg:justify-center'
-                    : 'justify-start'
+                  ? 'lg:justify-center'
+                  : 'justify-start'
                   }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (

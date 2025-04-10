@@ -6,7 +6,7 @@ import Label from '../form/Label';
 import React from 'react';
 
 export default function UserMetaCard() {
-  const { isOpen, openModal, closeModal } = useModal();
+  const { isOpen, openModal, closeModal } = useModal(false);
   const handleSave = () => {
     console.log('Saving changes...');
     closeModal();
@@ -161,29 +161,35 @@ export default function UserMetaCard() {
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div>
-                    <Label>Facebook</Label>
+                    <Label htmlFor="facebook" className="form-label">Facebook</Label>
                     <Input
                       type="text"
                       value="https://www.facebook.com/PimjoHQ"
+                      id="facebook"
+                      name="facebook"
+                      placeholder="Enter your Facebook URL"
+                      onChange={() => {}}
+                      min={1}
+                      max={100}
+                      step={1}
+                      hint="Provide a valid Facebook URL"
                     />
                   </div>
 
                   <div>
-                    <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" />
-                  </div>
-
-                  <div>
-                    <Label>Linkedin</Label>
+                    <Label htmlFor="instagram" className="form-label">Instagram</Label>
                     <Input
                       type="text"
-                      value="https://www.linkedin.com/company/pimjo"
+                      value="https://instagram.com/PimjoHQ"
+                      id="instagram"
+                      name="instagram"
+                      placeholder="Enter your Instagram URL"
+                      onChange={() => {}}
+                      min={1}
+                      max={100}
+                      step={1}
+                      hint="Provide a valid Instagram URL"
                     />
-                  </div>
-
-                  <div>
-                    <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" />
                   </div>
                 </div>
               </div>
@@ -194,37 +200,92 @@ export default function UserMetaCard() {
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name</Label>
-                    <Input type="text" value="Musharof" />
+                    <Label htmlFor="firstName" className="form-label">First Name</Label>
+                    <Input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      placeholder="Enter your first name"
+                      value="Musharof"
+                      onChange={() => {}}
+                      hint="Provide your first name"
+                      min={1}
+                      max={100}
+                      step={1}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name</Label>
-                    <Input type="text" value="Chowdhury" />
+                    <Label htmlFor="" className="">Last Name</Label>
+                    <Input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      placeholder="Enter your last name"
+                      value="Chowdhury"
+                      onChange={() => {}}
+                      hint="Provide your last name"
+                      min={1}
+                      max={100}
+                      step={1}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Email Address</Label>
-                    <Input type="text" value="randomuser@pimjo.com" />
+                    <Label htmlFor='' className=''>Email Address</Label>
+                    <Input
+                      type="text"
+                      id="email"
+                      name="email"
+                      placeholder="Enter your email address"
+                      value="randomuser@pimjo.com"
+                      onChange={() => {}}
+                      hint="Provide a valid email address"
+                      min={1}
+                      max={100}
+                      step={1}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Phone</Label>
-                    <Input type="text" value="+09 363 398 46" />
+                    <Label htmlFor='' className=''>Phone</Label>
+                    <Input
+                      type="text"
+                      id="phone"
+                      name="phone"
+                      placeholder="Enter your phone number"
+                      value="+09 363 398 46"
+                      onChange={() => {}}
+                      hint="Provide a valid phone number"
+                      min={1}
+                      max={100}
+                      step={1}
+                    />
                   </div>
 
                   <div className="col-span-2">
-                    <Label>Bio</Label>
-                    <Input type="text" value="Team Manager" />
+                    <Label htmlFor="" className="">Bio</Label>
+                    <Input
+                      type="text"
+                      id="bio"
+                      name="bio"
+                      placeholder="Enter your bio"
+                      value="Team Manager"
+                      onChange={() => {}}
+                      min={1}
+                      max={100}
+                      step={1}
+                      hint="Provide a brief bio"
+                    />
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
+              <Button size="sm" variant="outline" onClick={closeModal} startIcon={null} endIcon={null}>
                 Close
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <Button size="sm" onClick={handleSave}  startIcon={null} endIcon={null}>
                 Save Changes
               </Button>
             </div>
