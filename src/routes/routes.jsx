@@ -10,6 +10,10 @@ const NotFound = React.lazy(
   () => import('../../dashboard/src/pages/OtherPage/NotFound')
 );
 
+const ProductFeatures = React.lazy(
+  () => import('../../dashboard/src/pages/ProductFeatures')
+);
+
 // Dashboard pages
 const SignIn = React.lazy(
   () => import('../../dashboard/src/pages/AuthPages/SignIn')
@@ -54,6 +58,7 @@ const BasicTables = React.lazy(
 const FormElements = React.lazy(
   () => import('../../dashboard/src/pages/Forms/FormElements')
 );
+
 const Blank = React.lazy(() => import('../../dashboard/src/pages/Blank'));
 const DashboardHome = React.lazy(
   () => import('../../dashboard/src/pages/Dashboard/Home')
@@ -111,6 +116,7 @@ const AppRoutes = () => {
           <Route path="calendar" element={<Calendar />} />
           <Route path="blank" element={<Blank />} />
           <Route path="form-elements" element={<FormElements />} />
+          <Route path="product-features" element={<ProductFeatures />} />
           <Route path="basic-tables" element={<BasicTables />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="avatars" element={<Avatars />} />
