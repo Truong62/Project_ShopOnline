@@ -1,42 +1,33 @@
+// dashboard/src/components/product-features/ProductFormModal.tsx
 import React, { useState, useEffect, useRef } from 'react';
+import { Product, Size } from '../../types'; // Import Product và Size từ types.ts
 
-interface Size {
-  size: string;
-  quantity: number;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  mainImage: string;
-  subImages: string[];
-  color: string;
-  sizes: Size[];
-  brand: string;
-  description: string;
-  price: string;
-  purchaseUnit: number;
-  stock: number;
-  status: 'Active' | 'Inactive';
-}
-
-interface AddProductModalProps {
+interface ProductFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddProduct: (product: Product) => void;
+  onSave: (product: Product) => void;
   brandSuggestions: string[];
+  productToEdit?: Product | null;
 }
 
-const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAddProduct, brandSuggestions }) => {
-  const [mainImage, setMainImage] = useState<string | null>(null);
-  const [subImages, setSubImages] = useState<string[]>([]);
-  const [name, setName] = useState('');
-  const [color, setColor] = useState('');
-  const [sizes, setSizes] = useState<Size[]>([{ size: '', quantity: 0 }]);
-  const [brand, setBrand] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
+const ProductFormModal: React.FC<ProductFormModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  brandSuggestions,
+  productToEdit,
+}) => {
+  const [mainImage, setMainImage] = useState<string | null>(productToEdit?.mainImage || null);
+  const [subImages, setSubImages] = useState<string[]>(productToEdit?.subImages || []);
+  const [name, setName] = useState(productToEdit?.name || '');
+  const [color, setColor] = useState(productToEdit?.color || '');
+  const [sizes, setSizes] = useState<Size[]>(productToEdit?.sizes || [{ size: '', quantity: 0 }]);
+  const [brand, setBrand] = useState(productToEdit?.brand || '');
+  const [description, setDescription] = useState(productToEdit?.description || '');
+  const [price, setPrice] = useState(productToEdit?.price || '');
+  const [status, setStatus] = useState<'Deleted=0' | 'Released' | 'Unreleased'>(
+    productToEdit?.status || 'Released'
+  );
 
   const [errors, setErrors] = useState({
     mainImage: '',
@@ -48,11 +39,23 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
     price: '',
   });
 
-  // Ref cho input file
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const subImageInputRef = useRef<HTMLInputElement>(null);
 
-  // Xử lý upload ảnh chính
+  useEffect(() => {
+    if (productToEdit) {
+      setMainImage(productToEdit.mainImage);
+      setSubImages(productToEdit.subImages);
+      setName(productToEdit.name);
+      setColor(productToEdit.color);
+      setSizes(productToEdit.sizes.length > 0 ? productToEdit.sizes : [{ size: '', quantity: 0 }]);
+      setBrand(productToEdit.brand);
+      setDescription(productToEdit.description);
+      setPrice(productToEdit.price);
+      setStatus(productToEdit.status);
+    }
+  }, [productToEdit]);
+
   const handleMainImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -65,7 +68,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
     }
   };
 
-  // Xử lý chỉnh sửa ảnh chính
   const handleEditMainImage = () => {
     if (mainImageInputRef.current) {
       mainImageInputRef.current.click();
@@ -75,11 +77,10 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
   const handleDeleteMainImage = () => {
     setMainImage(null);
     if (mainImageInputRef.current) {
-      mainImageInputRef.current.value = ''; // Reset input file
+      mainImageInputRef.current.value = '';
     }
   };
 
-  // Xử lý upload ảnh phụ
   const handleSubImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -95,12 +96,10 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
     setSubImages(subImages.filter((_, i) => i !== index));
   };
 
-  // Xử lý thêm size
   const handleAddSize = () => {
     setSizes([...sizes, { size: '', quantity: 0 }]);
   };
 
-  // Xử lý cập nhật size
   const handleSizeChange = (index: number, field: 'size' | 'quantity', value: string | number) => {
     const newSizes = [...sizes];
     if (field === 'size') {
@@ -113,19 +112,16 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
     setErrors((prev) => ({ ...prev, sizes: '' }));
   };
 
-  // Xử lý xóa size
   const handleDeleteSize = (index: number) => {
     setSizes(sizes.filter((_, i) => i !== index));
   };
 
-  // Xử lý gợi ý hãng
   const handleBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase();
     setBrand(value);
     setErrors((prev) => ({ ...prev, brand: '' }));
   };
 
-  // Validation form
   const validateForm = () => {
     const newErrors = {
       mainImage: '',
@@ -171,7 +167,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
     return isValid;
   };
 
-  // Xử lý submit form
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -185,23 +180,24 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
       return;
     }
 
-    const newProduct: Product = {
-      id: Date.now(),
+    const product: Product = {
+      id: productToEdit?.id ?? Date.now(),
       name,
-      sku: `TI${Math.floor(Math.random() * 10000)}`,
+      sku: productToEdit?.sku ?? `TI${Math.floor(Math.random() * 10000)}`,
       mainImage: mainImage!,
       subImages,
       color,
       sizes: finalSizes,
       brand,
       description,
-      price,
-      purchaseUnit: 0,
+      price: price.replace(/[^0-9]/g, ''),
+      purchaseUnit: productToEdit?.purchaseUnit ?? 0,
       stock: finalSizes.reduce((total, s) => total + s.quantity, 0),
-      status: 'Active',
+      status,
+      createdAt: productToEdit?.createdAt ?? new Date().toISOString(),
     };
 
-    onAddProduct(newProduct);
+    onSave(product);
     handleClose();
   };
 
@@ -215,6 +211,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
     setBrand('');
     setDescription('');
     setPrice('');
+    setStatus('Released');
     setErrors({
       mainImage: '',
       name: '',
@@ -226,13 +223,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
     });
   };
 
+  const formatPriceInput = (value: string) => {
+    const numValue = value.replace(/[^0-9]/g, '');
+    return numValue;
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl w-full p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white/90">
-          Add New Product
+          {productToEdit ? 'Edit Product' : 'Add New Product'}
         </h2>
         <button
           onClick={handleClose}
@@ -242,91 +244,94 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
         </button>
       </div>
       <form onSubmit={handleSubmit}>
+        {/* Main Image */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
             <i className="pi pi-image mr-2" /> Main Image *
           </label>
-          {!mainImage ? (
-            <button
-              type="button"
-              onClick={() => mainImageInputRef.current?.click()}
-              className="h-32 w-32 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
-            >
-              <i className="pi pi-plus text-4xl text-gray-500 dark:text-gray-400" />
-            </button>
-          ) : (
-            <div className="relative">
-              <img src={mainImage} alt="Main Preview" className="h-32 w-32 rounded-lg object-cover shadow-sm" />
-              <div className="absolute bottom-2 right-2 flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleEditMainImage}
-                  className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white hover:bg-primary/90"
-                >
-                  <i className="pi pi-pencil text-sm" />
-                </button>
+          <div className="flex items-center gap-3">
+            {mainImage ? (
+              <div className="relative">
+                <img
+                  src={mainImage}
+                  alt="Main"
+                  className="h-20 w-20 rounded-lg object-cover shadow-sm"
+                />
                 <button
                   type="button"
                   onClick={handleDeleteMainImage}
-                  className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600"
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
                 >
-                  <i className="pi pi-trash text-sm" />
+                  <i className="pi pi-times text-xs" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEditMainImage}
+                  className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                >
+                  <i className="pi pi-pencil text-xs" />
                 </button>
               </div>
-            </div>
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            ref={mainImageInputRef}
-            onChange={handleMainImageUpload}
-            className="hidden"
-          />
+            ) : (
+              <div
+                onClick={() => mainImageInputRef.current?.click()}
+                className="h-20 w-20 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer"
+              >
+                <i className="pi pi-plus text-gray-400" />
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              ref={mainImageInputRef}
+              onChange={handleMainImageUpload}
+              className="hidden"
+            />
+          </div>
           {errors.mainImage && (
             <p className="text-red-500 text-xs mt-1">{errors.mainImage}</p>
           )}
         </div>
 
+        {/* Sub Images */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
             <i className="pi pi-images mr-2" /> Sub Images
           </label>
-          <button
-            type="button"
-            onClick={() => subImageInputRef.current?.click()}
-            className="h-20 w-20 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
-          >
-            <i className="pi pi-plus text-3xl text-gray-500 dark:text-gray-400" />
-          </button>
-          <input
-            type="file"
-            accept="image/*"
-            ref={subImageInputRef}
-            onChange={handleSubImageUpload}
-            className="hidden"
-          />
-          {subImages.length > 0 && (
-            <div className="mt-4 flex gap-3 overflow-x-auto">
-              {subImages.map((img, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={img}
-                    alt={`Sub Image ${index + 1}`}
-                    className="h-20 w-20 rounded-lg object-cover shadow-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteSubImage(index)}
-                    className="absolute top-1 right-1 h-6 w-6 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600"
-                  >
-                    <i className="pi pi-times text-xs" />
-                  </button>
-                </div>
-              ))}
+          <div className="flex items-center gap-3 flex-wrap">
+            {subImages.map((img, index) => (
+              <div key={index} className="relative">
+                <img
+                  src={img}
+                  alt={`Sub ${index}`}
+                  className="h-16 w-16 rounded-lg object-cover shadow-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteSubImage(index)}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                >
+                  <i className="pi pi-times text-xs" />
+                </button>
+              </div>
+            ))}
+            <div
+              onClick={() => subImageInputRef.current?.click()}
+              className="h-16 w-16 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer"
+            >
+              <i className="pi pi-plus text-gray-400" />
             </div>
-          )}
+            <input
+              type="file"
+              accept="image/*"
+              ref={subImageInputRef}
+              onChange={handleSubImageUpload}
+              className="hidden"
+            />
+          </div>
         </div>
 
+        {/* Name */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
             <i className="pi pi-tag mr-2" /> Shoe Name *
@@ -338,14 +343,13 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
               setName(e.target.value);
               setErrors((prev) => ({ ...prev, name: '' }));
             }}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
             placeholder="Enter shoe name"
           />
-          {errors.name && (
-            <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-          )}
+          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
         </div>
 
+        {/* Color */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
             <i className="pi pi-palette mr-2" /> Color *
@@ -356,49 +360,43 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
               setColor(e.target.value);
               setErrors((prev) => ({ ...prev, color: '' }));
             }}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:focus:ring-primary/30 transition-all duration-200"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
           >
-            <option value="">Select a color</option>
-            <option value="Blue">Blue</option>
+            <option value="">Select color</option>
             <option value="Red">Red</option>
-            <option value="Purple">Purple</option>
-            <option value="Yellow">Yellow</option>
+            <option value="Blue">Blue</option>
+            <option value="Green">Green</option>
             <option value="Black">Black</option>
             <option value="White">White</option>
           </select>
-          {errors.color && (
-            <p className="text-red-500 text-xs mt-1">{errors.color}</p>
-          )}
+          {errors.color && <p className="text-red-500 text-xs mt-1">{errors.color}</p>}
         </div>
 
+        {/* Sizes */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-            <i className="pi pi-arrows-h mr-2" /> Sizes and Quantities *
+            <i className="pi pi-list mr-2" /> Sizes *
           </label>
           {sizes.map((size, index) => (
-            <div key={index} className="flex gap-3 mb-3 items-center">
+            <div key={index} className="flex items-center gap-3 mb-2">
               <input
                 type="text"
                 value={size.size}
                 onChange={(e) => handleSizeChange(index, 'size', e.target.value)}
-                placeholder="Size (e.g., 38, 39)"
-                className="h-12 w-1/3 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+                placeholder="Size (e.g., 38)"
+                className="h-12 w-1/2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
               />
               <input
                 type="number"
-                value={size.quantity === 0 ? '' : size.quantity}
-                onInput={(e) => {
-                  const value = (e.target as HTMLInputElement).value;
-                  const numericValue = value === '' ? '' : parseInt(value.replace(/[^0-9]/g, '')) || 0;
-                  handleSizeChange(index, 'quantity', numericValue);
-                }}
+                value={size.quantity}
+                onChange={(e) => handleSizeChange(index, 'quantity', parseInt(e.target.value) || 0)}
                 placeholder="Quantity"
-                className="h-12 w-1/3 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+                className="h-12 w-1/2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
               />
               <button
                 type="button"
                 onClick={() => handleDeleteSize(index)}
-                className="h-12 w-12 rounded-lg bg-red-500 flex items-center justify-center text-white hover:bg-red-600 transition-all duration-200 shadow-sm"
+                className="text-red-500 hover:text-red-700"
               >
                 <i className="pi pi-trash" />
               </button>
@@ -407,15 +405,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
           <button
             type="button"
             onClick={handleAddSize}
-            className="h-12 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-all duration-200"
+            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
           >
             <i className="pi pi-plus mr-2" /> Add Size
           </button>
-          {errors.sizes && (
-            <p className="text-red-500 text-xs mt-1">{errors.sizes}</p>
-          )}
+          {errors.sizes && <p className="text-red-500 text-xs mt-1">{errors.sizes}</p>}
         </div>
 
+        {/* Brand */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
             <i className="pi pi-building mr-2" /> Brand *
@@ -425,20 +422,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
             value={brand}
             onChange={handleBrandChange}
             list="brandSuggestions"
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
             placeholder="Enter brand name"
           />
           <datalist id="brandSuggestions">
-            {brandSuggestions.map((b, index) => (
-              <option key={index} value={b} />
+            {brandSuggestions.map((suggestion, index) => (
+              <option key={index} value={suggestion} />
             ))}
           </datalist>
-          {errors.brand && (
-            <p className="text-red-500 text-xs mt-1">{errors.brand}</p>
-          )}
+          {errors.brand && <p className="text-red-500 text-xs mt-1">{errors.brand}</p>}
         </div>
 
-        {/* Mô tả */}
+        {/* Description */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
             <i className="pi pi-file mr-2" /> Description *
@@ -449,7 +444,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
               setDescription(e.target.value);
               setErrors((prev) => ({ ...prev, description: '' }));
             }}
-            className="h-32 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+            className="h-24 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
             placeholder="Enter description"
           />
           {errors.description && (
@@ -457,32 +452,47 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
           )}
         </div>
 
-        {/* Giá */}
+        {/* Price */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-            <i className="pi pi-dollar mr-2" /> Price *
+            <i className="pi pi-dollar mr-2" /> Price (VND) *
           </label>
           <input
             type="text"
-            value={price}
+            value={price ? parseFloat(price).toLocaleString('vi-VN') : ''}
             onChange={(e) => {
-              setPrice(e.target.value);
+              const formattedValue = formatPriceInput(e.target.value);
+              setPrice(formattedValue);
               setErrors((prev) => ({ ...prev, price: '' }));
             }}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
-            placeholder="Enter price (e.g., $99.99)"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+            placeholder="Enter price (e.g., 99.000)"
           />
-          {errors.price && (
-            <p className="text-red-500 text-xs mt-1">{errors.price}</p>
-          )}
+          {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
+        </div>
+
+        {/* Status */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
+            <i className="pi pi-info-circle mr-2" /> Status *
+          </label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as 'Deleted=0' | 'Released' | 'Unreleased')}
+            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+          >
+            <option value="Deleted=0">Deleted</option>
+            <option value="Released">Released</option>
+            <option value="Unreleased">Unreleased</option>
+          </select>
         </div>
 
         <div className="flex gap-3">
           <button
             type="submit"
-            className="h-12 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-white shadow-md hover:bg-primary/90 transition-all duration-200"
+            className="h-12 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all duration-200"
           >
-            <i className="pi pi-check mr-2" /> Save Product
+            <i className="pi pi-check mr-2" /> {productToEdit ? 'Update Product' : 'Save Product'}
           </button>
           <button
             type="button"
@@ -497,4 +507,4 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
   );
 };
 
-export default AddProductModal;
+export default ProductFormModal;

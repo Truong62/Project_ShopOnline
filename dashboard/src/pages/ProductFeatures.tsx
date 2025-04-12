@@ -1,32 +1,14 @@
+// dashboard/src/pages/ProductFeatures.tsx
 import React, { useState, useEffect } from 'react';
 import PageMeta from '../components/common/PageMeta';
+import NotificationModal from '../components/common/NotificationModal';
 import Header from '../components/product-features/Header';
 import FilterBar from '../components/product-features/FilterBar';
 import CategoryFilters from '../components/product-features/CategoryFilters';
 import ProductTable from '../components/product-features/ProductTable';
 import Pagination from '../components/product-features/Pagination';
-import AddProductModal from '../components/product-features/AddProductModal';
-
-interface Size {
-  size: string;
-  quantity: number;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  mainImage: string;
-  subImages: string[];
-  color: string;
-  sizes: Size[];
-  brand: string;
-  description: string;
-  price: string;
-  purchaseUnit: number;
-  stock: number;
-  status: 'Active' | 'Inactive';
-}
+import ProductFormModal from '../components/product-features/ProductFormModal';
+import { Product } from '../types'; // Import Product từ types.ts
 
 const initialProducts: Product[] = [
   {
@@ -42,10 +24,11 @@ const initialProducts: Product[] = [
     ],
     brand: 'GABRIELA',
     description: 'A luxurious cashmere blazer for all seasons.',
-    price: '$113.99',
+    price: '113990',
     purchaseUnit: 113,
     stock: 14012,
-    status: 'Active',
+    status: 'Released',
+    createdAt: new Date('2025-04-01').toISOString(),
   },
 ];
 
@@ -56,10 +39,20 @@ const ProductFeatures: React.FC = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
+  const [notification, setNotification] = useState<{ isOpen: boolean; message: string }>({
+    isOpen: false,
+    message: '',
+  });
   const productsPerPage = 7;
   const [brandSuggestions, setBrandSuggestions] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('');
+  const [filters, setFilters] = useState({
+    status: '',
+  });
 
-  // Lấy danh sách hãng từ localStorage để gợi ý
   useEffect(() => {
     const savedProducts = localStorage.getItem('products');
     if (savedProducts) {
@@ -69,15 +62,59 @@ const ProductFeatures: React.FC = () => {
     }
   }, []);
 
-  // Lưu sản phẩm vào localStorage khi products thay đổi
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
 
+  const formatPrice = (price: string) => {
+    const numPrice = parseFloat(price);
+    return numPrice.toLocaleString('vi-VN') + ' VND';
+  };
+
+  const getFilteredAndSortedProducts = () => {
+    let filteredProducts = [...products];
+
+    if (searchTerm) {
+      filteredProducts = filteredProducts.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.sku.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (filters.status) {
+      filteredProducts = filteredProducts.filter(
+        (product) => product.status === filters.status
+      );
+    }
+
+    if (sortOption) {
+      filteredProducts.sort((a, b) => {
+        if (sortOption === 'price-asc') {
+          return parseFloat(a.price) - parseFloat(b.price);
+        } else if (sortOption === 'price-desc') {
+          return parseFloat(b.price) - parseFloat(a.price);
+        } else if (sortOption === 'name-asc') {
+          return a.name.localeCompare(b.name);
+        } else if (sortOption === 'name-desc') {
+          return b.name.localeCompare(a.name);
+        } else if (sortOption === 'date-newest') {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        } else if (sortOption === 'date-oldest') {
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        }
+        return 0;
+      });
+    }
+
+    return filteredProducts;
+  };
+
+  const filteredAndSortedProducts = getFilteredAndSortedProducts();
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  const currentProducts = filteredAndSortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / productsPerPage);
 
   const handleDelete = (id: number) => {
     setProducts(products.filter((product) => product.id !== id));
@@ -87,9 +124,69 @@ const ProductFeatures: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const handleAddProduct = (newProduct: Product) => {
-    setProducts([...products, newProduct]);
-    setIsModalOpen(false);
+  const handleAddProduct = () => {
+    setIsEditing(false);
+    setProductToEdit(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setIsEditing(true);
+    setProductToEdit(product);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveProduct = (newProduct: Product) => {
+    if (isEditing && productToEdit) {
+      setProducts(
+        products.map((p) => (p.id === newProduct.id ? newProduct : p))
+      );
+      setIsModalOpen(false);
+      setIsEditing(false);
+      setProductToEdit(null);
+      setNotification({
+        isOpen: true,
+        message: 'Product updated successfully!',
+      });
+    } else {
+      const existingProduct = products.find(
+        (p) =>
+          p.name.toLowerCase() === newProduct.name.toLowerCase() &&
+          p.brand.toLowerCase() === newProduct.brand.toLowerCase()
+      );
+
+      if (existingProduct) {
+        setNotification({
+          isOpen: true,
+          message: `A product with the name "${newProduct.name}" and brand "${newProduct.brand}" already exists. Please edit the existing product or use a different name/brand.`,
+        });
+        return;
+      }
+
+      setProducts([...products, { ...newProduct, createdAt: new Date().toISOString() }]);
+      setIsModalOpen(false);
+      setIsEditing(false);
+      setProductToEdit(null);
+      setNotification({
+        isOpen: true,
+        message: 'Product added successfully!',
+      });
+    }
+  };
+
+  const handleSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    setCurrentPage(1);
+  };
+
+  const handleSort = (sortOption: string) => {
+    setSortOption(sortOption);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (newFilters: { status: string }) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
   };
 
   return (
@@ -100,20 +197,32 @@ const ProductFeatures: React.FC = () => {
       />
       <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <Header />
-        <FilterBar onAddProduct={() => setIsModalOpen(true)} />
+        <FilterBar
+          onAddProduct={handleAddProduct}
+          onSearch={handleSearch}
+          onSort={handleSort}
+        />
         {isModalOpen ? (
           <div className="flex justify-center mb-6">
-            <AddProductModal
+            <ProductFormModal
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
-              onAddProduct={handleAddProduct}
+              onSave={handleSaveProduct}
               brandSuggestions={brandSuggestions}
+              productToEdit={productToEdit}
             />
           </div>
         ) : (
           <>
-            <CategoryFilters />
-            <ProductTable products={currentProducts} onDelete={handleDelete} />
+            <CategoryFilters onFilterChange={handleFilterChange} />
+            <ProductTable
+              products={currentProducts.map((product) => ({
+                ...product,
+                price: formatPrice(product.price),
+              }))}
+              onDelete={handleDelete}
+              onEdit={handleEditProduct}
+            />
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -121,6 +230,11 @@ const ProductFeatures: React.FC = () => {
             />
           </>
         )}
+        <NotificationModal
+          isOpen={notification.isOpen}
+          message={notification.message}
+          onClose={() => setNotification({ isOpen: false, message: '' })}
+        />
       </div>
     </>
   );

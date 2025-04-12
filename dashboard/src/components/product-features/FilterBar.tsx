@@ -1,43 +1,51 @@
-import React from 'react';
+// dashboard/src/components/product-features/FilterBar.tsx
+import React, { ChangeEvent } from 'react';
 
 interface FilterBarProps {
   onAddProduct: () => void;
+  onSearch: (searchTerm: string) => void;
+  onSort: (sortOption: string) => void;
 }
 
-const FilterBar: React.FC<FilterBarProps> = ({ onAddProduct }) => {
+const FilterBar: React.FC<FilterBarProps> = ({ onAddProduct, onSearch, onSort }) => {
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onSearch(e.target.value);
+  };
+
+  const handleSortChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    onSort(e.target.value);
+  };
+
   return (
-    <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+    <div className="flex justify-between items-center mb-6">
+      <div className="flex items-center gap-3">
         <div className="relative">
+          <i className="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search products..."
-            className="h-12 w-full sm:w-64 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:placeholder:text-gray-500 dark:focus:ring-primary/30 transition-all duration-200"
+            onChange={handleSearchChange}
+            className="h-10 w-64 rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
           />
-          <i className="pi pi-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
         </div>
-        <div className="flex gap-2">
-          <select className="h-12 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:focus:ring-primary/30 transition-all duration-200">
-            <option>Show: All Products</option>
-            <option>Show: 10 Products</option>
-            <option>Show: 20 Products</option>
-          </select>
-          <select className="h-12 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:focus:ring-primary/30 transition-all duration-200">
-            <option>Sort by: Default</option>
-            <option>Sort by: Price (Low to High)</option>
-            <option>Sort by: Price (High to Low)</option>
-          </select>
-          <button className="h-12 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-all duration-200">
-            <i className="pi pi-filter mr-2" />
-            Filter
-          </button>
-        </div>
+        <select
+          onChange={handleSortChange}
+          className="h-10 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+        >
+          <option value="">Sort by</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name: A to Z</option>
+          <option value="name-desc">Name: Z to A</option>
+          <option value="date-newest">Date: Newest</option>
+          <option value="date-oldest">Date: Oldest</option>
+        </select>
       </div>
       <button
         onClick={onAddProduct}
-        className="h-12 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-white shadow-md hover:bg-primary/90 transition-all duration-200"
+        className="h-10 rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-all duration-200"
       >
-        + Add Product
+        <i className="pi pi-plus mr-2" /> Add Product
       </button>
     </div>
   );
