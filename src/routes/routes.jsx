@@ -17,6 +17,9 @@ const SignIn = React.lazy(
 const SignUp = React.lazy(
   () => import('../../dashboard/src/pages/AuthPages/SignUp')
 );
+const ResetPassword = React.lazy(
+  () => import('../../dashboard/src/pages/AuthPages/ForgetPassword')
+);
 const UserProfiles = React.lazy(
   () => import('../../dashboard/src/pages/UserProfiles')
 );
@@ -53,6 +56,9 @@ const BasicTables = React.lazy(
 );
 const FormElements = React.lazy(
   () => import('../../dashboard/src/pages/Forms/FormElements')
+);
+const OrderManagement = React.lazy(
+  () => import('../../dashboard/src/pages/Forms/OrderManagement')
 );
 const Blank = React.lazy(() => import('../../dashboard/src/pages/Blank'));
 const DashboardHome = React.lazy(
@@ -111,6 +117,7 @@ const AppRoutes = () => {
           <Route path="calendar" element={<Calendar />} />
           <Route path="blank" element={<Blank />} />
           <Route path="form-elements" element={<FormElements />} />
+          <Route path="order-management" element={<OrderManagement />} />
           <Route path="basic-tables" element={<BasicTables />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="avatars" element={<Avatars />} />
@@ -125,6 +132,7 @@ const AppRoutes = () => {
         {/* Dashboard Auth */}
         <Route path="/Signin" element={<SignIn />} />
         <Route path="/Signup" element={<SignUp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Fallback */}
         <Route path="*" element={<NotFound />} />
