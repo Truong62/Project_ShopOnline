@@ -100,8 +100,6 @@ const AppRoutes = () => {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/tracking" element={<Tracking />} />
         <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/register" element={<SignUpForm />} />
-        <Route path="/login" element={<LoginForm />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/enter-otp" element={<EnterOtp />} />
         <Route path="/create-new-password" element={<CreateNewPassword />} />
@@ -109,6 +107,9 @@ const AppRoutes = () => {
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/congratulations" element={<Congratulations />} />
         <Route path="/company" element={<Company />} />
+
+        <Route path="/register" element={<SignUpForm />} />
+        <Route path="/login" element={<LoginForm />} />
 
         {/* Dashboard Routes */}
         <Route path="/admin" element={<AppLayout />}>
