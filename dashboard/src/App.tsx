@@ -15,6 +15,7 @@ import BarChart from './pages/Charts/BarChart';
 import Calendar from './pages/Calendar';
 import BasicTables from './pages/Tables/BasicTables';
 import FormElements from './pages/Forms/FormElements';
+import ProductFeatures from './pages/ProductFeatures';
 import Blank from './pages/Blank';
 import AppLayout from './layout/AppLayout';
 import { ScrollToTop } from './components/common/ScrollToTop';
@@ -38,6 +39,7 @@ export default function App() {
 
             {/* Forms */}
             <Route path="/form-elements" element={<FormElements />} />
+            <Route path="/product-features" element={<ProductFeatures />} />
 
             {/* Tables */}
             <Route path="/basic-tables" element={<BasicTables />} />
@@ -59,9 +61,6 @@ export default function App() {
           <Route path="/Signin" element={<SignIn />} />
           <Route path="/ForgetPassword" element={<ForgetPassword />} />
           <Route path="/Signup" element={<SignUp />} />
-
-          {/* Fallback Route */}
-          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </>

@@ -10,6 +10,13 @@ const NotFound = React.lazy(
   () => import('../../dashboard/src/pages/OtherPage/NotFound')
 );
 
+const ProductFeatures = React.lazy(
+  () => import('../../dashboard/src/pages/ProductFeatures')
+);
+const UserManagement = React.lazy(
+  () => import('../../dashboard/src/pages/UserManagement')
+);
+
 // Dashboard pages
 const SignIn = React.lazy(
   () => import('../../dashboard/src/pages/AuthPages/SignIn')
@@ -119,6 +126,8 @@ const AppRoutes = () => {
           <Route path="blank" element={<Blank />} />
           <Route path="form-elements" element={<FormElements />} />
           <Route path="order-management" element={<OrderManagement />} />
+          <Route path="product-features" element={<ProductFeatures />} />
+          <Route path="user-management" element={<UserManagement />} />
           <Route path="basic-tables" element={<BasicTables />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="avatars" element={<Avatars />} />
