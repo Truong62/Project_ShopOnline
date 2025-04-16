@@ -24,6 +24,9 @@ const SignIn = React.lazy(
 const SignUp = React.lazy(
   () => import('../../dashboard/src/pages/AuthPages/SignUp')
 );
+const ResetPassword = React.lazy(
+  () => import('../../dashboard/src/pages/AuthPages/ForgetPassword')
+);
 const UserProfiles = React.lazy(
   () => import('../../dashboard/src/pages/UserProfiles')
 );
@@ -61,7 +64,9 @@ const BasicTables = React.lazy(
 const FormElements = React.lazy(
   () => import('../../dashboard/src/pages/Forms/FormElements')
 );
-
+const OrderManagement = React.lazy(
+  () => import('../../dashboard/src/pages/Forms/OrderManagement')
+);
 const Blank = React.lazy(() => import('../../dashboard/src/pages/Blank'));
 const DashboardHome = React.lazy(
   () => import('../../dashboard/src/pages/Dashboard/Home')
@@ -102,8 +107,6 @@ const AppRoutes = () => {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/tracking" element={<Tracking />} />
         <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/register" element={<SignUpForm />} />
-        <Route path="/login" element={<LoginForm />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/enter-otp" element={<EnterOtp />} />
         <Route path="/create-new-password" element={<CreateNewPassword />} />
@@ -112,6 +115,9 @@ const AppRoutes = () => {
         <Route path="/congratulations" element={<Congratulations />} />
         <Route path="/company" element={<Company />} />
 
+        <Route path="/register" element={<SignUpForm />} />
+        <Route path="/login" element={<LoginForm />} />
+
         {/* Dashboard Routes */}
         <Route path="/admin" element={<AppLayout />}>
           <Route index element={<DashboardHome />} />
@@ -119,6 +125,7 @@ const AppRoutes = () => {
           <Route path="calendar" element={<Calendar />} />
           <Route path="blank" element={<Blank />} />
           <Route path="form-elements" element={<FormElements />} />
+          <Route path="order-management" element={<OrderManagement />} />
           <Route path="product-features" element={<ProductFeatures />} />
           <Route path="user-management" element={<UserManagement />} />
           <Route path="basic-tables" element={<BasicTables />} />
@@ -135,6 +142,7 @@ const AppRoutes = () => {
         {/* Dashboard Auth */}
         <Route path="/Signin" element={<SignIn />} />
         <Route path="/Signup" element={<SignUp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Fallback */}
         <Route path="*" element={<NotFound />} />

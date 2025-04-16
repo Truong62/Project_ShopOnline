@@ -49,7 +49,6 @@ const CartPage = () => {
     }
     navigate('/checkout');
   };
-  console.log('Cart Items after reload:', cartItems);
 
   return (
     <React.Fragment>
@@ -118,7 +117,6 @@ const CartPage = () => {
                         }}
                         className="w-12 text-center border mx-2"
                       />
-
                       <button
                         className="px-2"
                         onClick={() =>
@@ -135,7 +133,7 @@ const CartPage = () => {
                       </button>
                       <Button
                         icon="pi pi-trash"
-                        className="p-button-danger"
+                        className="p-button-danger ml-2"
                         onClick={() =>
                           handleRemoveItem(item.id, item.color, item.size)
                         }
