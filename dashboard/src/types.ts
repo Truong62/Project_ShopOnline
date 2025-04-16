@@ -19,3 +19,15 @@ export interface Size {
     status: 'Deleted=0' | 'Released' | 'Unreleased';
     createdAt: string;
   }
+  export interface Users {
+    id: number;
+    name: string;
+    Avatar: string;
+    description: string;
+    status: 'Deleted=0' | 'Active' | 'Inactive';
+    role: string;
+    email: string;
+    phone: string;
+    address: string;
+    createdAt: string;
+  }

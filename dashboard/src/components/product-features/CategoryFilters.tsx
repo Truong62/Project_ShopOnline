@@ -6,6 +6,7 @@ interface CategoryFiltersProps {
     status: string;
     priceRange: string;
     store: string;
+    role: string;
   }) => void;
 }
 
@@ -15,6 +16,7 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onFilterChange }) => 
     status: '',
     priceRange: '',
     store: '',
+    role: '',
   });
 
   const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {

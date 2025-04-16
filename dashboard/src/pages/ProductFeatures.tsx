@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { Toast } from 'primereact/toast';
 import PageMeta from '../components/common/PageMeta';
 import Header from '../components/product-features/Header';
 import FilterBar from '../components/product-features/FilterBar';
@@ -8,6 +7,7 @@ import CategoryFilters from '../components/product-features/CategoryFilters';
 import ProductTable from '../components/product-features/ProductTable';
 import Pagination from '../components/product-features/Pagination';
 import ProductFormModal from '../components/product-features/ProductFormModal';
+import Alert from '../components/ui/alert/Alert'; // Import the Alert component
 import { Product } from '../types';
 
 const initialProducts: Product[] = [
@@ -48,6 +48,20 @@ const ProductFeatures: React.FC = () => {
   const [filters, setFilters] = useState({
     status: '',
   });
+  const toast = useRef<Toast>(null);
+
+  // State for managing Alert
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    variant: 'success' | 'error' | 'warning' | 'info';
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    variant: 'info',
+    title: '',
+    message: '',
+  });
 
   useEffect(() => {
     const savedProducts = localStorage.getItem('products');
@@ -61,6 +75,18 @@ const ProductFeatures: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
+
+  // Function to show alert and auto-dismiss after 5 seconds
+  const showAlert = (
+    variant: 'success' | 'error' | 'warning' | 'info',
+    title: string,
+    message: string
+  ) => {
+    setAlert({ show: true, variant, title, message });
+    setTimeout(() => {
+      setAlert({ show: false, variant: 'info', title: '', message: '' });
+    }, 5000); // Auto-dismiss after 5 seconds
+  };
 
   const formatPrice = (price: string) => {
     const numPrice = parseFloat(price);
@@ -109,11 +135,15 @@ const ProductFeatures: React.FC = () => {
   const filteredAndSortedProducts = getFilteredAndSortedProducts();
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredAndSortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = filteredAndSortedProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
   const totalPages = Math.ceil(filteredAndSortedProducts.length / productsPerPage);
 
   const handleDelete = (id: number) => {
     setProducts(products.filter((product) => product.id !== id));
+    showAlert('success', 'Product Deleted', 'Product was successfully deleted.');
   };
 
   const handlePageChange = (page: number) => {
@@ -134,35 +164,30 @@ const ProductFeatures: React.FC = () => {
 
   const handleSaveProduct = (newProduct: Product) => {
     try {
-      console.log('New Product:', newProduct);
-
       if (isEditing && productToEdit) {
-        // Cập nhật sản phẩm
         setProducts(
           products.map((p) => (p.id === newProduct.id ? newProduct : p))
         );
         setIsModalOpen(false);
         setIsEditing(false);
         setProductToEdit(null);
-        toast.success('Product updated successfully!', {
-          position: 'top-center',
-          autoClose: 3000,
-        });
+        showAlert(
+          'success',
+          'Product Updated',
+          'Product updated successfully!'
+        );
       } else {
-        // Kiểm tra sản phẩm trùng
         const existingProduct = products.find((p) => {
           const normalizedName = (p.name || '').trim().toLowerCase();
           const normalizedBrand = (p.brand || '').trim().toLowerCase();
           const normalizedColor = (p.color || '').trim().toLowerCase();
-
           const newNormalizedName = (newProduct.name || '').trim().toLowerCase();
-          const newNormalizedBrand = (newProduct.brand || '').trim().toLowerCase();
-          const newNormalizedColor = (newProduct.color || '').trim().toLowerCase();
-
-          console.log('Comparing:', {
-            existing: { name: normalizedName, brand: normalizedBrand, color: normalizedColor },
-            new: { name: newNormalizedName, brand: newNormalizedBrand, color: newNormalizedColor },
-          });
+          const newNormalizedBrand = (newProduct.brand || '')
+            .trim()
+            .toLowerCase();
+          const newNormalizedColor = (newProduct.color || '')
+            .trim()
+            .toLowerCase();
 
           return (
             normalizedName === newNormalizedName &&
@@ -172,30 +197,30 @@ const ProductFeatures: React.FC = () => {
         });
 
         if (existingProduct) {
-          console.log('Duplicate found:', existingProduct);
-          toast.error('This product already exists.', {
-            position: 'top-center',
-            autoClose: 5000,
-          });
+          showAlert(
+            'error',
+            'Duplicate Product',
+            'This product already exists.'
+          );
           return;
         }
 
-        // Thêm sản phẩm mới
-        setProducts([...products, { ...newProduct, createdAt: new Date().toISOString() }]);
+        setProducts([
+          ...products,
+          { ...newProduct, createdAt: new Date().toISOString() },
+        ]);
         setIsModalOpen(false);
         setIsEditing(false);
         setProductToEdit(null);
-        toast.success('Product added successfully!', {
-          position: 'top-center',
-          autoClose: 3000,
-        });
+        showAlert('success', 'Product Added', 'Product added successfully!');
       }
     } catch (error: any) {
       console.error('Error saving product:', error);
-      toast.error(error.message || 'An error occurred while saving the product.', {
-        position: 'top-center',
-        autoClose: 5000,
-      });
+      showAlert(
+        'error',
+        'Error',
+        error.message || 'An error occurred while saving the product.'
+      );
     }
   };
 
@@ -221,13 +246,24 @@ const ProductFeatures: React.FC = () => {
         description="Manage products in TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
       <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
-        <ToastContainer style={{ zIndex: 10000 }} position="top-center" />
+        <Toast ref={toast} />
         <Header />
         <FilterBar
           onAddProduct={handleAddProduct}
           onSearch={handleSearch}
           onSort={handleSort}
         />
+        {/* Render Alert Component */}
+        {alert.show && (
+          <div className="mb-6">
+            <Alert
+              variant={alert.variant}
+              title={alert.title}
+              message={alert.message}
+              showLink={false}
+            />
+          </div>
+        )}
         {isModalOpen ? (
           <div className="flex justify-center mb-6">
             <ProductFormModal

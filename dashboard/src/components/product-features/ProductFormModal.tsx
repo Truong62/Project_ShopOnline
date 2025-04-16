@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { toast } from 'react-toastify'; // Import react-toastify
 import { Product, Size } from '../../types';
+import Alert from '../../components/ui/alert/Alert'; // Adjust the path based on your project structure
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -29,6 +29,19 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     productToEdit?.status || 'Released'
   );
 
+  // State for managing Alert
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    variant: 'success' | 'error' | 'warning' | 'info';
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    variant: 'error',
+    title: '',
+    message: '',
+  });
+
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const subImageInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,6 +66,18 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setStatus(productToEdit.status);
     }
   }, [productToEdit]);
+
+  // Function to show alert and auto-dismiss after 5 seconds
+  const showAlert = (
+    variant: 'success' | 'error' | 'warning' | 'info',
+    title: string,
+    message: string
+  ) => {
+    setAlert({ show: true, variant, title, message });
+    setTimeout(() => {
+      setAlert({ show: false, variant: 'error', title: '', message: '' });
+    }, 5000); // Auto-dismiss after 5 seconds
+  };
 
   const handleMainImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -141,10 +166,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     }
 
     if (errorMessage) {
-      toast.error(errorMessage, {
-        position: 'top-right',
-        autoClose: 5000,
-      });
+      showAlert('error', 'Validation Error', errorMessage);
       return false;
     }
     return true;
@@ -181,6 +203,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     };
 
     onSave(product);
+    showAlert('success', 'Success', productToEdit ? 'Product updated successfully!' : 'Product added successfully!');
     handleClose();
   };
 
@@ -195,6 +218,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     setDescription('');
     setPrice('');
     setStatus('Released');
+    setAlert({ show: false, variant: 'error', title: '', message: '' });
   };
 
   const formatPriceInput = (value: string) => {
@@ -217,6 +241,17 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           <i className="pi pi-times text-xl" />
         </button>
       </div>
+      {/* Render Alert Component */}
+      {alert.show && (
+        <div className="mb-6">
+          <Alert
+            variant={alert.variant}
+            title={alert.title}
+            message={alert.message}
+            showLink={false}
+          />
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         {/* Main Image */}
         <div className="mb-6">
@@ -316,7 +351,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           />
         </div>
 
-        {/* Color - Chọn bằng ô màu */}
+        {/* Color */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
             <i className="pi pi-palette mr-2" /> Color *
@@ -420,13 +455,13 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           </label>
           <input
             type="text"
-            value={price ? parseFloat(price).toLocaleString('vi-VN') : ''}
+            value={price}
             onChange={(e) => {
               const formattedValue = formatPriceInput(e.target.value);
               setPrice(formattedValue);
             }}
             className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
-            placeholder="Enter price (e.g., 99.000)"
+            placeholder="Enter price (e.g., 99000)"
           />
         </div>
 
@@ -440,7 +475,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             onChange={(e) => setStatus(e.target.value as 'Deleted=0' | 'Released' | 'Unreleased')}
             className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
           >
-            <option value="Deleted=0">Deleted</option>
+            <option value="Deleted">Deleted</option>
             <option value="Released">Released</option>
             <option value="Unreleased">Unreleased</option>
           </select>
