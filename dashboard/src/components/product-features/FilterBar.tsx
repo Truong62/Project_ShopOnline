@@ -1,4 +1,3 @@
-// dashboard/src/components/product-features/FilterBar.tsx
 import React, { ChangeEvent } from 'react';
 
 interface FilterBarProps {

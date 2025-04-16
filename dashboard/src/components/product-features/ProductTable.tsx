@@ -1,4 +1,3 @@
-// dashboard/src/components/product-features/ProductTable.tsx
 import React from 'react';
 import { Product, Size } from '../../types'; // Import Product và Size từ types.ts
 

@@ -1,14 +1,14 @@
-// dashboard/src/pages/ProductFeatures.tsx
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import PageMeta from '../components/common/PageMeta';
-import NotificationModal from '../components/common/NotificationModal';
 import Header from '../components/product-features/Header';
 import FilterBar from '../components/product-features/FilterBar';
 import CategoryFilters from '../components/product-features/CategoryFilters';
 import ProductTable from '../components/product-features/ProductTable';
 import Pagination from '../components/product-features/Pagination';
 import ProductFormModal from '../components/product-features/ProductFormModal';
-import { Product } from '../types'; // Import Product từ types.ts
+import { Product } from '../types';
 
 const initialProducts: Product[] = [
   {
@@ -41,10 +41,6 @@ const ProductFeatures: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
-  const [notification, setNotification] = useState<{ isOpen: boolean; message: string }>({
-    isOpen: false,
-    message: '',
-  });
   const productsPerPage = 7;
   const [brandSuggestions, setBrandSuggestions] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -57,7 +53,7 @@ const ProductFeatures: React.FC = () => {
     const savedProducts = localStorage.getItem('products');
     if (savedProducts) {
       const products: Product[] = JSON.parse(savedProducts);
-      const brands = [...new Set(products.map((p) => p.brand))];
+      const brands = [...new Set(products.map((p) => p.brand).filter(Boolean))];
       setBrandSuggestions(brands);
     }
   }, []);
@@ -77,8 +73,8 @@ const ProductFeatures: React.FC = () => {
     if (searchTerm) {
       filteredProducts = filteredProducts.filter(
         (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.sku.toLowerCase().includes(searchTerm.toLowerCase())
+          product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.sku?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -137,39 +133,68 @@ const ProductFeatures: React.FC = () => {
   };
 
   const handleSaveProduct = (newProduct: Product) => {
-    if (isEditing && productToEdit) {
-      setProducts(
-        products.map((p) => (p.id === newProduct.id ? newProduct : p))
-      );
-      setIsModalOpen(false);
-      setIsEditing(false);
-      setProductToEdit(null);
-      setNotification({
-        isOpen: true,
-        message: 'Product updated successfully!',
-      });
-    } else {
-      const existingProduct = products.find(
-        (p) =>
-          p.name.toLowerCase() === newProduct.name.toLowerCase() &&
-          p.brand.toLowerCase() === newProduct.brand.toLowerCase()
-      );
+    try {
+      console.log('New Product:', newProduct);
 
-      if (existingProduct) {
-        setNotification({
-          isOpen: true,
-          message: `A product with the name "${newProduct.name}" and brand "${newProduct.brand}" already exists. Please edit the existing product or use a different name/brand.`,
+      if (isEditing && productToEdit) {
+        // Cập nhật sản phẩm
+        setProducts(
+          products.map((p) => (p.id === newProduct.id ? newProduct : p))
+        );
+        setIsModalOpen(false);
+        setIsEditing(false);
+        setProductToEdit(null);
+        toast.success('Product updated successfully!', {
+          position: 'top-center',
+          autoClose: 3000,
         });
-        return;
-      }
+      } else {
+        // Kiểm tra sản phẩm trùng
+        const existingProduct = products.find((p) => {
+          const normalizedName = (p.name || '').trim().toLowerCase();
+          const normalizedBrand = (p.brand || '').trim().toLowerCase();
+          const normalizedColor = (p.color || '').trim().toLowerCase();
 
-      setProducts([...products, { ...newProduct, createdAt: new Date().toISOString() }]);
-      setIsModalOpen(false);
-      setIsEditing(false);
-      setProductToEdit(null);
-      setNotification({
-        isOpen: true,
-        message: 'Product added successfully!',
+          const newNormalizedName = (newProduct.name || '').trim().toLowerCase();
+          const newNormalizedBrand = (newProduct.brand || '').trim().toLowerCase();
+          const newNormalizedColor = (newProduct.color || '').trim().toLowerCase();
+
+          console.log('Comparing:', {
+            existing: { name: normalizedName, brand: normalizedBrand, color: normalizedColor },
+            new: { name: newNormalizedName, brand: newNormalizedBrand, color: newNormalizedColor },
+          });
+
+          return (
+            normalizedName === newNormalizedName &&
+            normalizedBrand === newNormalizedBrand &&
+            normalizedColor === newNormalizedColor
+          );
+        });
+
+        if (existingProduct) {
+          console.log('Duplicate found:', existingProduct);
+          toast.error('This product already exists.', {
+            position: 'top-center',
+            autoClose: 5000,
+          });
+          return;
+        }
+
+        // Thêm sản phẩm mới
+        setProducts([...products, { ...newProduct, createdAt: new Date().toISOString() }]);
+        setIsModalOpen(false);
+        setIsEditing(false);
+        setProductToEdit(null);
+        toast.success('Product added successfully!', {
+          position: 'top-center',
+          autoClose: 3000,
+        });
+      }
+    } catch (error: any) {
+      console.error('Error saving product:', error);
+      toast.error(error.message || 'An error occurred while saving the product.', {
+        position: 'top-center',
+        autoClose: 5000,
       });
     }
   };
@@ -196,6 +221,7 @@ const ProductFeatures: React.FC = () => {
         description="Manage products in TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
       <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <ToastContainer style={{ zIndex: 10000 }} position="top-center" />
         <Header />
         <FilterBar
           onAddProduct={handleAddProduct}
@@ -230,11 +256,6 @@ const ProductFeatures: React.FC = () => {
             />
           </>
         )}
-        <NotificationModal
-          isOpen={notification.isOpen}
-          message={notification.message}
-          onClose={() => setNotification({ isOpen: false, message: '' })}
-        />
       </div>
     </>
   );

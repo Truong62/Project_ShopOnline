@@ -1,4 +1,3 @@
-// dashboard/src/components/common/NotificationModal.tsx
 import React from 'react';
 
 interface NotificationModalProps {

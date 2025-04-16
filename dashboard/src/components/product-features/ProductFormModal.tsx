@@ -1,6 +1,6 @@
-// dashboard/src/components/product-features/ProductFormModal.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Product, Size } from '../../types'; // Import Product và Size từ types.ts
+import { toast } from 'react-toastify'; // Import react-toastify
+import { Product, Size } from '../../types';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -29,18 +29,16 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     productToEdit?.status || 'Released'
   );
 
-  const [errors, setErrors] = useState({
-    mainImage: '',
-    name: '',
-    color: '',
-    sizes: '',
-    brand: '',
-    description: '',
-    price: '',
-  });
-
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const subImageInputRef = useRef<HTMLInputElement>(null);
+
+  const colors = [
+    { name: 'Red', code: '#FF0000' },
+    { name: 'Blue', code: '#0000FF' },
+    { name: 'Green', code: '#008000' },
+    { name: 'Black', code: '#000000' },
+    { name: 'White', code: '#FFFFFF' },
+  ];
 
   useEffect(() => {
     if (productToEdit) {
@@ -62,7 +60,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       const reader = new FileReader();
       reader.onloadend = () => {
         setMainImage(reader.result as string);
-        setErrors((prev) => ({ ...prev, mainImage: '' }));
       };
       reader.readAsDataURL(file);
     }
@@ -109,7 +106,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
       newSizes[index] = { ...newSizes[index], [field]: value as number };
     }
     setSizes(newSizes);
-    setErrors((prev) => ({ ...prev, sizes: '' }));
   };
 
   const handleDeleteSize = (index: number) => {
@@ -119,52 +115,39 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const handleBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase();
     setBrand(value);
-    setErrors((prev) => ({ ...prev, brand: '' }));
+  };
+
+  const handleColorSelect = (colorName: string) => {
+    setColor(colorName);
   };
 
   const validateForm = () => {
-    const newErrors = {
-      mainImage: '',
-      name: '',
-      color: '',
-      sizes: '',
-      brand: '',
-      description: '',
-      price: '',
-    };
-    let isValid = true;
+    let errorMessage = '';
 
     if (!mainImage) {
-      newErrors.mainImage = 'Main image is required.';
-      isValid = false;
-    }
-    if (!name.trim()) {
-      newErrors.name = 'Shoe name is required.';
-      isValid = false;
-    }
-    if (!color) {
-      newErrors.color = 'Please select a color.';
-      isValid = false;
-    }
-    if (sizes.some((s) => !s.size || parseInt(s.size) <= 0 || s.quantity <= 0)) {
-      newErrors.sizes = 'Each size must be a number greater than 0 and have a quantity greater than 0.';
-      isValid = false;
-    }
-    if (!brand.trim()) {
-      newErrors.brand = 'Brand name is required.';
-      isValid = false;
-    }
-    if (!description.trim()) {
-      newErrors.description = 'Description is required.';
-      isValid = false;
-    }
-    if (!price.trim() || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
-      newErrors.price = 'Price must be a valid number greater than 0.';
-      isValid = false;
+      errorMessage = 'Main image is required.';
+    } else if (!name.trim()) {
+      errorMessage = 'Shoe name is required.';
+    } else if (!color) {
+      errorMessage = 'Please select a color.';
+    } else if (sizes.some((s) => !s.size || parseInt(s.size) <= 0 || s.quantity <= 0)) {
+      errorMessage = 'Each size must be a number greater than 0 and have a quantity greater than 0.';
+    } else if (!brand.trim()) {
+      errorMessage = 'Brand name is required.';
+    } else if (!description.trim()) {
+      errorMessage = 'Description is required.';
+    } else if (!price.trim() || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
+      errorMessage = 'Price must be a valid number greater than 0.';
     }
 
-    setErrors(newErrors);
-    return isValid;
+    if (errorMessage) {
+      toast.error(errorMessage, {
+        position: 'top-right',
+        autoClose: 5000,
+      });
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -212,15 +195,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     setDescription('');
     setPrice('');
     setStatus('Released');
-    setErrors({
-      mainImage: '',
-      name: '',
-      color: '',
-      sizes: '',
-      brand: '',
-      description: '',
-      price: '',
-    });
   };
 
   const formatPriceInput = (value: string) => {
@@ -288,9 +262,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               className="hidden"
             />
           </div>
-          {errors.mainImage && (
-            <p className="text-red-500 text-xs mt-1">{errors.mainImage}</p>
-          )}
         </div>
 
         {/* Sub Images */}
@@ -339,37 +310,35 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           <input
             type="text"
             value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              setErrors((prev) => ({ ...prev, name: '' }));
-            }}
+            onChange={(e) => setName(e.target.value)}
             className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
             placeholder="Enter shoe name"
           />
-          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
         </div>
 
-        {/* Color */}
+        {/* Color - Chọn bằng ô màu */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
             <i className="pi pi-palette mr-2" /> Color *
           </label>
-          <select
-            value={color}
-            onChange={(e) => {
-              setColor(e.target.value);
-              setErrors((prev) => ({ ...prev, color: '' }));
-            }}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
-          >
-            <option value="">Select color</option>
-            <option value="Red">Red</option>
-            <option value="Blue">Blue</option>
-            <option value="Green">Green</option>
-            <option value="Black">Black</option>
-            <option value="White">White</option>
-          </select>
-          {errors.color && <p className="text-red-500 text-xs mt-1">{errors.color}</p>}
+          <div className="flex gap-2">
+            {colors.map((c) => (
+              <div
+                key={c.name}
+                onClick={() => handleColorSelect(c.name)}
+                className={`h-8 w-8 rounded-full cursor-pointer border-2 ${
+                  color === c.name ? 'border-blue-500' : 'border-gray-300'
+                }`}
+                style={{ backgroundColor: c.code }}
+                title={c.name}
+              />
+            ))}
+          </div>
+          {color && (
+            <div className="mt-2 text-sm text-gray-700 dark:text-gray-400">
+              Selected color: {color}
+            </div>
+          )}
         </div>
 
         {/* Sizes */}
@@ -409,7 +378,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           >
             <i className="pi pi-plus mr-2" /> Add Size
           </button>
-          {errors.sizes && <p className="text-red-500 text-xs mt-1">{errors.sizes}</p>}
         </div>
 
         {/* Brand */}
@@ -430,7 +398,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               <option key={index} value={suggestion} />
             ))}
           </datalist>
-          {errors.brand && <p className="text-red-500 text-xs mt-1">{errors.brand}</p>}
         </div>
 
         {/* Description */}
@@ -440,16 +407,10 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           </label>
           <textarea
             value={description}
-            onChange={(e) => {
-              setDescription(e.target.value);
-              setErrors((prev) => ({ ...prev, description: '' }));
-            }}
+            onChange={(e) => setDescription(e.target.value)}
             className="h-24 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
             placeholder="Enter description"
           />
-          {errors.description && (
-            <p className="text-red-500 text-xs mt-1">{errors.description}</p>
-          )}
         </div>
 
         {/* Price */}
@@ -463,12 +424,10 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             onChange={(e) => {
               const formattedValue = formatPriceInput(e.target.value);
               setPrice(formattedValue);
-              setErrors((prev) => ({ ...prev, price: '' }));
             }}
             className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
             placeholder="Enter price (e.g., 99.000)"
           />
-          {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
         </div>
 
         {/* Status */}

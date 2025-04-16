@@ -1,4 +1,3 @@
-// dashboard/src/components/product-features/CategoryFilters.tsx
 import React, { ChangeEvent } from 'react';
 
 interface CategoryFiltersProps {
