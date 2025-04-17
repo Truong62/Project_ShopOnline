@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+// import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { formatCurrency } from '../utils/formatCurrency';
 import Header from '../components/Header/Header';
@@ -12,17 +12,45 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
 
 const CheckoutPage = () => {
-  const cartItems = useSelector((state) => state.cart);
-  const navigate = useNavigate();
+  const reduxCartItems = useSelector((state) => state.cart.items);
+  const [cartItems, setCartItems] = useState([]);
+
+  // const navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
 
   useEffect(() => {
-    if (cartItems.length === 0) {
-      navigate('/cart');
+    const buyNowItem = localStorage.getItem('buyNowTempProduct');
+    const localCart = localStorage.getItem('cart');
+
+    if (buyNowItem) {
+      try {
+        const parsed = JSON.parse(buyNowItem);
+        const normalized = Array.isArray(parsed) ? parsed : [parsed];
+        setCartItems(normalized);
+      } catch (err) {
+        console.error(
+          'Failed to parse buyNowTempProduct from localStorage',
+          err
+        );
+        setCartItems([]);
+      }
+    } else if (localCart) {
+      try {
+        const parsedCart = JSON.parse(localCart);
+        const normalizedCart = Array.isArray(parsedCart)
+          ? parsedCart
+          : [parsedCart];
+        setCartItems(normalizedCart);
+      } catch (err) {
+        console.error('Failed to parse cart from localStorage', err);
+        setCartItems([]);
+      }
+    } else {
+      setCartItems(reduxCartItems); // fallback cuối cùng nếu localStorage trống
     }
-  }, [cartItems, navigate]);
+  }, [reduxCartItems]);
 
   useEffect(() => {
     axios
@@ -117,33 +145,36 @@ const CheckoutPage = () => {
             <div className="flex justify-between font-bold mb-4">
               <span>Total</span>
               <span className="text-red-500">
-                {formatCurrency(
-                  cartItems.reduce(
-                    (total, item) => total + item.price * item.quantity,
-                    0
-                  )
-                )}
+                {Array.isArray(cartItems) &&
+                  formatCurrency(
+                    cartItems.reduce(
+                      (total, item) => total + item.price * item.quantity,
+                      0
+                    )
+                  )}
               </span>
             </div>
-            {cartItems.map((item) => (
-              <div
-                key={`${item.id}-${item.color}-${item.size}`}
-                className="flex items-center mb-4"
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-24 h-24 mr-4"
-                />
-                <div>
-                  <p>{item.name}</p>
-                  <p>
-                    Size: {item.size}, Qty: {item.quantity}, Color: {item.color}
-                  </p>
-                  <p>{formatCurrency(item.price * item.quantity)}</p>
+            {Array.isArray(cartItems) &&
+              cartItems.map((item) => (
+                <div
+                  key={`${item.id}-${item.color}-${item.size}`}
+                  className="flex items-center mb-4"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-24 h-24 mr-4"
+                  />
+                  <div>
+                    <p>{item.name}</p>
+                    <p>
+                      Size: {item.size}, Qty: {item.quantity}, Color:{' '}
+                      {item.color}
+                    </p>
+                    <p>{formatCurrency(item.price * item.quantity)}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
           <div className="w-full md:w-1/2 p-4">
             <h2 className="text-2xl font-bold mb-4">Shipping Information</h2>

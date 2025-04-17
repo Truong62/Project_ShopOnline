@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import Label from '../../dashboard/src/components/form/Label';
 import Input from '../../dashboard/src/components/form/input/InputField';
 import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
 import Button from '../../dashboard/src/components/ui/button/Button';
-
+import { buyNow } from '../redux/cart/cartSlice';
 export default function SignInForm() {
   const [formData, setFormData] = useState({
     email: '',
@@ -15,10 +16,14 @@ export default function SignInForm() {
     email: '',
     password: '',
   });
-
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-
+  const dispatch = useDispatch();
+  const account = {
+    email: 'test1@gmail.com',
+    password: '123456',
+  };
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
@@ -67,8 +72,42 @@ export default function SignInForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (validateForm()) {
-      console.log('Submitting', formData);
+      if (
+        formData.email === account.email &&
+        formData.password === account.password
+      ) {
+        console.log('Đăng nhập thành công!');
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('loggedInUser', JSON.stringify(account));
+
+        const redirectPath = localStorage.getItem('redirectAfterLogin');
+        const tempProduct = localStorage.getItem('buyNowTempProduct');
+
+        // Trường hợp từ "Buy Now"
+        if (redirectPath === 'checkout' && tempProduct) {
+          const parsedProduct = JSON.parse(tempProduct);
+          dispatch(buyNow(parsedProduct));
+          localStorage.removeItem('buyNowTempProduct');
+          localStorage.removeItem('redirectAfterLogin');
+          navigate('/checkout');
+        }
+        // Trường hợp quay lại trang trước
+        else if (redirectPath) {
+          localStorage.removeItem('redirectAfterLogin');
+          navigate(redirectPath);
+        }
+        // Trường hợp không có gì
+        else {
+          navigate('/');
+        }
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          password: 'Sai email hoặc mật khẩu',
+        }));
+      }
     }
   };
 

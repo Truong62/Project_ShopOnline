@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { formatCurrency } from '../utils/formatCurrency';
-import { updateQuantity, removeItem } from '../redux/cart/cartSlice';
+import { updateQuantity, removeItem, addToCart } from '../redux/cart/cartSlice'; // Đảm bảo bạn có action addItem trong cartSlice
 import { Message } from 'primereact/message';
 import { Button } from 'primereact/button';
 import Header from '../components/Header/Header';
@@ -21,6 +21,32 @@ const CartPage = () => {
     );
     setSubtotal(newSubtotal);
   }, [cartItems]);
+
+  useEffect(() => {
+    const buyNowItem = localStorage.getItem('buyNowTempProduct');
+    if (buyNowItem) {
+      try {
+        const parsedItem = JSON.parse(buyNowItem);
+
+        // Kiểm tra xem sản phẩm đã có trong cart chưa
+        const exists = cartItems.some(
+          (item) =>
+            item.id === parsedItem.id &&
+            item.color === parsedItem.color &&
+            item.size === parsedItem.size
+        );
+
+        if (!exists) {
+          dispatch(addToCart(parsedItem));
+        }
+
+        // Xóa ngay sau khi xử lý để tránh bị thêm lại nếu refresh
+        localStorage.removeItem('buyNowTempProduct');
+      } catch (err) {
+        console.error('Invalid buyNowTempProduct in localStorage', err);
+      }
+    }
+  }, [dispatch]);
 
   const handleQuantityChange = (id, color, size, quantity, stock) => {
     if (quantity < 1 || quantity > stock) {
@@ -42,11 +68,35 @@ const CartPage = () => {
   };
 
   const handleCheckout = () => {
-    const buyNowItem = localStorage.getItem('buyNow');
+    const buyNowItem = localStorage.getItem('buyNowTempProduct');
+
     if (cartItems.length === 0 && !buyNowItem) {
       setAlert('Your cart is empty. Please add items before checking out.');
       return;
     }
+
+    const isInCart = (parsedItem) =>
+      cartItems.some(
+        (item) =>
+          item.id === parsedItem.id &&
+          item.color === parsedItem.color &&
+          item.size === parsedItem.size
+      );
+
+    if (buyNowItem) {
+      try {
+        const parsedItem = JSON.parse(buyNowItem);
+        if (!isInCart(parsedItem)) {
+          dispatch(addToCart(parsedItem));
+        }
+      } catch (err) {
+        console.error('Invalid buyNowTempProduct in localStorage', err);
+        setAlert('There was an error processing your product.');
+        return;
+      }
+    }
+
+    // ✅ Chỉ chuyển hướng, KHÔNG xóa localStorage ở đây
     navigate('/checkout');
   };
 

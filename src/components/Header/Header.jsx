@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import CartModal from '../Cart/CartModal.jsx';
 import SidebarContainer from './Sidebar';
@@ -12,9 +11,14 @@ import { PrimeIcons } from 'primereact/api';
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleRight, setVisibleRight] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const cartItems = useSelector((state) => state.cart || []);
   const uniqueItemsCount = cartItems.length;
   const { isMobile } = useDeviceType();
+  const navigate = useNavigate();
+
+  const isLoggedIn = !!localStorage.getItem('accountId');
+  const accountEmail = localStorage.getItem('email') || 'Guest';
 
   const handleCloseModal = () => setIsModalOpen(false);
   const [activeLink, setActiveLink] = useState('/');
@@ -23,6 +27,13 @@ const Header = () => {
     const path = window.location.pathname.split('/');
     setActiveLink(path.length > 1 ? `/${path[1]}` : '/');
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('accountId');
+    localStorage.removeItem('email');
+    setIsAccountOpen(false);
+    navigate('/login');
+  };
 
   return (
     <header className="sticky top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 p-2">
@@ -54,7 +65,7 @@ const Header = () => {
         </div>
 
         <nav className="hidden md:flex space-x-6">
-          {['Products', 'Tracking', 'Blogs', 'Company'].map((text) => (
+          {['Products', 'Orders', 'Blogs', 'Company'].map((text) => (
             <Link
               key={text}
               to={`/${text.toLowerCase()}`}
@@ -74,7 +85,6 @@ const Header = () => {
             <span className="cursor-pointer">
               <i className="pi pi-shopping-cart text-xl"></i>
             </span>
-
             {uniqueItemsCount > 0 && (
               <span className="absolute top-0 right-0 transform translate-x-2 -translate-y-2 bg-red-500 text-white text-xs font-bold rounded-full px-2">
                 {uniqueItemsCount}
@@ -82,19 +92,51 @@ const Header = () => {
             )}
           </Link>
 
-          {!isMobile && (
-            <div className="flex items-center space-x-4">
-              <Link to="/login">
-                <Button className="p-button-text text-gray-700 font-semibold">
-                  Log In
-                </Button>
-              </Link>
-              <Link to="/register">
-                <Button className="p-button-rounded p-button-primary font-semibold">
-                  Sign Up
-                </Button>
-              </Link>
+          {isLoggedIn ? (
+            <div className="relative">
+              <Button
+                icon="pi pi-user"
+                className="p-button-text text-gray-700"
+                onClick={() => setIsAccountOpen(!isAccountOpen)}
+              />
+              {isAccountOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 z-50">
+                  <div
+                    className="cursor-pointer flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition mb-3"
+                    onClick={() => {
+                      setIsAccountOpen(false);
+                      navigate('/account');
+                    }}
+                  >
+                    <i className="pi pi-user-edit text-gray-700 dark:text-gray-200"></i>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Your Account: {accountEmail}
+                    </span>
+                  </div>
+
+                  <Button
+                    label="Logout"
+                    className="w-full p-button-outlined p-button-sm"
+                    onClick={handleLogout}
+                  />
+                </div>
+              )}
             </div>
+          ) : (
+            !isMobile && (
+              <div className="flex items-center space-x-4">
+                <Link to="/login">
+                  <Button className="p-button-text text-gray-700 font-semibold">
+                    Log In
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button className="p-button-rounded p-button-primary font-semibold">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )
           )}
 
           {isMobile && (
