@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Label from '../../dashboard/src/components/form/Label';
@@ -55,28 +55,6 @@ export default function SignInForm() {
     setErrors(newErrors);
     return isValid;
   };
-  useEffect(() => {
-    const redirectPath = localStorage.getItem('redirectAfterLogin');
-    const tempProduct = localStorage.getItem('buyNowTempProduct');
-    const user = JSON.parse(localStorage.getItem('loggedInUser'));
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-
-    if (isLoggedIn && redirectPath === 'checkout' && tempProduct && user) {
-      const parsedProduct = JSON.parse(tempProduct);
-      console.log(`✅ Logged with account: ${user.email || user.username}`);
-      console.log('🛒 Product to buy:', parsedProduct);
-
-      // Giả sử bạn dispatch action để lưu sản phẩm vào giỏ hàng của người dùng
-      dispatch(buyNow(parsedProduct));
-
-      // Xóa dữ liệu tạm thời
-      localStorage.removeItem('buyNowTempProduct');
-      localStorage.removeItem('redirectAfterLogin');
-
-      // Điều hướng đến trang Checkout
-      navigate('/checkout');
-    }
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -93,27 +71,38 @@ export default function SignInForm() {
   };
 
   const handleSubmit = (e) => {
-    const tempProduct = localStorage.getItem('buyNowTempProduct');
-    const parsedProduct = JSON.parse(tempProduct);
-
     e.preventDefault();
+
     if (validateForm()) {
-      // Kiểm tra thông tin đăng nhập có khớp với account mock không
       if (
         formData.email === account.email &&
         formData.password === account.password
       ) {
         console.log('Đăng nhập thành công!');
-        console.log(
-          `✅ Logged with account: ${account.email || account.username}`
-        );
-        console.log('🛒 Product to buy:', parsedProduct);
-        localStorage.setItem('isLoggedIn', 'true'); // ✅ lưu trạng thái
-        localStorage.setItem('accountId', 'user1'); // hoặc id nào đó
-        localStorage.setItem('email', formData.email); // lưu email
-        navigate('/checkout');
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('loggedInUser', JSON.stringify(account));
+
+        const redirectPath = localStorage.getItem('redirectAfterLogin');
+        const tempProduct = localStorage.getItem('buyNowTempProduct');
+
+        // Trường hợp từ "Buy Now"
+        if (redirectPath === 'checkout' && tempProduct) {
+          const parsedProduct = JSON.parse(tempProduct);
+          dispatch(buyNow(parsedProduct));
+          localStorage.removeItem('buyNowTempProduct');
+          localStorage.removeItem('redirectAfterLogin');
+          navigate('/checkout');
+        }
+        // Trường hợp quay lại trang trước
+        else if (redirectPath) {
+          localStorage.removeItem('redirectAfterLogin');
+          navigate(redirectPath);
+        }
+        // Trường hợp không có gì
+        else {
+          navigate('/');
+        }
       } else {
-        console.log('Sai email hoặc mật khẩu');
         setErrors((prev) => ({
           ...prev,
           password: 'Sai email hoặc mật khẩu',

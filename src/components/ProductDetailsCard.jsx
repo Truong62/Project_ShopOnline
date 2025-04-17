@@ -31,7 +31,7 @@ const ProductDetailsCard = () => {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const { isMobile } = useDeviceType();
   const toast = useRef(null);
-  const isLoggedIn = false;
+  // const isLoggedIn = false;
   const navigate = useNavigate();
   useEffect(() => {
     if (!product) {
@@ -94,7 +94,7 @@ const ProductDetailsCard = () => {
       return;
     }
 
-    // Lưu sản phẩm vào localStorage trước khi chuyển hướng
+    // Tạo object sản phẩm để lưu
     const productToCheckout = {
       id: product?.brandId,
       name: product?.productName,
@@ -106,31 +106,37 @@ const ProductDetailsCard = () => {
       stock: sizeInfo?.quantity,
     };
 
+    // Kiểm tra trạng thái đăng nhập từ localStorage
+    const isLoggedIn = !!localStorage.getItem('isLoggedIn'); // Kiểm tra tài khoản đã đăng nhập hay chưa
+
     if (!isLoggedIn) {
+      // Nếu chưa đăng nhập, hiển thị thông báo và chuyển hướng đến trang login
       showToast(
         'info',
         'Please Log In',
         'You need to log in to proceed with buying.'
       );
 
-      // Lưu thông tin sản phẩm tạm thời và redirect
+      // Lưu thông tin sản phẩm tạm thời và redirect sang trang đăng nhập
       localStorage.setItem(
         'buyNowTempProduct',
         JSON.stringify(productToCheckout)
       );
       localStorage.setItem('redirectAfterLogin', 'checkout');
 
-      // Chuyển hướng tới trang đăng nhập
       navigate('/login');
       return;
     }
 
-    // Nếu đã đăng nhập, tiến hành mua ngay
-    dispatch(buyNow(productToCheckout));
+    // Nếu đã đăng nhập, lưu sản phẩm vào localStorage và chuyển sang checkout
+    localStorage.setItem(
+      'buyNowTempProduct',
+      JSON.stringify(productToCheckout)
+    );
 
-    // Sau khi mua xong, điều hướng tới trang checkout
     navigate('/checkout');
   };
+
   useEffect(() => {
     // Kiểm tra nếu người dùng đã đăng nhập và có dữ liệu sản phẩm tạm thời
     const redirectPath = localStorage.getItem('redirectAfterLogin');
