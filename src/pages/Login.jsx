@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import Label from '../../dashboard/src/components/form/Label';
 import Input from '../../dashboard/src/components/form/input/InputField';
 import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
 import Button from '../../dashboard/src/components/ui/button/Button';
-
+import { buyNow } from '../redux/cart/cartSlice';
 export default function SignInForm() {
   const [formData, setFormData] = useState({
     email: '',
@@ -15,10 +16,14 @@ export default function SignInForm() {
     email: '',
     password: '',
   });
-
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-
+  const dispatch = useDispatch();
+  const account = {
+    email: 'test1@gmail.com',
+    password: '123456',
+  };
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
@@ -50,6 +55,28 @@ export default function SignInForm() {
     setErrors(newErrors);
     return isValid;
   };
+  useEffect(() => {
+    const redirectPath = localStorage.getItem('redirectAfterLogin');
+    const tempProduct = localStorage.getItem('buyNowTempProduct');
+    const user = JSON.parse(localStorage.getItem('loggedInUser'));
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+    if (isLoggedIn && redirectPath === 'checkout' && tempProduct && user) {
+      const parsedProduct = JSON.parse(tempProduct);
+      console.log(`✅ Logged with account: ${user.email || user.username}`);
+      console.log('🛒 Product to buy:', parsedProduct);
+
+      // Giả sử bạn dispatch action để lưu sản phẩm vào giỏ hàng của người dùng
+      dispatch(buyNow(parsedProduct));
+
+      // Xóa dữ liệu tạm thời
+      localStorage.removeItem('buyNowTempProduct');
+      localStorage.removeItem('redirectAfterLogin');
+
+      // Điều hướng đến trang Checkout
+      navigate('/checkout');
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,9 +93,32 @@ export default function SignInForm() {
   };
 
   const handleSubmit = (e) => {
+    const tempProduct = localStorage.getItem('buyNowTempProduct');
+    const parsedProduct = JSON.parse(tempProduct);
+
     e.preventDefault();
     if (validateForm()) {
-      console.log('Submitting', formData);
+      // Kiểm tra thông tin đăng nhập có khớp với account mock không
+      if (
+        formData.email === account.email &&
+        formData.password === account.password
+      ) {
+        console.log('Đăng nhập thành công!');
+        console.log(
+          `✅ Logged with account: ${account.email || account.username}`
+        );
+        console.log('🛒 Product to buy:', parsedProduct);
+        localStorage.setItem('isLoggedIn', 'true'); // ✅ lưu trạng thái
+        localStorage.setItem('accountId', 'user1'); // hoặc id nào đó
+        localStorage.setItem('email', formData.email); // lưu email
+        navigate('/checkout');
+      } else {
+        console.log('Sai email hoặc mật khẩu');
+        setErrors((prev) => ({
+          ...prev,
+          password: 'Sai email hoặc mật khẩu',
+        }));
+      }
     }
   };
 

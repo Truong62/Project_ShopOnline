@@ -1,4 +1,4 @@
-import PageBreadcrumb from '../../components/common/PageBreadCrumb';
+import PageBreadcrumb from '../../components/common/PageBreadcrumb';
 import ComponentCard from '../../components/common/ComponentCard';
 import PageMeta from '../../components/common/PageMeta';
 import BasicTableOne from '../../components/tables/BasicTables/BasicTableOne';

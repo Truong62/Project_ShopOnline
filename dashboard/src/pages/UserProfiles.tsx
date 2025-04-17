@@ -1,4 +1,4 @@
-import PageBreadcrumb from '../components/common/PageBreadCrumb';
+import PageBreadcrumb from '../components/common/PageBreadcrumb';
 import UserMetaCard from '../components/UserProfile/UserMetaCard';
 import UserInfoCard from '../components/UserProfile/UserInfoCard';
 import UserAddressCard from '../components/UserProfile/UserAddressCard';

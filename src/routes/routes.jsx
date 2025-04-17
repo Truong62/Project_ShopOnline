@@ -16,7 +16,7 @@ const ProductFeatures = React.lazy(
 const UserManagement = React.lazy(
   () => import('../../dashboard/src/pages/UserManagement')
 );
-
+const YourProfile = React.lazy(() => import('../pages/Profile/YourProfile'));
 // Dashboard pages
 const SignIn = React.lazy(
   () => import('../../dashboard/src/pages/AuthPages/SignIn')
@@ -77,7 +77,7 @@ const HomePage = lazy(() => import('../pages/HomePage'));
 const Blogs = lazy(() => import('../pages/Blogs'));
 const Product = lazy(() => import('../pages/Product'));
 const ProductDetail = lazy(() => import('../pages/ProductDetail'));
-const Tracking = lazy(() => import('../pages/Tracking'));
+const YourOrder = lazy(() => import('../pages/YourOrder'));
 const CartPage = lazy(() => import('../pages/Cart'));
 const CheckoutPage = lazy(() => import('../pages/Checkout'));
 const LoginForm = lazy(() => import('../pages/Login'));
@@ -105,7 +105,7 @@ const AppRoutes = () => {
         <Route path="/products/:link" element={<ProductDetail />} />
         <Route path="/productdetails" element={<ProductDetail />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/tracking" element={<Tracking />} />
+        <Route path="/orders" element={<YourOrder />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/enter-otp" element={<EnterOtp />} />
@@ -114,7 +114,7 @@ const AppRoutes = () => {
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/congratulations" element={<Congratulations />} />
         <Route path="/company" element={<Company />} />
-
+        <Route path="/account" element={<YourProfile />} />
         <Route path="/register" element={<SignUpForm />} />
         <Route path="/login" element={<LoginForm />} />
 

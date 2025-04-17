@@ -14,6 +14,7 @@ import useDeviceType from '../hooks/useDeviceType';
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import PrivacyForUser from './PrivacyForUser';
+import { useNavigate } from 'react-router-dom';
 
 const ProductDetailsCard = () => {
   const { link } = useParams();
@@ -30,7 +31,8 @@ const ProductDetailsCard = () => {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const { isMobile } = useDeviceType();
   const toast = useRef(null);
-
+  const isLoggedIn = false;
+  const navigate = useNavigate();
   useEffect(() => {
     if (!product) {
       window.location.href = '/page-not-found';
@@ -78,6 +80,7 @@ const ProductDetailsCard = () => {
       return;
     }
 
+    // Kiểm tra số lượng tồn kho
     const sizeInfo = currentVariant?.productColorSize?.find(
       (size) => size.sizeValue === selectedSize
     );
@@ -91,6 +94,7 @@ const ProductDetailsCard = () => {
       return;
     }
 
+    // Lưu sản phẩm vào localStorage trước khi chuyển hướng
     const productToCheckout = {
       id: product?.brandId,
       name: product?.productName,
@@ -101,10 +105,69 @@ const ProductDetailsCard = () => {
       image: currentVariant?.images[0],
       stock: sizeInfo?.quantity,
     };
-    console.log('Buy Now clicked:', productToCheckout);
+
+    if (!isLoggedIn) {
+      showToast(
+        'info',
+        'Please Log In',
+        'You need to log in to proceed with buying.'
+      );
+
+      // Lưu thông tin sản phẩm tạm thời và redirect
+      localStorage.setItem(
+        'buyNowTempProduct',
+        JSON.stringify(productToCheckout)
+      );
+      localStorage.setItem('redirectAfterLogin', 'checkout');
+
+      // Chuyển hướng tới trang đăng nhập
+      navigate('/login');
+      return;
+    }
+
+    // Nếu đã đăng nhập, tiến hành mua ngay
     dispatch(buyNow(productToCheckout));
-    window.location.href = '/checkout';
+
+    // Sau khi mua xong, điều hướng tới trang checkout
+    navigate('/checkout');
   };
+  useEffect(() => {
+    // Kiểm tra nếu người dùng đã đăng nhập và có dữ liệu sản phẩm tạm thời
+    const redirectPath = localStorage.getItem('redirectAfterLogin');
+    const tempProduct = localStorage.getItem('buyNowTempProduct');
+    const user = JSON.parse(localStorage.getItem('loggedInUser'));
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+    if (isLoggedIn && redirectPath === 'checkout' && tempProduct && user) {
+      const parsedProduct = JSON.parse(tempProduct);
+      console.log(`✅ Logged with account: ${user.email || user.username}`);
+      console.log('🛒 Product to buy:', parsedProduct);
+
+      // Giả sử bạn dispatch action để lưu sản phẩm vào giỏ hàng của người dùng
+      dispatch(buyNow(parsedProduct));
+
+      // Xóa dữ liệu tạm thời
+      localStorage.removeItem('buyNowTempProduct');
+      localStorage.removeItem('redirectAfterLogin');
+
+      // Điều hướng đến trang Checkout
+      navigate('/checkout');
+    }
+
+    // Thêm event listener để xóa dữ liệu khi người dùng thoát hoặc chuyển trang
+    const handleBeforeUnload = () => {
+      localStorage.removeItem('buyNowTempProduct');
+      localStorage.removeItem('redirectAfterLogin');
+    };
+
+    // Gắn sự kiện trước khi thoát trang
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup sự kiện khi component bị unmount
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [dispatch, navigate]);
 
   const handleAddToCart = () => {
     if (!selectedColor || !selectedSize) {

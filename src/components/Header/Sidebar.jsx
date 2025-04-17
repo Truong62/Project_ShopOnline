@@ -5,6 +5,9 @@ import { Sidebar } from 'primereact/sidebar';
 import { Button } from 'primereact/button';
 
 const SidebarContainer = ({ visibleRight, setVisibleRight, activeLink }) => {
+  // Lấy trạng thái đăng nhập từ localStorage
+  const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn')); // Giả sử isLoggedIn lưu trữ dưới dạng boolean
+
   return (
     <Sidebar
       visible={visibleRight}
@@ -18,7 +21,7 @@ const SidebarContainer = ({ visibleRight, setVisibleRight, activeLink }) => {
         </h2>
 
         <ul className="list-none space-y-4 flex-1">
-          {['Products', 'Order Status', 'Blogs', 'Company'].map((text) => (
+          {['Products', 'Orders', 'Blogs', 'Company'].map((text) => (
             <li key={text}>
               <Link
                 to={`/${text.toLowerCase()}`}
@@ -35,14 +38,26 @@ const SidebarContainer = ({ visibleRight, setVisibleRight, activeLink }) => {
           ))}
         </ul>
         <div className="flex items-center justify-center space-x-2 flex-nowrap">
-          <Link to="/login">
-            <Button className="p-button-text  font-semibold">Log In</Button>
-          </Link>
-          <Link to="/register">
-            <Button className="p-button-rounded text-gray-700 p-button-primary font-semibold">
-              Sign Up
-            </Button>
-          </Link>
+          {!isLoggedIn ? ( // Nếu chưa đăng nhập, hiển thị Login và Sign Up
+            <>
+              <Link to="/login">
+                <Button className="p-button-text font-semibold">Log In</Button>
+              </Link>
+              <Link to="/register">
+                <Button className="p-button-rounded text-gray-700 p-button-primary font-semibold">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          ) : (
+            // Nếu đã đăng nhập, hiển thị icon tài khoản
+            <Link to="/account">
+              <Button className="p-button-rounded text-gray-700 font-semibold">
+                <i className="pi pi-user" /> {/* Biểu tượng tài khoản */}
+                Account
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </Sidebar>
