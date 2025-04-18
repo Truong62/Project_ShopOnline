@@ -78,7 +78,6 @@ export default function SignInForm() {
         formData.email === account.email &&
         formData.password === account.password
       ) {
-        console.log('Đăng nhập thành công!');
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('loggedInUser', JSON.stringify(account));
 
@@ -105,7 +104,7 @@ export default function SignInForm() {
       } else {
         setErrors((prev) => ({
           ...prev,
-          password: 'Sai email hoặc mật khẩu',
+          password: 'Invalid email or password',
         }));
       }
     }
@@ -119,7 +118,7 @@ export default function SignInForm() {
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700"
         >
           <i className="pi pi-chevron-left size-5" />
-          Back to dashboard
+          Back to Home
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">

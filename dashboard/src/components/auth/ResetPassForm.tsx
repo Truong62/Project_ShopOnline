@@ -49,9 +49,9 @@ export default function ResetPasswordForm() {
         const enteredCode = code.join("");
         if (enteredCode === randomCode) {
             setIsCodeVerified(true);
-            setMessage("✅ Verification successful. Please enter your new password.");
+            setMessage("Verification successful. Please enter your new password.");
         } else {
-            setMessage("❌ Incorrect verification code.");
+            setMessage("Incorrect verification code.");
         }
     };
 
@@ -61,12 +61,12 @@ export default function ResetPasswordForm() {
             return;
         }
         if (newPassword !== rePassword) {
-            setMessage("❌ Passwords do not match.");
+            setMessage(" Passwords do not match.");
             return;
         }
 
-        console.log(`🔐 New password for ${email}: ${newPassword}`);
-        setMessage("✅ Password changed successfully! You can now log in.");
+        console.log(` New password for ${email}: ${newPassword}`);
+        setMessage(" Password changed successfully! You can now log in.");
     };
 
     return (

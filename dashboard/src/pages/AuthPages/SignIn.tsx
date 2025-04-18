@@ -7,13 +7,13 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="Đăng nhập | TailAdmin"
-        description="Trang đăng nhập bằng Google hoặc email"
+        title="Login | TailAdmin"
+        description="Login page by Google or email"
       />
       <div className="max-w-md mx-auto mt-10">
         <SignInForm />
 
-        <div className="my-6 text-center text-gray-500">hoặc</div>
+        <div className="my-6 text-center text-gray-500">or</div>
 
         <GoogleSignInButton />
       </div>
