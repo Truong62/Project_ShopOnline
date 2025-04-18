@@ -3,15 +3,101 @@ import { Modal } from '../ui/modal';
 import Button from '../ui/button/Button';
 import Input from '../form/input/InputField';
 import Label from '../form/Label';
-import React from 'react';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import { User } from '../../types/user';
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal(false);
-  const handleSave = () => {
-    // Handle save logic here
-    console.log('Saving changes...');
-    closeModal();
+  const [user, setUser] = useState<User>(
+    JSON.parse(localStorage.getItem('user') || '{}')
+  );
+  const [formData, setFormData] = useState({
+    name: user.name || '',
+    email: user.email || '',
+    phoneNumber: user.phoneNumber || '',
+    address: user.address || '',
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleSave = () => {
+    const updatedUser = {
+      ...user,
+      name: formData.name,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      address: formData.address,
+    };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    closeModal();
+    toast.success('Profile updated successfully!');
+  };
+
+  const fields = [
+    { label: 'Role', value: user.role || 'N/A' },
+    { label: 'Name', value: user.name || 'N/A' },
+    { label: 'Email', value: user.email || 'N/A' },
+    { label: 'Phone Number', value: user.phoneNumber || 'N/A' },
+    { label: 'Address', value: user.address || 'N/A' },
+    { label: 'Created Date', value: user.createdAt || new Date().toISOString().split('T')[0] },
+  ];
+
+  const modalFields = [
+    {
+      label: 'Name',
+      name: 'name',
+      type: 'text',
+      placeholder: 'Enter Name',
+      value: formData.name,
+      disabled: false,
+    },
+    {
+      label: 'Email',
+      name: 'email',
+      type: 'email',
+      placeholder: 'Enter Email Address',
+      value: formData.email,
+      disabled: false,
+    },
+    {
+      label: 'Phone Number',
+      name: 'phoneNumber',
+      type: 'text',
+      placeholder: 'Enter Phone Number',
+      value: formData.phoneNumber,
+      disabled: false,
+    },
+    {
+      label: 'Address',
+      name: 'address',
+      type: 'text',
+      placeholder: 'Enter Address',
+      value: formData.address,
+      disabled: false,
+    },
+    {
+      label: 'Role',
+      name: 'role',
+      type: 'text',
+      placeholder: 'Role (Read-only)',
+      value: user.role || 'N/A',
+      disabled: true,
+    },
+    {
+      label: 'Created Date',
+      name: 'createdAt',
+      type: 'text',
+      placeholder: 'Created Date (Read-only)',
+      value: user.createdAt || new Date().toISOString().split('T')[0],
+      disabled: true,
+    },
+  ];
+
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -19,55 +105,19 @@ export default function UserInfoCard() {
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
             Personal Information
           </h4>
-
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                First Name
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Last Name
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Email address
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Phone
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Bio
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
-              </p>
-            </div>
+            {fields.map((field) => (
+              <div key={field.label}>
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                  {field.label}
+                </p>
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                  {field.value}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
-
         <button
           onClick={openModal}
           className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
@@ -90,7 +140,6 @@ export default function UserInfoCard() {
           Edit
         </button>
       </div>
-
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
@@ -105,160 +154,29 @@ export default function UserInfoCard() {
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div>
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Social Links
-                </h5>
-
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div>
-                    <Label htmlFor="facebook" className="text-sm font-medium text-gray-700">Facebook</Label>
-                    <Input
-                      id="facebook"
-                      name="facebook"
-                      placeholder="Enter Facebook URL"
-                      type="text"
-                      value="https://www.facebook.com/PimjoHQ"
-                      onChange={() => { }}
-                      min={undefined}
-                      max={undefined}
-                      step={undefined}
-                      hint={undefined}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="x-com" className="text-sm font-medium text-gray-700">X.com</Label>
-                    <Input
-                      id="x-com"
-                      name="x-com"
-                      placeholder="Enter X.com URL"
-                      type="text"
-                      value="https://x.com/PimjoHQ"
-                      onChange={() => {}}
-                      min={undefined}
-                      max={undefined}
-                      step={undefined}
-                      hint={undefined}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="linkedin" className="text-sm font-medium text-gray-700">Linkedin</Label>
-                    <Input
-                      id="linkedin"
-                      name="linkedin"
-                      placeholder="Enter LinkedIn URL"
-                      type="text"
-                      value="https://www.linkedin.com/company/pimjo"
-                      onChange={() => {}}
-                      min={undefined}
-                      max={undefined}
-                      step={undefined}
-                      hint={undefined}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="instagram" className="text-sm font-medium text-gray-700">Instagram</Label>
-                    <Input
-                      id="instagram"
-                      name="instagram"
-                      placeholder="Enter Instagram URL"
-                      type="text"
-                      value="https://instagram.com/PimjoHQ"
-                      onChange={() => {}}
-                      min={undefined}
-                      max={undefined}
-                      step={undefined}
-                      hint={undefined}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="mt-7">
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Personal Information
                 </h5>
-
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label htmlFor="first-name" className="text-sm font-medium text-gray-700">First Name</Label>
-                    <Input
-                      id="first-name"
-                      name="firstName"
-                      placeholder="Enter First Name"
-                      type="text"
-                      value="Musharof"
-                      onChange={() => {}}
-                      min={undefined}
-                      max={undefined}
-                      step={undefined}
-                      hint={undefined}
-                    />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label htmlFor="last-name" className="text-sm font-medium text-gray-700">Last Name</Label>
-                    <Input
-                      id="last-name"
-                      name="lastName"
-                      placeholder="Enter Last Name"
-                      type="text"
-                      value="Chowdhury"
-                      onChange={() => {}}
-                      min={undefined}
-                      max={undefined}
-                      step={undefined}
-                      hint={undefined}
-                    />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label htmlFor="email-address" className="text-sm font-medium text-gray-700">Email Address</Label>
-                    <Input
-                      id="email-address"
-                      name="email"
-                      placeholder="Enter Email Address"
-                      type="text"
-                      value="randomuser@pimjo.com"
-                      onChange={() => {}}
-                      min={undefined}
-                      max={undefined}
-                      step={undefined}
-                      hint={undefined}
-                    />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      placeholder="Enter Phone Number"
-                      type="text"
-                      value="+09 363 398 46"
-                      onChange={() => {}}
-                      min={undefined}
-                      max={undefined}
-                      step={undefined}
-                      hint={undefined}
-                    />
-                  </div>
-
-                  <div className="col-span-2">
-                    <Label htmlFor="bio" className="text-sm font-medium text-gray-700">Bio</Label>
-                    <Input
-                      id="bio"
-                      name="bio"
-                      placeholder="Enter Bio"
-                      type="text"
-                      value="Team Manager"
-                      onChange={() => {}}
-                      min={0}
-                      max={100}
-                      step={1}
-                      hint={undefined}
-                    />
-                  </div>
+                  {modalFields.map((field) => (
+                    <div key={field.name} className="col-span-2 lg:col-span-1">
+                      <Label htmlFor={field.name} className="text-sm font-medium text-gray-700">
+                        {field.label}
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        type={field.type}
+                        placeholder={field.placeholder}
+                        value={field.value}
+                        onChange={field.disabled ? () => {} : handleInputChange}
+                        disabled={field.disabled}
+                        min={undefined}
+                        max={undefined}
+                        step={undefined}
+                        hint={undefined}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
