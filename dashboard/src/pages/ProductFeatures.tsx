@@ -7,7 +7,7 @@ import CategoryFilters from '../components/product-features/CategoryFilters';
 import ProductTable from '../components/product-features/ProductTable';
 import Pagination from '../components/product-features/Pagination';
 import ProductFormModal from '../components/product-features/ProductFormModal';
-import Alert from '../components/ui/alert/Alert'; // Import the Alert component
+import Alert from '../components/ui/alert/Alert';
 import { Product } from '../types';
 
 const initialProducts: Product[] = [
@@ -50,7 +50,6 @@ const ProductFeatures: React.FC = () => {
   });
   const toast = useRef<Toast>(null);
 
-  // State for managing Alert
   const [alert, setAlert] = useState<{
     show: boolean;
     variant: 'success' | 'error' | 'warning' | 'info';
@@ -76,7 +75,6 @@ const ProductFeatures: React.FC = () => {
     localStorage.setItem('products', JSON.stringify(products));
   }, [products]);
 
-  // Function to show alert and auto-dismiss after 5 seconds
   const showAlert = (
     variant: 'success' | 'error' | 'warning' | 'info',
     title: string,
@@ -85,7 +83,7 @@ const ProductFeatures: React.FC = () => {
     setAlert({ show: true, variant, title, message });
     setTimeout(() => {
       setAlert({ show: false, variant: 'info', title: '', message: '' });
-    }, 5000); // Auto-dismiss after 5 seconds
+    }, 5000);
   };
 
   const formatPrice = (price: string) => {
@@ -121,9 +119,13 @@ const ProductFeatures: React.FC = () => {
         } else if (sortOption === 'name-desc') {
           return b.name.localeCompare(a.name);
         } else if (sortOption === 'date-newest') {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
         } else if (sortOption === 'date-oldest') {
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         }
         return 0;
       });
@@ -139,11 +141,17 @@ const ProductFeatures: React.FC = () => {
     indexOfFirstProduct,
     indexOfLastProduct
   );
-  const totalPages = Math.ceil(filteredAndSortedProducts.length / productsPerPage);
+  const totalPages = Math.ceil(
+    filteredAndSortedProducts.length / productsPerPage
+  );
 
   const handleDelete = (id: number) => {
     setProducts(products.filter((product) => product.id !== id));
-    showAlert('success', 'Product Deleted', 'Product was successfully deleted.');
+    showAlert(
+      'success',
+      'Product Deleted',
+      'Product was successfully deleted.'
+    );
   };
 
   const handlePageChange = (page: number) => {
@@ -181,7 +189,9 @@ const ProductFeatures: React.FC = () => {
           const normalizedName = (p.name || '').trim().toLowerCase();
           const normalizedBrand = (p.brand || '').trim().toLowerCase();
           const normalizedColor = (p.color || '').trim().toLowerCase();
-          const newNormalizedName = (newProduct.name || '').trim().toLowerCase();
+          const newNormalizedName = (newProduct.name || '')
+            .trim()
+            .toLowerCase();
           const newNormalizedBrand = (newProduct.brand || '')
             .trim()
             .toLowerCase();
@@ -247,13 +257,15 @@ const ProductFeatures: React.FC = () => {
       />
       <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <Toast ref={toast} />
-        <Header />
+        <Header className="flex flex-col md:flex-row items-center justify-between gap-4" />
+
         <FilterBar
           onAddProduct={handleAddProduct}
           onSearch={handleSearch}
           onSort={handleSort}
+          className="flex flex-wrap items-center gap-2"
         />
-        {/* Render Alert Component */}
+
         {alert.show && (
           <div className="mb-6">
             <Alert
@@ -264,6 +276,7 @@ const ProductFeatures: React.FC = () => {
             />
           </div>
         )}
+
         {isModalOpen ? (
           <div className="flex justify-center mb-6">
             <ProductFormModal
@@ -276,19 +289,27 @@ const ProductFeatures: React.FC = () => {
           </div>
         ) : (
           <>
-            <CategoryFilters onFilterChange={handleFilterChange} />
-            <ProductTable
-              products={currentProducts.map((product) => ({
-                ...product,
-                price: formatPrice(product.price),
-              }))}
-              onDelete={handleDelete}
-              onEdit={handleEditProduct}
+            <CategoryFilters
+              onFilterChange={handleFilterChange}
+              className="flex flex-wrap items-center gap-2"
             />
+
+            <div className="overflow-x-auto">
+              <ProductTable
+                products={currentProducts.map((product) => ({
+                  ...product,
+                  price: formatPrice(product.price),
+                }))}
+                onDelete={handleDelete}
+                onEdit={handleEditProduct}
+              />
+            </div>
+
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
+              className="flex flex-wrap justify-center gap-2"
             />
           </>
         )}

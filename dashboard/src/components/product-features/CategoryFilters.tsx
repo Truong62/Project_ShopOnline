@@ -8,9 +8,13 @@ interface CategoryFiltersProps {
     store: string;
     role: string;
   }) => void;
+  className?: string; // Add className as an optional prop
 }
 
-const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onFilterChange }) => {
+const CategoryFilters: React.FC<CategoryFiltersProps> = ({
+  onFilterChange,
+  className,
+}) => {
   const [filters, setFilters] = React.useState({
     category: '',
     status: '',
@@ -27,7 +31,7 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onFilterChange }) => 
   };
 
   return (
-    <div className="flex gap-3 mb-6">
+    <div className={`flex gap-3 mb-6 ${className}`}>
       <div>
         <select
           name="category"

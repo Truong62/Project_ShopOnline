@@ -1,8 +1,12 @@
 import React from 'react';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  className?: string; // Add className as an optional prop
+}
+
+const Header: React.FC<HeaderProps> = ({ className }) => {
   return (
-    <div className="mb-6">
+    <div className={`mb-6 ${className}`}>
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white/90">
         Product Management
       </h1>
