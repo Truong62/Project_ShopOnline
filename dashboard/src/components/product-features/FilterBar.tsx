@@ -4,9 +4,15 @@ interface FilterBarProps {
   onAddProduct: () => void;
   onSearch: (searchTerm: string) => void;
   onSort: (sortOption: string) => void;
+  className?: string; // Add className as an optional prop
 }
 
-const FilterBar: React.FC<FilterBarProps> = ({ onAddProduct, onSearch, onSort }) => {
+const FilterBar: React.FC<FilterBarProps> = ({
+  onAddProduct,
+  onSearch,
+  onSort,
+  className,
+}) => {
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     onSearch(e.target.value);
   };
@@ -16,7 +22,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ onAddProduct, onSearch, onSort })
   };
 
   return (
-    <div className="flex justify-between items-center mb-6">
+    <div className={`flex justify-between items-center mb-6 ${className}`}>
       <div className="flex items-center gap-3">
         <div className="relative">
           <i className="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
