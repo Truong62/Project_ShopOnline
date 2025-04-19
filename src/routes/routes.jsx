@@ -1,9 +1,22 @@
 import React, { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import LoadingRoute from '../components/LoadingRoute/LoadingRoute';
 
-// Layouts
-// import AppLayout from '../layout/AppLayout';
+// Component bảo vệ route dựa trên role
+const ProtectedRoute = ({ element, allowedRoles }) => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const role = user.role || '';
+
+  if (!role) {
+    return <Navigate to="/Signin" replace />;
+  }
+
+  if (!allowedRoles.includes(role)) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return element;
+};
 
 // Lazy import
 const NotFound = React.lazy(
@@ -120,23 +133,151 @@ const AppRoutes = () => {
 
         {/* Dashboard Routes */}
         <Route path="/admin" element={<AppLayout />}>
-          <Route index element={<DashboardHome />} />
-          <Route path="profile" element={<UserProfiles />} />
-          <Route path="calendar" element={<Calendar />} />
-          <Route path="blank" element={<Blank />} />
-          <Route path="form-elements" element={<FormElements />} />
-          <Route path="order-management" element={<OrderManagement />} />
-          <Route path="product-features" element={<ProductFeatures />} />
-          <Route path="user-management" element={<UserManagement />} />
-          <Route path="basic-tables" element={<BasicTables />} />
-          <Route path="alerts" element={<Alerts />} />
-          <Route path="avatars" element={<Avatars />} />
-          <Route path="badge" element={<Badges />} />
-          <Route path="buttons" element={<Buttons />} />
-          <Route path="images" element={<Images />} />
-          <Route path="videos" element={<Videos />} />
-          <Route path="line-chart" element={<LineChart />} />
-          <Route path="bar-chart" element={<BarChart />} />
+          <Route index element={<ProtectedRoute element={<DashboardHome />} allowedRoles={['admin', 'product_manager', 'sale_manager']} />} />
+          <Route
+            path="profile"
+            element={
+              <ProtectedRoute
+                element={<UserProfiles />}
+                allowedRoles={['admin', 'product_manager', 'sale_manager']}
+              />
+            }
+          />
+          <Route
+            path="calendar"
+            element={
+              <ProtectedRoute
+                element={<Calendar />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="blank"
+            element={
+              <ProtectedRoute
+                element={<Blank />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="form-elements"
+            element={
+              <ProtectedRoute
+                element={<FormElements />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="order-management"
+            element={
+              <ProtectedRoute
+                element={<OrderManagement />}
+                allowedRoles={['admin', 'sale_manager']}
+              />
+            }
+          />
+          <Route
+            path="product-features"
+            element={
+              <ProtectedRoute
+                element={<ProductFeatures />}
+                allowedRoles={['admin', 'product_manager']}
+              />
+            }
+          />
+          <Route
+            path="user-management"
+            element={
+              <ProtectedRoute
+                element={<UserManagement />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="basic-tables"
+            element={
+              <ProtectedRoute
+                element={<BasicTables />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="alerts"
+            element={
+              <ProtectedRoute
+                element={<Alerts />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="avatars"
+            element={
+              <ProtectedRoute
+                element={<Avatars />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="badge"
+            element={
+              <ProtectedRoute
+                element={<Badges />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="buttons"
+            element={
+              <ProtectedRoute
+                element={<Buttons />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="images"
+            element={
+              <ProtectedRoute
+                element={<Images />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="videos"
+            element={
+              <ProtectedRoute
+                element={<Videos />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="line-chart"
+            element={
+              <ProtectedRoute
+                element={<LineChart />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
+          <Route
+            path="bar-chart"
+            element={
+              <ProtectedRoute
+                element={<BarChart />}
+                allowedRoles={['admin']}
+              />
+            }
+          />
         </Route>
 
         {/* Dashboard Auth */}

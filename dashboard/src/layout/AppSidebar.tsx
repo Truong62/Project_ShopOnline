@@ -3,219 +3,165 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSidebar } from '../context/SidebarContext';
 import React from 'react';
 
-// Replace these icon imports with your icon class names.
-const navItems = [
-  {
-    icon: <i className="pi pi-th-large" />, // Grid icon
-    name: 'Dashboard',
-    path: '/admin',
-  },
-  {
-    icon: <i className="pi pi-calendar" />, // Calendar icon
-    name: 'Calendar',
-    path: '/admin/calendar',
-  },
-  {
-    icon: <i className="pi pi-user" />, // User Profile icon
-    name: 'User Profile',
-    path: '/admin/profile',
-  },
-  {
-    name: 'Forms',
-    icon: <i className="pi pi-list" />, // List icon
-    subItems: [{ name: 'Form Elements', path: '/admin/form-elements', pro: false }, { name: 'Order Management', path: '/admin/order-management', pro: false }, { name: 'User Management', path: '/admin/user-management', pro: false }, { name: 'Product Features', path: '/admin/product-features', pro: false }],
-  },
-  {
-    name: 'Tables',
-    icon: <i className="pi pi-table" />, // Table icon
-    subItems: [{ name: 'Basic Tables', path: '/admin/basic-tables', pro: false }],
-  },
-  {
-    name: 'Pages',
-    icon: <i className="pi pi-file" />, // Page icon
-    subItems: [
-      { name: 'Blank Page', path: '/admin/blank', pro: false },
-      { name: '404 Error', path: '/admin/error-404', pro: false },
-    ],
-  },
-];
+const getMenuByRole = (role: string) => {
+  console.log('Role in getMenuByRole:', role);  
 
-const othersItems = [
-  {
-    icon: <i className="pi pi-chart-line" />, // Pie chart icon
-    name: 'Charts',
-    subItems: [
-      { name: 'Line Chart', path: '/admin/line-chart', pro: false },
-      { name: 'Bar Chart', path: '/admin/bar-chart', pro: false },
-    ],
-  },
-  {
-    icon: <i className="pi pi-box" />, // Box cube icon
-    name: 'UI Elements',
-    subItems: [
-      { name: 'Alerts', path: '/admin/alerts', pro: false },
-      { name: 'Avatar', path: '/admin/avatars', pro: false },
-      { name: 'Badge', path: '/admin/badge', pro: false },
-      { name: 'Buttons', path: '/admin/buttons', pro: false },
-      { name: 'Images', path: '/admin/images', pro: false },
-      { name: 'Videos', path: '/admin/videos', pro: false },
-    ],
-  },
-  {
-    icon: <i className="pi pi-verified" />,
-    name: 'Authentication',
-    subItems: [
-      { name: 'Sign In', path: '/signin', pro: false },
-      { name: 'Sign Up', path: '/signup', pro: false },
-    ],
-  },
-];
+  const fullMenu = [
+    {
+      icon: <i className="pi pi-th-large" />,
+      name: 'Dashboard',
+      path: '/admin',
+    },
+    {
+      icon: <i className="pi pi-calendar" />,
+      name: 'Calendar',
+      path: '/admin/calendar',
+    },
+    {
+      icon: <i className="pi pi-user" />,
+      name: 'User Profile',
+      path: '/admin/profile',
+    },
+    {
+      icon: <i className="pi pi-cog" />,
+      name: 'Management',
+      subItems: [
+        { name: 'Form Elements', path: '/admin/form-elements', pro: false },
+        { name: 'Order Management', path: '/admin/order-management', pro: false },
+        { name: 'User Management', path: '/admin/user-management', pro: false },
+        { name: 'Product Features', path: '/admin/product-features', pro: false },
+      ],
+    },
+    {
+      icon: <i className="pi pi-table" />,
+      name: 'Tables',
+      subItems: [{ name: 'Basic Tables', path: '/admin/basic-tables', pro: false }],
+    },
+    {
+      icon: <i className="pi pi-file" />,
+      name: 'Pages',
+      subItems: [
+        { name: 'Blank Page', path: '/admin/blank', pro: false },
+        { name: '404 Error', path: '/admin/error-404', pro: false },
+      ],
+    },
+  ];
+
+  switch (role) {
+    case 'admin':
+      return fullMenu;
+    case 'sale_manager':
+      return [
+        {
+          icon: <i className="pi pi-th-large" />,
+          name: 'Dashboard',
+          path: '/admin',
+        },
+        {
+          icon: <i className="pi pi-user" />,
+          name: 'User Profile',
+          path: '/admin/profile',
+        },
+        {
+          icon: <i className="pi pi-shopping-cart" />,
+          name: 'Order Management',
+          path: '/admin/order-management',
+        },
+      ];
+    case 'product_manager':
+      return [
+        {
+          icon: <i className="pi pi-th-large" />,
+          name: 'Dashboard',
+          path: '/admin',
+        },
+        {
+          icon: <i className="pi pi-user" />,
+          name: 'User Profile',
+          path: '/admin/profile',
+        },
+        {
+          icon: <i className="pi pi-box" />,
+          name: 'Product Features',
+          path: '/admin/product-features',
+        },
+      ];
+    default:
+      console.warn('Unknown role:', role); 
+      return [];
+  }
+};
 
 const AppSidebar = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar()!;
   const location = useLocation();
 
-  type OpenSubmenuState = { type: string; index: number } | null;
-  const [openSubmenu, setOpenSubmenu] = useState<OpenSubmenuState>(null);
-  const [subMenuHeight, setSubMenuHeight] = useState({});
-  const subMenuRefs = useRef({});
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  console.log('Current user in AppSidebar:', user); 
+  const menuItems = getMenuByRole(user.role || '');
 
   const isActive = useCallback(
     (path) => location.pathname === path,
     [location.pathname]
   );
 
-  useEffect(() => {
-    let submenuMatched = false;
-    ['main', 'others'].forEach((menuType) => {
-      const items = menuType === 'main' ? navItems : othersItems;
-      items.forEach((nav, index) => {
-        if (nav.subItems) {
-          nav.subItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({
-                type: menuType,
-                index,
-              });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
-    });
-
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
+  const renderMenuItems = (items) => {
+    if (!items.length) {
+      console.warn('No menu items to render'); 
+      return <div className="text-gray-500 p-4">No menu available for this role</div>;
     }
-  }, [location, isActive]);
-
-  useEffect(() => {
-    if (openSubmenu !== null) {
-      const key = `${openSubmenu.type}-${openSubmenu.index}`;
-      if (subMenuRefs.current[key]) {
-        setSubMenuHeight((prevHeights) => ({
-          ...prevHeights,
-          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
-        }));
-      }
-    }
-  }, [openSubmenu]);
-
-  const handleSubmenuToggle = (index, menuType) => {
-    setOpenSubmenu((prevOpenSubmenu) => {
-      if (
-        prevOpenSubmenu &&
-        prevOpenSubmenu.type === menuType &&
-        prevOpenSubmenu.index === index
-      ) {
-        return null;
-      }
-      return { type: menuType, index };
-    });
-  };
-
-  const renderMenuItems = (items, menuType) => (
-    <ul className="flex flex-col gap-4">
-      {items.map((nav, index) => (
-        <li key={nav.name}>
-          {nav.subItems ? (
-            <button
-              onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                ? 'menu-item-active'
-                : 'menu-item-inactive'
-                } cursor-pointer ${!isExpanded && !isHovered
-                  ? 'lg:justify-center'
-                  : 'lg:justify-start'
-                }`}
-            >
-              <span
-                className={`menu-item-icon-size  ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? 'menu-item-icon-active'
-                  : 'menu-item-icon-inactive'
-                  }`}
-              >
-                {nav.icon}
-              </span>
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <span className="menu-item-text">{nav.name}</span>
-              )}
-            </button>
-          ) : (
-            nav.path && (
-              <Link
-                to={nav.path}
-                className={`menu-item group ${isActive(nav.path) ? 'menu-item-active' : 'menu-item-inactive'
-                  }`}
-              >
-                <span
-                  className={`menu-item-icon-size ${isActive(nav.path)
-                    ? 'menu-item-icon-active'
-                    : 'menu-item-icon-inactive'
-                    }`}
-                >
-                  {nav.icon}
-                </span>
-                {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className="menu-item-text">{nav.name}</span>
-                )}
-              </Link>
-            )
-          )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
-            <div
-              ref={(el) => {
-                subMenuRefs.current[`${menuType}-${index}`] = el;
-              }}
-              className="overflow-hidden transition-all duration-300"
-              style={{
-                height:
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? `${subMenuHeight[`${menuType}-${index}`]}px`
-                    : '0px',
-              }}
-            >
-              <ul className="mt-2 space-y-1 ml-9">
-                {nav.subItems.map((subItem) => (
-                  <li key={subItem.name}>
-                    <Link
-                      to={subItem.path}
-                      className={`menu-dropdown-item ${isActive(subItem.path)
-                        ? 'menu-dropdown-item-active'
-                        : 'menu-dropdown-item-inactive'
+    return (
+      <ul className="flex flex-col gap-4">
+        {items.map((nav, index) => (
+          <React.Fragment key={nav.name || `menu-${index}`}>
+            {nav.subItems ? (
+              nav.subItems.map((subItem) => (
+                <li key={subItem.name}>
+                  <Link
+                    to={subItem.path}
+                    className={`menu-item group ${isActive(subItem.path) ? 'menu-item-active' : 'menu-item-inactive'
+                      }`}
+                  >
+                    <span
+                      className={`menu-item-icon-size ${isActive(subItem.path)
+                        ? 'menu-item-icon-active'
+                        : 'menu-item-icon-inactive'
                         }`}
                     >
-                      {subItem.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
+                      {nav.icon || <i className="pi pi-circle" />}
+                    </span>
+                    {(isExpanded || isHovered || isMobileOpen) && (
+                      <span className="menu-item-text">{subItem.name}</span>
+                    )}
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <li>
+                <Link
+                  to={nav.path}
+                  className={`menu-item group ${isActive(nav.path) ? 'menu-item-active' : 'menu-item-inactive'
+                    }`}
+                >
+                  <span
+                    className={`menu-item-icon-size ${isActive(nav.path)
+                      ? 'menu-item-icon-active'
+                      : 'menu-item-icon-inactive'
+                      }`}
+                  >
+                    {nav.icon || <i className="pi pi-circle" />}
+                  </span>
+                  {(isExpanded || isHovered || isMobileOpen) && (
+                    <span className="menu-item-text">{nav.name}</span>
+                  )}
+                </Link>
+              </li>
+            )}
+          </React.Fragment>
+        ))}
+      </ul>
+    );
+  };
 
   return (
     <aside
@@ -279,22 +225,7 @@ const AppSidebar = () => {
                   <i className="pi pi-ellipsis-h" />
                 )}
               </h2>
-              {renderMenuItems(navItems, 'main')}
-            </div>
-            <div className="">
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? 'lg:justify-center'
-                  : 'justify-start'
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  'Others'
-                ) : (
-                  <i className="pi pi-ellipsis-h" />
-                )}
-              </h2>
-              {renderMenuItems(othersItems, 'others')}
+              {renderMenuItems(menuItems)}
             </div>
           </div>
         </nav>

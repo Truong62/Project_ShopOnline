@@ -17,9 +17,9 @@ const Header = () => {
   const { isMobile } = useDeviceType();
   const navigate = useNavigate();
 
-  const isLoggedIn = !!localStorage.getItem('accountId');
-  const accountEmail = localStorage.getItem('email') || 'Guest';
-
+  const isLoggedIn = !!localStorage.getItem('loggedInUser');
+  const user = JSON.parse(localStorage.getItem('loggedInUser'));
+  const accountEmail = user?.email || 'User';
   const handleCloseModal = () => setIsModalOpen(false);
   const [activeLink, setActiveLink] = useState('/');
 
@@ -29,10 +29,11 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('accountId');
-    localStorage.removeItem('email');
+    localStorage.removeItem('loggedInUser');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('cart');
     setIsAccountOpen(false);
-    navigate('/login');
+    navigate('/signin');
   };
 
   return (
@@ -101,19 +102,9 @@ const Header = () => {
               />
               {isAccountOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 z-50">
-                  <div
-                    className="cursor-pointer flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition mb-3"
-                    onClick={() => {
-                      setIsAccountOpen(false);
-                      navigate('/account');
-                    }}
-                  >
-                    <i className="pi pi-user-edit text-gray-700 dark:text-gray-200"></i>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Your Account: {accountEmail}
-                    </span>
-                  </div>
-
+                  <p className="text-sm text-gray-700 dark:text-gray-200 mb-4">
+                    Your Account: {accountEmail}
+                  </p>
                   <Button
                     label="Logout"
                     className="w-full p-button-outlined p-button-sm"
@@ -125,7 +116,7 @@ const Header = () => {
           ) : (
             !isMobile && (
               <div className="flex items-center space-x-4">
-                <Link to="/login">
+                <Link to="/signin">
                   <Button className="p-button-text text-gray-700 font-semibold">
                     Log In
                   </Button>
