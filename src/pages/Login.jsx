@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import Label from '../../dashboard/src/components/form/Label';
 import Input from '../../dashboard/src/components/form/input/InputField';
 import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
-import Button from '../../dashboard/src/components/ui/button/Button';
 import { buyNow } from '../redux/cart/cartSlice';
 import GoogleSignInButton from '../../dashboard/src/components/auth/GoogleSignInButton';
 import { motion } from 'framer-motion';
