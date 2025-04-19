@@ -85,42 +85,19 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Sign In</h2>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-            Email
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
-            placeholder="Enter your email"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-            Password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
-            placeholder="Enter your password"
-          />
-        </div>
-        <button
-          type="submit"
-          className="h-12 w-full rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          Sign In
-        </button>
-      </form>
-    </div>
+    <>
+      <PageMeta
+        title="Login | TailAdmin"
+        description="Login page by Google or email"
+      />
+      <div className="max-w-md mx-auto mt-10">
+        <SignInForm />
+
+        <div className="my-6 text-center text-gray-500">or</div>
+
+        <GoogleSignInButton />
+      </div>
+    </>
   );
 };
 

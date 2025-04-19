@@ -185,7 +185,7 @@ export default function SignUpForm() {
             <div className="flex items-center gap-3">
               <Checkbox id="terms-checkbox" label="Agree to terms" checked={isChecked} onChange={setIsChecked} />
               <p className="inline-block font-normal text-gray-500 dark:text-gray-400">
-                By creating an account means you agree to the{" "}
+                You must to agree to the{" "}
                 <span className="text-gray-800 dark:text-white/90">Terms and Conditions,</span>{" "}
                 and our <span className="text-gray-800 dark:text-white">Privacy Policy</span>
               </p>

@@ -6,6 +6,7 @@ import Input from '../../dashboard/src/components/form/input/InputField';
 import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
 import Button from '../../dashboard/src/components/ui/button/Button';
 import { buyNow } from '../redux/cart/cartSlice';
+import GoogleSignInButton from '../../dashboard/src/components/auth/GoogleSignInButton';
 export default function SignInForm() {
   const [formData, setFormData] = useState({
     email: '',
@@ -78,7 +79,6 @@ export default function SignInForm() {
         formData.email === account.email &&
         formData.password === account.password
       ) {
-        console.log('Đăng nhập thành công!');
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('loggedInUser', JSON.stringify(account));
 
@@ -105,7 +105,7 @@ export default function SignInForm() {
       } else {
         setErrors((prev) => ({
           ...prev,
-          password: 'Sai email hoặc mật khẩu',
+          password: 'Invalid email or password',
         }));
       }
     }
@@ -119,7 +119,7 @@ export default function SignInForm() {
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700"
         >
           <i className="pi pi-chevron-left size-5" />
-          Back to dashboard
+          Back to Home
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -217,10 +217,11 @@ export default function SignInForm() {
 
         <p className="text-sm text-center mt-5">
           Don&apos;t have an account?{' '}
-          <Link to="/Signup" className="text-brand-500 hover:text-brand-600">
-            Sign Up
+          <Link to="/register" className="text-brand-500 hover:text-brand-600">
+            Register
           </Link>
         </p>
+        <GoogleSignInButton />
       </div>
     </div>
   );
