@@ -33,7 +33,7 @@ const Header = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('cart');
     setIsAccountOpen(false);
-    navigate('/signin');
+    navigate('/login');
   };
 
   return (
@@ -116,7 +116,7 @@ const Header = () => {
           ) : (
             !isMobile && (
               <div className="flex items-center space-x-4">
-                <Link to="/signin">
+                <Link to="/login">
                   <Button className="p-button-text text-gray-700 font-semibold">
                     Log In
                   </Button>

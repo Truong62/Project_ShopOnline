@@ -196,7 +196,7 @@ export default function ResetPasswordForm() {
                     )}
 
                     <div className="mt-6 text-center text-sm">
-                        <Link to="/signin" className="text-blue-500 hover:underline">
+                        <Link to="/login" className="text-blue-500 hover:underline">
                             Back to Sign In
                         </Link>
                     </div>

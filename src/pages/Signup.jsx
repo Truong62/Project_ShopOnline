@@ -4,16 +4,21 @@ import Label from '../../dashboard/src/components/form/Label';
 import Input from '../../dashboard/src/components/form/input/InputField';
 import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
 import Button from '../../dashboard/src/components/ui/button/Button';
-
-export default function SignInForm() {
+import GoogleSinUpButton from '../../dashboard/src/components/auth/GoogleSignUpButton';
+export default function SignUpForm() {
   const [formData, setFormData] = useState({
+    fname: '',
+    lname: '',
     email: '',
     password: '',
   });
 
   const [errors, setErrors] = useState({
+    fname: '',
+    lname: '',
     email: '',
     password: '',
+    terms: '',
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -25,25 +30,43 @@ export default function SignInForm() {
   };
 
   const validateForm = () => {
-    let newErrors = { email: '', password: '' };
+    let newErrors = {
+      fname: '',
+      lname: '',
+      email: '',
+      password: '',
+      terms: '',
+    };
     let isValid = true;
 
+    if (!formData.fname) {
+      newErrors.fname = 'First name is required!';
+      isValid = false;
+    }
+
+    if (!formData.lname) {
+      newErrors.lname = 'Last name is required!';
+      isValid = false;
+    }
+
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email is required!';
       isValid = false;
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = 'Invalid email format!';
       isValid = false;
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Password is required!';
       isValid = false;
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = 'Password must be at least 6 characters!';
       isValid = false;
-    } else if (formData.password.length > 30) {
-      newErrors.password = 'Password must be less than 30 characters';
+    }
+
+    if (!isChecked) {
+      newErrors.terms = 'You must agree to the terms and conditions!';
       isValid = false;
     }
 
@@ -85,14 +108,59 @@ export default function SignInForm() {
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <h1 className="mb-2 font-semibold text-gray-800 text-title-sm sm:text-title-md">
-          Sign In
+          Sign Up
         </h1>
         <p className="text-sm text-gray-500">
-          Enter your email and password to sign in!
+          Enter your details to create an account!
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="fname" className="">
+                  First Name <span className="text-error-500">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  id="fname"
+                  name="fname"
+                  placeholder="Enter your first name"
+                  value={formData.fname}
+                  onChange={handleChange}
+                  error={!!errors.fname}
+                  min="0"
+                  max="100"
+                  step="1"
+                  hint=""
+                />
+                {errors.fname && (
+                  <p className="text-red-500 text-sm">{errors.fname}</p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="lname" className="">
+                  Last Name <span className="text-error-500">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  id="lname"
+                  name="lname"
+                  placeholder="Enter your last name"
+                  value={formData.lname}
+                  onChange={handleChange}
+                  error={!!errors.lname}
+                  min="0"
+                  max="100"
+                  step="1"
+                  hint=""
+                />
+                {errors.lname && (
+                  <p className="text-red-500 text-sm">{errors.lname}</p>
+                )}
+              </div>
+            </div>
+
             <div>
               <Label htmlFor="email" className="">
                 Email <span className="text-error-500">*</span>
@@ -104,11 +172,10 @@ export default function SignInForm() {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                className=""
                 error={!!errors.email}
-                min={0}
-                max={100}
-                step={1}
+                min="0"
+                max="100"
+                step="1"
                 hint=""
               />
               {errors.email && (
@@ -128,11 +195,11 @@ export default function SignInForm() {
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={handleChange}
-                  className=""
-                  error={!!errors.email}
-                  min={0}
-                  max={100}
-                  step={1}
+                  className={`${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                  error={!!errors.password}
+                  min="0"
+                  max="100"
+                  step="1"
                   hint=""
                 />
                 <span
@@ -151,21 +218,27 @@ export default function SignInForm() {
               )}
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
               <Checkbox
-                id="keep-logged-in"
-                label="Keep me logged in"
+                id="terms-checkbox"
+                label="Agree to terms"
                 checked={isChecked}
                 onChange={setIsChecked}
               />
-              <span>Keep me logged in</span>
-              <Link
-                to="/reset-password"
-                className="text-sm text-brand-500 hover:text-brand-600"
-              >
-                Forgot password?
-              </Link>
+              <p className="inline-block font-normal text-gray-500 dark:text-gray-400">
+                By creating an account means you agree to the{' '}
+                <span className="text-gray-800 dark:text-white/90">
+                  Terms and Conditions,
+                </span>{' '}
+                and our{' '}
+                <span className="text-gray-800 dark:text-white">
+                  Privacy Policy
+                </span>
+              </p>
             </div>
+            {errors.terms && (
+              <p className="text-red-500 text-sm">{errors.terms}</p>
+            )}
 
             <Button
               onClick={handleSubmit}
@@ -173,17 +246,19 @@ export default function SignInForm() {
               startIcon={null}
               endIcon={null}
             >
-              Sign in
+              Sign Up
             </Button>
           </div>
         </form>
 
         <p className="text-sm text-center mt-5">
-          Don&apos;t have an account?{' '}
-          <Link to="/Signup" className="text-brand-500 hover:text-brand-600">
-            Sign Up
+          Already have an account?{' '}
+          <Link to="/login" className="text-brand-500 hover:text-brand-600">
+            Login
           </Link>
         </p>
+        <p className="text-sm text-center mt-5">or</p>
+        <GoogleSinUpButton />
       </div>
     </div>
   );

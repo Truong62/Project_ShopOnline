@@ -6,6 +6,7 @@ import Input from '../../dashboard/src/components/form/input/InputField';
 import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
 import Button from '../../dashboard/src/components/ui/button/Button';
 import { buyNow } from '../redux/cart/cartSlice';
+import GoogleSignInButton from '../../dashboard/src/components/auth/GoogleSignInButton';
 export default function SignInForm() {
   const [formData, setFormData] = useState({
     email: '',
@@ -216,10 +217,11 @@ export default function SignInForm() {
 
         <p className="text-sm text-center mt-5">
           Don&apos;t have an account?{' '}
-          <Link to="/Signup" className="text-brand-500 hover:text-brand-600">
-            Sign Up
+          <Link to="/register" className="text-brand-500 hover:text-brand-600">
+            Register
           </Link>
         </p>
+        <GoogleSignInButton />
       </div>
     </div>
   );
