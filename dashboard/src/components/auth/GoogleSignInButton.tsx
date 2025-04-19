@@ -25,7 +25,7 @@ const CustomGoogleLoginButton: React.FC = () => {
         alt="Google"
         className="w-5 h-5"
       />
-      <span className="text-gray-700 font-medium">Sign In with Google</span>
+      <span className="text-gray-700 font-medium">Sign Up with Google</span>
     </button>
   );
 };

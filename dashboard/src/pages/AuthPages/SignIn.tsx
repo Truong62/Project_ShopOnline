@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import PageMeta from '../../components/common/PageMeta';
+import SignInForm from '../../components/auth/SignInForm';
+import GoogleSignInButton from '../../components/auth/GoogleSignInButton';
 interface User {
   id: number;
   name: string;
@@ -52,7 +54,7 @@ const SignIn: React.FC = () => {
     setError('');
     try {
       let users: User[] = JSON.parse(localStorage.getItem('users') || '[]');
-      console.log('Users in SignIn (before init):', users);  
+      console.log('Users in SignIn (before init):', users);
 
       if (!users.length) {
         console.log('No users found, initializing with default users');
@@ -62,10 +64,12 @@ const SignIn: React.FC = () => {
       }
 
       const user = users.find(
-        (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+        (u) =>
+          u.email.toLowerCase() === email.toLowerCase() &&
+          u.password === password
       );
-      console.log('Input:', { email, password }); 
-      console.log('Found user:', user);  
+      console.log('Input:', { email, password });
+      console.log('Found user:', user);
 
       if (!user) {
         throw new Error('Invalid email or password');
@@ -75,7 +79,7 @@ const SignIn: React.FC = () => {
       }
 
       localStorage.setItem('user', JSON.stringify(user));
-      console.log('User logged in:', user); 
+      console.log('User logged in:', user);
 
       navigate('/admin');
     } catch (err: any) {
@@ -92,10 +96,6 @@ const SignIn: React.FC = () => {
       />
       <div className="max-w-md mx-auto mt-10">
         <SignInForm />
-
-        <div className="my-6 text-center text-gray-500">or</div>
-
-        <GoogleSignInButton />
       </div>
     </>
   );

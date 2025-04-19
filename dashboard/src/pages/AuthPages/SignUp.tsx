@@ -13,13 +13,7 @@ export default function SignUp() {
       />
       <div className="max-w-md mx-auto mt-10">
         <SignUpForm />
-
-        <div className="my-6 text-center text-gray-500">or</div>
-
-        <GoogleSignUpButton />
       </div>
-
-
 
     </>
   );

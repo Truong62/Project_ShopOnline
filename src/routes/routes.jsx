@@ -1,9 +1,9 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LoadingRoute from '../components/LoadingRoute/LoadingRoute';
+import PropTypes from 'prop-types';
 
-// Component bảo vệ route dựa trên role
-const ProtectedRoute = ({ element, allowedRoles }) => {
+const ProtectedRoute = ({ allowedRoles, element }) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const role = user.role || '';
 
@@ -133,7 +133,15 @@ const AppRoutes = () => {
 
         {/* Dashboard Routes */}
         <Route path="/admin" element={<AppLayout />}>
-          <Route index element={<ProtectedRoute element={<DashboardHome />} allowedRoles={['admin', 'product_manager', 'sale_manager']} />} />
+          <Route
+            index
+            element={
+              <ProtectedRoute
+                element={<DashboardHome />}
+                allowedRoles={['admin', 'product_manager', 'sale_manager']}
+              />
+            }
+          />
           <Route
             path="profile"
             element={
@@ -146,19 +154,13 @@ const AppRoutes = () => {
           <Route
             path="calendar"
             element={
-              <ProtectedRoute
-                element={<Calendar />}
-                allowedRoles={['admin']}
-              />
+              <ProtectedRoute element={<Calendar />} allowedRoles={['admin']} />
             }
           />
           <Route
             path="blank"
             element={
-              <ProtectedRoute
-                element={<Blank />}
-                allowedRoles={['admin']}
-              />
+              <ProtectedRoute element={<Blank />} allowedRoles={['admin']} />
             }
           />
           <Route
@@ -209,55 +211,37 @@ const AppRoutes = () => {
           <Route
             path="alerts"
             element={
-              <ProtectedRoute
-                element={<Alerts />}
-                allowedRoles={['admin']}
-              />
+              <ProtectedRoute element={<Alerts />} allowedRoles={['admin']} />
             }
           />
           <Route
             path="avatars"
             element={
-              <ProtectedRoute
-                element={<Avatars />}
-                allowedRoles={['admin']}
-              />
+              <ProtectedRoute element={<Avatars />} allowedRoles={['admin']} />
             }
           />
           <Route
             path="badge"
             element={
-              <ProtectedRoute
-                element={<Badges />}
-                allowedRoles={['admin']}
-              />
+              <ProtectedRoute element={<Badges />} allowedRoles={['admin']} />
             }
           />
           <Route
             path="buttons"
             element={
-              <ProtectedRoute
-                element={<Buttons />}
-                allowedRoles={['admin']}
-              />
+              <ProtectedRoute element={<Buttons />} allowedRoles={['admin']} />
             }
           />
           <Route
             path="images"
             element={
-              <ProtectedRoute
-                element={<Images />}
-                allowedRoles={['admin']}
-              />
+              <ProtectedRoute element={<Images />} allowedRoles={['admin']} />
             }
           />
           <Route
             path="videos"
             element={
-              <ProtectedRoute
-                element={<Videos />}
-                allowedRoles={['admin']}
-              />
+              <ProtectedRoute element={<Videos />} allowedRoles={['admin']} />
             }
           />
           <Route
@@ -272,10 +256,7 @@ const AppRoutes = () => {
           <Route
             path="bar-chart"
             element={
-              <ProtectedRoute
-                element={<BarChart />}
-                allowedRoles={['admin']}
-              />
+              <ProtectedRoute element={<BarChart />} allowedRoles={['admin']} />
             }
           />
         </Route>
@@ -290,6 +271,10 @@ const AppRoutes = () => {
       </Routes>
     </Suspense>
   );
+};
+ProtectedRoute.propTypes = {
+  allowedRoles: PropTypes.arrayOf(PropTypes.string).isRequired,
+  element: PropTypes.element.isRequired,
 };
 
 export default AppRoutes;
