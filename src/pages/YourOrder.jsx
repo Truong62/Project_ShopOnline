@@ -96,7 +96,7 @@ const YourOrders = () => {
           <Tag
             value="Pending"
             icon={<FaBoxOpen className="mr-2" />}
-            className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+            className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200 px-2 py-1 rounded-lg"
           />
         );
       case 'paid':
@@ -104,7 +104,7 @@ const YourOrders = () => {
           <Tag
             value="Paid"
             icon={<FaShippingFast className="mr-2" />}
-            className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+            className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 px-2 py-1 rounded-lg"
           />
         );
       case 'delivering':
@@ -112,7 +112,7 @@ const YourOrders = () => {
           <Tag
             value="Delivering"
             icon={<FaTruck className="mr-2" />}
-            className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200"
+            className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200 px-2 py-1 rounded-lg"
           />
         );
       case 'delivered':
@@ -120,7 +120,7 @@ const YourOrders = () => {
           <Tag
             value="Delivered"
             icon={<FaCheckCircle className="mr-2" />}
-            className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200"
+            className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200 px-2 py-1 rounded-lg"
           />
         );
       case 'cancelled':
@@ -128,11 +128,16 @@ const YourOrders = () => {
           <Tag
             value="Cancelled"
             icon={<FaTimesCircle className="mr-2" />}
-            className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200"
+            className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200 px-2 py-1 rounded-lg"
           />
         );
       default:
-        return <Tag value={status} />;
+        return (
+          <Tag
+            value={status}
+            className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200 px-2 py-1 rounded-lg"
+          />
+        );
     }
   };
 
@@ -146,16 +151,16 @@ const YourOrders = () => {
 
         {/* Search Bar */}
         <div className="mb-6">
-          <div className="relative max-w-md">
-            <span className="p-input-icon-left w-full">
-              <i className="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+          <div className="relative max-w-md mx-auto">
+            <div className="flex items-center relative w-full">
+              <i className="pi pi-search absolute left-3 z-10 text-gray-400 dark:text-gray-500" />
               <InputText
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by ID or product..."
                 className="h-12 w-full rounded-lg border border-gray-200 bg-white pl-10 pr-4 text-sm text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:placeholder:text-gray-500"
               />
-            </span>
+            </div>
           </div>
         </div>
 
