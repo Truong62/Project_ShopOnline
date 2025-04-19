@@ -1,9 +1,9 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LoadingRoute from '../components/LoadingRoute/LoadingRoute';
+import PropTypes from 'prop-types';
 
-// Component bảo vệ route dựa trên role
-const ProtectedRoute = ({ element, allowedRoles }) => {
+const ProtectedRoute = ({ allowedRoles, element }) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const role = user.role || '';
 
@@ -271,6 +271,10 @@ const AppRoutes = () => {
       </Routes>
     </Suspense>
   );
+};
+ProtectedRoute.propTypes = {
+  allowedRoles: PropTypes.arrayOf(PropTypes.string).isRequired,
+  element: PropTypes.element.isRequired,
 };
 
 export default AppRoutes;

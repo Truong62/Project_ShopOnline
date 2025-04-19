@@ -35,9 +35,9 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
   const [name, setName] = useState(userToEdit?.name || '');
   const [description, setDescription] = useState(userToEdit?.Description || '');
   const [email, setEmail] = useState(userToEdit?.email || '');
-  const [role, setRole] = useState<'admin' | 'product_manager' | 'sale_manager'>(
-    userToEdit?.role || 'admin'
-  );
+  const [role, setRole] = useState<
+    'admin' | 'product_manager' | 'sale_manager'
+  >(userToEdit?.role || 'admin');
   const [status, setStatus] = useState<'Active' | 'Inactive'>(
     userToEdit?.status || 'Active'
   );
@@ -70,7 +70,11 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
       return false;
     }
     if (name.length < 3) {
-      showAlert('error', 'Validation Error', 'Name must be at least 3 characters long.');
+      showAlert(
+        'error',
+        'Validation Error',
+        'Name must be at least 3 characters long.'
+      );
       return false;
     }
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -78,7 +82,11 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
       return false;
     }
     if (email.length < 5) {
-      showAlert('error', 'Validation Error', 'Email must be at least 5 characters long.');
+      showAlert(
+        'error',
+        'Validation Error',
+        'Email must be at least 5 characters long.'
+      );
       return false;
     }
     if (!role) {
@@ -205,7 +213,11 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
           </label>
           <select
             value={role}
-            onChange={(e) => setRole(e.target.value as 'admin' | 'product_manager' | 'sale_manager')}
+            onChange={(e) =>
+              setRole(
+                e.target.value as 'admin' | 'product_manager' | 'sale_manager'
+              )
+            }
             className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
           >
             {ROLES.map((r) => (
@@ -233,7 +245,8 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
             type="submit"
             className="h-12 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all duration-200"
           >
-            <i className="pi pi-check mr-2" /> {userToEdit ? 'Update User' : 'Save User'}
+            <i className="pi pi-check mr-2" />{' '}
+            {userToEdit ? 'Update User' : 'Save User'}
           </button>
           <button
             type="button"

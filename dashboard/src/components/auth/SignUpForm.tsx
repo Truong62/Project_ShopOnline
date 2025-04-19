@@ -365,7 +365,7 @@ export default function SignUpForm() {
             <p className="text-sm text-center mb-4">
               Already have an account?{' '}
               <Link
-                to="/login"
+                to="/signin"
                 className="text-[#2c7d90] hover:text-[#1a4e5a] font-medium transition-colors"
               >
                 Login
