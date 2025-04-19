@@ -493,7 +493,6 @@ const CheckoutPage = () => {
                           </p>
                         )}
                       </div>
-
                       <motion.button
                         type="submit"
                         className="w-full py-4 bg-[#79c2d2] text-white font-semibold rounded-lg hover:bg-[#5ca9bd] transition-all duration-300 col-span-2 mt-4 shadow-md"
