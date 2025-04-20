@@ -1,10 +1,11 @@
 import React, { ChangeEvent } from 'react';
+import { FiSearch, FiPlus } from 'react-icons/fi';
 
 interface FilterBarProps {
   onAddProduct: () => void;
   onSearch: (searchTerm: string) => void;
   onSort: (sortOption: string) => void;
-  className?: string; // Add className as an optional prop
+  className?: string;
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({
@@ -22,20 +23,22 @@ const FilterBar: React.FC<FilterBarProps> = ({
   };
 
   return (
-    <div className={`flex justify-between items-center mb-6 ${className}`}>
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <i className="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+    <div
+      className={`flex flex-col sm:flex-row justify-between items-center gap-3 ${className}`}
+    >
+      <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+        <div className="relative w-full sm:w-64">
+          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search products..."
             onChange={handleSearchChange}
-            className="h-10 w-64 rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+            className="h-12 w-full rounded-xl border border-gray-200 bg-[#E6F2F5] pl-10 pr-4 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] transition-all duration-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
           />
         </div>
         <select
           onChange={handleSortChange}
-          className="h-10 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+          className="h-12 w-full sm:w-48 rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] transition-all duration-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
         >
           <option value="">Sort by</option>
           <option value="price-asc">Price: Low to High</option>
@@ -48,9 +51,9 @@ const FilterBar: React.FC<FilterBarProps> = ({
       </div>
       <button
         onClick={onAddProduct}
-        className="h-10 rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-all duration-200"
+        className="h-12 rounded-xl bg-[#A8DCE7] px-6 py-3 text-sm font-medium text-gray-800 hover:bg-[#95C8D2] focus:ring-2 focus:ring-[#A8DCE7] focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 justify-center w-full sm:w-auto"
       >
-        <i className="pi pi-plus mr-2" /> Add Product
+        <FiPlus /> Add Product
       </button>
     </div>
   );

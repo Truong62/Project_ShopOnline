@@ -255,15 +255,15 @@ const ProductFeatures: React.FC = () => {
         title="Product Features | TailAdmin - React.js Admin Dashboard Template"
         description="Manage products in TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-4 sm:p-6 md:p-8 bg-[#F1F9FB] dark:bg-gray-800 min-h-screen transition-colors duration-300">
         <Toast ref={toast} />
-        <Header className="flex flex-col md:flex-row items-center justify-between gap-4" />
+        <Header className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8" />
 
         <FilterBar
           onAddProduct={handleAddProduct}
           onSearch={handleSearch}
           onSort={handleSort}
-          className="flex flex-wrap items-center gap-2"
+          className="flex flex-wrap items-center gap-3 mb-6"
         />
 
         {alert.show && (
@@ -291,10 +291,10 @@ const ProductFeatures: React.FC = () => {
           <>
             <CategoryFilters
               onFilterChange={handleFilterChange}
-              className="flex flex-wrap items-center gap-2"
+              className="flex flex-wrap items-center gap-3 mb-6"
             />
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl shadow-sm">
               <ProductTable
                 products={currentProducts.map((product) => ({
                   ...product,
@@ -309,7 +309,7 @@ const ProductFeatures: React.FC = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
-              className="flex flex-wrap justify-center gap-2"
+              className="flex flex-wrap justify-center gap-2 mt-6"
             />
           </>
         )}

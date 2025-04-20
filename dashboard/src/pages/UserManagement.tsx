@@ -96,7 +96,11 @@ const UserFeatures: React.FC = () => {
       console.log('Users saved in UserFeatures:', users); // Debug
     } catch (error) {
       console.error('Error saving users to localStorage:', error);
-      showAlert('error', 'Storage Error', 'Failed to save users to local storage.');
+      showAlert(
+        'error',
+        'Storage Error',
+        'Failed to save users to local storage.'
+      );
     }
   }, [users]);
 
@@ -123,11 +127,15 @@ const UserFeatures: React.FC = () => {
     }
 
     if (filters.role) {
-      filteredUsers = filteredUsers.filter((user) => user.role === filters.role);
+      filteredUsers = filteredUsers.filter(
+        (user) => user.role === filters.role
+      );
     }
 
     if (filters.status) {
-      filteredUsers = filteredUsers.filter((user) => user.status === filters.status);
+      filteredUsers = filteredUsers.filter(
+        (user) => user.status === filters.status
+      );
     }
 
     if (sortOption) {
@@ -141,9 +149,13 @@ const UserFeatures: React.FC = () => {
         } else if (sortOption === 'email-desc') {
           return b.email.localeCompare(a.email);
         } else if (sortOption === 'date-newest') {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
         } else if (sortOption === 'date-oldest') {
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         }
         return 0;
       });
@@ -155,7 +167,10 @@ const UserFeatures: React.FC = () => {
   const filteredAndSortedUsers = getFilteredAndSortedUsers();
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredAndSortedUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = filteredAndSortedUsers.slice(
+    indexOfFirstUser,
+    indexOfLastUser
+  );
   const totalPages = Math.ceil(filteredAndSortedUsers.length / usersPerPage);
 
   const handleDelete = (id: number) => {
@@ -186,14 +201,24 @@ const UserFeatures: React.FC = () => {
         showAlert('success', 'User Updated', 'User updated successfully!');
       } else {
         const existingUser = users.find(
-          (u) => u.email.toLowerCase() === newUser.email.toLowerCase() && u.id !== newUser.id
+          (u) =>
+            u.email.toLowerCase() === newUser.email.toLowerCase() &&
+            u.id !== newUser.id
         );
         if (existingUser) {
-          showAlert('error', 'Duplicate User', 'A user with this email already exists.');
+          showAlert(
+            'error',
+            'Duplicate User',
+            'A user with this email already exists.'
+          );
           return;
         }
         setUsers([...users, newUser]);
-        showAlert('success', 'User Added', `User added successfully! A password has been sent to ${newUser.email}.`);
+        showAlert(
+          'success',
+          'User Added',
+          `User added successfully! A password has been sent to ${newUser.email}.`
+        );
       }
       setIsModalOpen(false);
       setIsEditing(false);
@@ -225,7 +250,7 @@ const UserFeatures: React.FC = () => {
         title="User Management | TailAdmin - React.js Admin Dashboard Template"
         description="Manage users in TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-6 bg-[#F1F9FB] dark:bg-gray-800 min-h-screen">
         <Toast ref={toast} />
         <Header />
         <FilterUser
@@ -255,7 +280,11 @@ const UserFeatures: React.FC = () => {
         ) : (
           <>
             <CategoryUser onFilterChange={handleFilterChange} />
-            <UserTable users={currentUsers} onDelete={handleDelete} onEdit={handleEditUser} />
+            <UserTable
+              users={currentUsers}
+              onDelete={handleDelete}
+              onEdit={handleEditUser}
+            />
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

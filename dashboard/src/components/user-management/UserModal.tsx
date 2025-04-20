@@ -180,7 +180,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
             placeholder="Enter user name"
           />
         </div>
@@ -191,7 +191,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
           <textarea
             value={description || ''}
             onChange={(e) => setDescription(e.target.value)}
-            className="h-24 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+            className="h-24 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
             placeholder="Enter user description"
           />
         </div>
@@ -203,7 +203,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
             placeholder="Enter email address"
           />
         </div>
@@ -218,7 +218,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
                 e.target.value as 'admin' | 'product_manager' | 'sale_manager'
               )
             }
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
           >
             {ROLES.map((r) => (
               <option key={r.value} value={r.value}>
@@ -234,7 +234,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as 'Active' | 'Inactive')}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-200"
+            className="h-12 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
           >
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
@@ -243,7 +243,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         <div className="flex gap-3">
           <button
             type="submit"
-            className="h-12 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all duration-200"
+            className="h-12 rounded-lg bg-[#A8DCE7] px-5 py-3 text-sm font-medium text-gray-800 shadow-md hover:bg-[#95C8D2] focus:ring-2 focus:ring-[#A8DCE7] focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
           >
             <i className="pi pi-check mr-2" />{' '}
             {userToEdit ? 'Update User' : 'Save User'}
@@ -251,7 +251,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
           <button
             type="button"
             onClick={handleClose}
-            className="h-12 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-all duration-200"
+            className="h-12 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-all duration-300"
           >
             <i className="pi pi-times mr-2" /> Cancel
           </button>

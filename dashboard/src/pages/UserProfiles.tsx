@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Alert from '../components/ui/alert/Alert';
+import {
+  FiUser,
+  FiMail,
+  FiLock,
+  FiEdit,
+  FiSave,
+  FiX,
+  FiKey,
+  FiInfo,
+  FiShield,
+  FiCheckSquare,
+} from 'react-icons/fi';
 
 interface User {
   id: number;
@@ -65,7 +77,11 @@ const UserProfile: React.FC = () => {
     if (!user) return;
 
     if (!name.trim() || name.length < 3) {
-      showAlert('error', 'Validation Error', 'Name must be at least 3 characters long.');
+      showAlert(
+        'error',
+        'Validation Error',
+        'Name must be at least 3 characters long.'
+      );
       return;
     }
 
@@ -86,7 +102,11 @@ const UserProfile: React.FC = () => {
 
       setUser(updatedUser);
       setIsEditing(false);
-      showAlert('success', 'Profile Updated', 'Your profile has been updated successfully.');
+      showAlert(
+        'success',
+        'Profile Updated',
+        'Your profile has been updated successfully.'
+      );
     } catch (error) {
       console.error('Error updating profile:', error);
       showAlert('error', 'Update Failed', 'Failed to update profile.');
@@ -103,12 +123,20 @@ const UserProfile: React.FC = () => {
     }
 
     if (newPassword.length < 6) {
-      showAlert('error', 'Validation Error', 'New password must be at least 6 characters long.');
+      showAlert(
+        'error',
+        'Validation Error',
+        'New password must be at least 6 characters long.'
+      );
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      showAlert('error', 'Validation Error', 'New password and confirmation do not match.');
+      showAlert(
+        'error',
+        'Validation Error',
+        'New password and confirmation do not match.'
+      );
       return;
     }
 
@@ -119,7 +147,11 @@ const UserProfile: React.FC = () => {
       );
       localStorage.setItem('users', JSON.stringify(updatedUsers));
 
-      showAlert('success', 'Password Changed', 'Your password has been updated successfully.');
+      showAlert(
+        'success',
+        'Password Changed',
+        'Your password has been updated successfully.'
+      );
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -131,7 +163,7 @@ const UserProfile: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-6 bg-[#F1F9FB] dark:bg-gray-800 min-h-screen transition-colors duration-300">
         {alert.show && (
           <Alert
             variant={alert.variant}
@@ -145,54 +177,61 @@ const UserProfile: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">User Profile</h2>
-      {alert.show && (
-        <div className="mb-6">
-          <Alert
-            variant={alert.variant}
-            title={alert.title}
-            message={alert.message}
-            showLink={false}
-          />
+    <div className="p-4 sm:p-6 md:p-8 bg-[#F1F9FB] dark:bg-gray-800 min-h-screen transition-colors duration-300 flex items-center justify-center">
+      <div className="w-full max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 sm:p-8 md:p-10 transition-colors duration-300">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+            <FiUser className="text-[#A8DCE7]" /> User Profile
+          </h2>
         </div>
-      )}
-      <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white/90">
-            Account Information
+
+        {alert.show && (
+          <div className="mb-6">
+            <Alert
+              variant={alert.variant}
+              title={alert.title}
+              message={alert.message}
+              showLink={false}
+            />
+          </div>
+        )}
+
+        <div className="mb-10">
+          <h3 className="text-xl sm:text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-100 flex items-center gap-2">
+            <FiInfo className="text-[#A8DCE7]" /> Account Information
           </h3>
           {isEditing ? (
-            <form onSubmit={handleEditSubmit}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-                  Name *
+            <div>
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
+                  <FiUser className="text-[#A8DCE7]" /> Name *
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                  className="h-12 w-full rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 transition-colors duration-300"
                   placeholder="Enter your name"
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-                  Description
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
+                  <FiInfo className="text-[#A8DCE7]" /> Description
                 </label>
                 <textarea
                   value={description || ''}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="h-24 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                  className="h-28 w-full rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 transition-colors duration-300"
                   placeholder="Enter description"
                 />
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   type="submit"
-                  className="h-12 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700"
+                  onClick={handleEditSubmit}
+                  className="h-12 rounded-xl bg-[#A8DCE7] px-6 py-3 text-sm font-medium text-gray-800 hover:bg-[#95C8D2] focus:ring-2 focus:ring-[#A8DCE7] focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 justify-center"
                 >
-                  Save Changes
+                  <FiSave /> Save Changes
                 </button>
                 <button
                   type="button"
@@ -201,110 +240,132 @@ const UserProfile: React.FC = () => {
                     setName(user.name);
                     setDescription(user.Description || '');
                   }}
-                  className="h-12 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                  className="h-12 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 justify-center"
                 >
-                  Cancel
+                  <FiX /> Cancel
                 </button>
               </div>
-            </form>
+            </div>
           ) : (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Name
-                </label>
-                <p className="text-gray-900 dark:text-gray-200">{user.name}</p>
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <FiUser className="text-[#A8DCE7] text-lg" />
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                    Name
+                  </label>
+                  <p className="text-gray-800 dark:text-gray-200">
+                    {user.name}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Email
-                </label>
-                <p className="text-gray-900 dark:text-gray-200">{user.email}</p>
+              <div className="flex items-center gap-3">
+                <FiMail className="text-[#A8DCE7] text-lg" />
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                    Email
+                  </label>
+                  <p className="text-gray-800 dark:text-gray-200">
+                    {user.email}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Description
-                </label>
-                <p className="text-gray-900 dark:text-gray-200">
-                  {user.Description || 'No description provided'}
-                </p>
+              <div className="flex items-center gap-3">
+                <FiInfo className="text-[#A8DCE7] text-lg" />
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                    Description
+                  </label>
+                  <p className="text-gray-800 dark:text-gray-200">
+                    {user.Description || 'No description provided'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Role
-                </label>
-                <p className="text-gray-900 dark:text-gray-200">
-                  {user.role === 'admin'
-                    ? 'Admin'
-                    : user.role === 'sale_manager'
-                    ? 'Sales Manager'
-                    : 'Product Manager'}
-                </p>
+              <div className="flex items-center gap-3">
+                <FiShield className="text-[#A8DCE7] text-lg" />
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                    Role
+                  </label>
+                  <p className="text-gray-800 dark:text-gray-200">
+                    {user.role === 'admin'
+                      ? 'Admin'
+                      : user.role === 'sale_manager'
+                        ? 'Sales Manager'
+                        : 'Product Manager'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400">
-                  Status
-                </label>
-                <p className="text-gray-900 dark:text-gray-200">{user.status}</p>
+              <div className="flex items-center gap-3">
+                <FiCheckSquare className="text-[#A8DCE7] text-lg" />
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                    Status
+                  </label>
+                  <p className="text-gray-800 dark:text-gray-200">
+                    {user.status}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setIsEditing(true)}
-                className="h-12 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700"
+                className="h-12 rounded-xl bg-[#A8DCE7] px-6 py-3 text-sm font-medium text-gray-800 hover:bg-[#95C8D2] focus:ring-2 focus:ring-[#A8DCE7] focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 justify-center w-full sm:w-auto"
               >
-                Edit Profile
+                <FiEdit /> Edit Profile
               </button>
             </div>
           )}
         </div>
 
         <div>
-          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white/90">
-            Change Password
+          <h3 className="text-xl sm:text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-100 flex items-center gap-2">
+            <FiKey className="text-[#A8DCE7]" /> Change Password
           </h3>
-          <form onSubmit={handlePasswordSubmit}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-                Current Password *
+          <div>
+            <div className="mb-5">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
+                <FiLock className="text-[#A8DCE7]" /> Current Password *
               </label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                className="h-12 w-full rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 transition-colors duration-300"
                 placeholder="Enter current password"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-                New Password *
+            <div className="mb-5">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
+                <FiLock className="text-[#A8DCE7]" /> New Password *
               </label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                className="h-12 w-full rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 transition-colors duration-300"
                 placeholder="Enter new password"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-                Confirm New Password *
+            <div className="mb-5">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
+                <FiLock className="text-[#A8DCE7]" /> Confirm New Password *
               </label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-12 w-full rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                className="h-12 w-full rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 transition-colors duration-300"
                 placeholder="Confirm new password"
               />
             </div>
             <button
               type="submit"
-              className="h-12 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700"
+              onClick={handlePasswordSubmit}
+              className="h-12 rounded-xl bg-[#A8DCE7] px-6 py-3 text-sm font-medium text-gray-800 hover:bg-[#95C8D2] focus:ring-2 focus:ring-[#A8DCE7] focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 justify-center w-full sm:w-auto"
             >
-              Change Password
+              <FiKey /> Change Password
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>
