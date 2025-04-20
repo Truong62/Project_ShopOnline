@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Label from '../form/Label';
 import Input from '../form/input/InputField';
@@ -12,46 +12,32 @@ interface User {
   email: string;
   password?: string;
   role: 'admin' | 'product_manager' | 'sale_manager';
-  status: 'Active' | 'Inactive';
+  // status: 'Active' | 'Inactive';
   createdAt: string;
 }
-
-const initialUsers: User[] = [
-  {
-    id: 1,
-    name: 'Admin User',
-    email: 'admin@example.com',
-    password: 'admin123',
-    role: 'admin',
-    status: 'Active',
-    createdAt: new Date('2025-04-01').toISOString(),
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    password: 'jane123',
-    role: 'product_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-02').toISOString(),
-  },
-  {
-    id: 3,
-    name: 'Bob Johnson',
-    email: 'bob.johnson@example.com',
-    password: 'bob123',
-    role: 'sale_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-03').toISOString(),
-  },
-];
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({ email: '', password: '', global: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [users, setUsers] = useState<User[]>([]); // State to store the users
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch data from dummyjson API when the component mounts
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('https://dummyjson.com/users'); // DummyJSON API endpoint
+        const data = await response.json();
+        setUsers(data.users); // Assuming 'users' is the key in the response
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -91,13 +77,6 @@ export default function SignInForm() {
     if (!validateForm()) return;
 
     try {
-      let users: User[] = JSON.parse(localStorage.getItem('users') || '[]');
-
-      if (!users.length) {
-        users = initialUsers;
-        localStorage.setItem('users', JSON.stringify(users));
-      }
-
       const user = users.find(
         (u) =>
           u.email.toLowerCase() === formData.email.toLowerCase() &&
@@ -108,9 +87,9 @@ export default function SignInForm() {
         throw new Error('Invalid email or password');
       }
 
-      if (user.status !== 'Active') {
-        throw new Error('Account is inactive');
-      }
+      // if (user.status !== 'Active') {
+      //   throw new Error('Account is inactive');
+      // }
 
       localStorage.setItem('user', JSON.stringify(user));
       navigate('/admin');
@@ -118,6 +97,7 @@ export default function SignInForm() {
       setErrors((prev) => ({ ...prev, global: err.message || 'Login failed' }));
     }
   };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

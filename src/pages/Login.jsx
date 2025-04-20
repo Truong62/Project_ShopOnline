@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Label from '../../dashboard/src/components/form/Label';
@@ -18,14 +18,23 @@ export default function SignInForm() {
     email: '',
     password: '',
   });
+
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const dispatch = useDispatch();
-  const account = {
-    email: 'test1@gmail.com',
-    password: '123456',
-  };
+  const [account, setAccount] = useState(null); // State to store account info
+
+  // Fetch user account data from dummyjson API
+  useEffect(() => {
+    fetch('https://dummyjson.com/users')
+      .then((res) => res.json())
+      .then((data) => {
+        // Assuming the first user is the one you're interested in for this demo
+        setAccount(data.users[0]); // Adjust according to your logic (e.g., based on the email or ID)
+      });
+  }, []);
+
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
@@ -75,7 +84,7 @@ export default function SignInForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
+    if (validateForm() && account) {
       if (
         formData.email === account.email &&
         formData.password === account.password
@@ -127,6 +136,10 @@ export default function SignInForm() {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   };
+
+  if (!account) {
+    return <div>Loading...</div>; // Loading while account data is being fetched
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-[#e6f7fa]">
@@ -185,14 +198,7 @@ export default function SignInForm() {
                       errors.email ? 'border-red-500' : 'border-[#A8DCE7]'
                     }`}
                     error={!!errors.email}
-                    min={0}
-                    max={100}
-                    step={1}
-                    hint=""
                   />
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <i className="pi pi-envelope text-[#79c2d2]"></i>
-                  </div>
                 </div>
                 {errors.email && (
                   <motion.p
@@ -223,14 +229,7 @@ export default function SignInForm() {
                     className={`w-full py-3 pl-10 pr-10 rounded-lg border transition-all duration-300 focus:ring-2 focus:ring-[#79c2d2] outline-none ${
                       errors.password ? 'border-red-500' : 'border-[#A8DCE7]'
                     }`}
-                    min={0}
-                    max={100}
-                    step={1}
-                    hint=""
                   />
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <i className="pi pi-lock text-[#79c2d2]"></i>
-                  </div>
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -266,51 +265,28 @@ export default function SignInForm() {
                 />
                 <Link
                   to="/reset-password"
-                  className="text-sm text-[#2c7d90] hover:text-[#1a4e5a] transition-colors"
+                  className="text-[#2c7d90] font-medium text-sm"
                 >
-                  Forgot password?
+                  Forgot Password?
                 </Link>
               </motion.div>
 
               <motion.div variants={itemVariants}>
-                <motion.button
+                <button
                   type="submit"
-                  className="w-full py-3 px-4 bg-[#A8DCE7] hover:bg-[#79c2d2] text-white font-medium rounded-lg transition-all duration-300 shadow-md"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-3 mt-5 text-white font-medium bg-[#79c2d2] rounded-lg hover:bg-[#2c7d90] transition-colors"
                 >
-                  Sign in
-                </motion.button>
+                  Sign In
+                </button>
+              </motion.div>
+
+              <motion.div className="text-center mt-5" variants={itemVariants}>
+                <GoogleSignInButton />
               </motion.div>
             </motion.div>
           </form>
-
-          <motion.div
-            className="mt-6 pt-6 border-t border-[#e6f7fa]"
-            variants={itemVariants}
-          >
-            <p className="text-sm text-center mb-4">
-              Don&apos;t have an account?{' '}
-              <Link
-                to="/register"
-                className="text-[#2c7d90] hover:text-[#1a4e5a] font-medium transition-colors"
-              >
-                Register
-              </Link>
-            </p>
-            <GoogleSignInButton />
-          </motion.div>
         </motion.div>
       </div>
-
-      <motion.div
-        className="text-center py-4 text-xs text-gray-500"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-      >
-        © {new Date().getFullYear()} All Rights Reserved
-      </motion.div>
     </div>
   );
 }

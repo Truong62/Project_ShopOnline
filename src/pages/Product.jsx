@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Footer from '../components/Footer/Footer';
 import Header from '../components/Header/Header';
 import Layout from '../components/Layout';
@@ -7,14 +7,12 @@ import Sidebar from '../components/Sidebar.jsx';
 import SortBy from '../components/SortBy';
 import BreadCrumb from '../components/BreadCrumb.jsx';
 import { useNavigate } from 'react-router-dom';
-import products from '../data.json';
-/**
- *
- * @returns {Element}
- * @constructor
- */
+
 const Product = () => {
   const navigate = useNavigate();
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [productFilters, setProductFilters] = useState({
     brand: '',
@@ -45,9 +43,22 @@ const Product = () => {
     [updateProductFilters]
   );
 
-  const handleProductClick = (id) => {
-    navigate(`/products/${id}`);
+  const handleProductClick = (productName) => {
+    navigate(`/products/${productName}`);
   };
+
+  useEffect(() => {
+    fetch('https://dummyjson.com/products')
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data.products || []);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <React.Fragment>
@@ -74,13 +85,17 @@ const Product = () => {
               />
             </div>
             <div className="w-full md:w-3/4 ml-0 md:ml-4">
-              <ProductList
-                products={products}
-                selectedCategory={productFilters}
-                onCategoryChange={handleCategoryChange}
-                onRemoveCategory={handleRemoveCategory}
-                onProductClick={handleProductClick}
-              />
+              {loading ? (
+                <p>Loading products...</p>
+              ) : (
+                <ProductList
+                  products={products}
+                  selectedCategory={productFilters}
+                  onCategoryChange={handleCategoryChange}
+                  onRemoveCategory={handleRemoveCategory}
+                  onProductClick={handleProductClick}
+                />
+              )}
             </div>
           </div>
         </div>

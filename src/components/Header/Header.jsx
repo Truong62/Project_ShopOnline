@@ -7,7 +7,7 @@ import useDeviceType from '../../hooks/useDeviceType';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { PrimeIcons } from 'primereact/api';
-
+import { truncateDescription } from '../../utils/truncateDescription.js';
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleRight, setVisibleRight] = useState(false);
@@ -102,9 +102,12 @@ const Header = () => {
               />
               {isAccountOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 z-50">
-                  <p className="text-sm text-gray-700 dark:text-gray-200 mb-4">
-                    Your Account: {accountEmail}
-                  </p>
+                  <Link
+                    to="/account"
+                    className="text-sm text-gray-700 dark:text-gray-200 mb-4 truncate w-48 block overflow-hidden whitespace-nowrap"
+                  >
+                    Your Account: {truncateDescription(accountEmail)}
+                  </Link>
                   <Button
                     label="Logout"
                     className="w-full p-button-outlined p-button-sm"
