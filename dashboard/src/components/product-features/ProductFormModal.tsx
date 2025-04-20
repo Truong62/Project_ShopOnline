@@ -285,34 +285,37 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           </label>
           <div className="flex items-center gap-3">
             {mainImage ? (
-              <div className="relative">
-                <img
-                  src={mainImage}
-                  alt="Main"
-                  className="h-24 w-24 rounded-xl object-cover shadow-sm"
-                />
-                <button
-                  type="button"
-                  onClick={handleDeleteMainImage}
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center transform hover:scale-110 transition-all duration-300"
-                >
-                  [x]
-                </button>
+              <div className="flex items-center gap-3">
+                <div className="relative inline-block">
+                  <img
+                    src={mainImage}
+                    alt="Main"
+                    className="h-24 w-24 rounded-xl object-cover shadow-sm"
+                  />
+
+                  {/* Nút X nằm ở góc phải trên */}
+                  <button
+                    type="button"
+                    onClick={handleDeleteMainImage}
+                    className="absolute top-0 right-0 bg-white rounded-md p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                  >
+                    <i className="pi pi-times text-red-500"></i>
+                  </button>
+                </div>
+
                 <button
                   type="button"
                   onClick={handleEditMainImage}
-                  className="absolute bottom-0 right-0 bg-[#A8DCE7] text-gray-800 rounded-full h-6 w-6 flex items-center justify-center transform hover:scale-110 transition-all duration-300"
+                  className="ml-2 bg-[#A8DCE7] text-gray-800 rounded-full h-6 px-2 text-sm flex items-center justify-center transform hover:scale-110 transition-all duration-300"
                 >
-                  [Edit]
+                  Edit
                 </button>
               </div>
             ) : (
               <div
                 onClick={() => mainImageInputRef.current?.click()}
-                className="h-24 w-24 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-[#A8DCE7] transition-colors duration-300"
-              >
-                [+]
-              </div>
+                className="pi pi-plus h-24 w-24 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-[#A8DCE7] transition-colors duration-300"
+              ></div>
             )}
             <input
               type="file"
@@ -349,7 +352,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               onClick={() => subImageInputRef.current?.click()}
               className="h-16 w-16 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-[#A8DCE7] transition-colors duration-300"
             >
-              [+]
+              <i className="pi pi-plus"></i>
             </div>
             <input
               type="file"
@@ -363,7 +366,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-            [Tag] Shoe Name *
+            <i
+              className="pi pi-tag
+"
+            ></i>{' '}
+            Shoe Name *
           </label>
           <input
             type="text"
@@ -376,7 +383,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-            [Color] Color *
+            <i className="pi pi-palette"></i> Color *
           </label>
           <div className="flex gap-3 flex-wrap">
             {colors.map((c) => (
@@ -400,7 +407,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-            [List] Sizes *
+            <i
+              className="pi pi-list
+"
+            ></i>{' '}
+            Sizes *
           </label>
           {sizes.map((size, index) => (
             <div key={index} className="flex items-center gap-3 mb-3">
@@ -431,7 +442,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 onClick={() => handleDeleteSize(index)}
                 className="text-red-500 hover:text-red-600 transform hover:scale-110 transition-all duration-300"
               >
-                [Delete]
+                <i className="pi pi-times text-red-500"></i>
               </button>
             </div>
           ))}
@@ -440,13 +451,17 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             onClick={handleAddSize}
             className="text-[#A8DCE7] hover:text-[#95C8D2] text-sm flex items-center gap-2 transition-colors duration-300"
           >
-            [+] Add Size
+            <i className="pi pi-plus"></i> Add Size
           </button>
         </div>
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-            [Brand] Brand *
+            <i
+              className="pi pi-filter
+"
+            ></i>{' '}
+            Brand *
           </label>
           <input
             type="text"
@@ -465,7 +480,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-            [Description] Description *
+            <i
+              className="pi pi-clipboard
+"
+            ></i>{' '}
+            Description *
           </label>
           <textarea
             value={description}
@@ -477,7 +496,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-            [Price] Price (VND) *
+            <i
+              className="pi pi-tags
+"
+            ></i>{' '}
+            Price (VND) *
           </label>
           <input
             type="text"
@@ -493,7 +516,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-            [Status] Status *
+            <i
+              className="pi pi-sliders-v
+"
+            ></i>{' '}
+            Status *
           </label>
           <select
             value={status}
@@ -515,7 +542,11 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             type="submit"
             className="h-12 rounded-xl bg-[#A8DCE7] px-6 py-3 text-sm font-medium text-gray-800 hover:bg-[#95C8D2] focus:ring-2 focus:ring-[#A8DCE7] focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 justify-center"
           >
-            [✔] {productToEdit ? 'Update Product' : 'Save Product'}
+            <i
+              className="pi pi-sync
+"
+            ></i>{' '}
+            {productToEdit ? 'Update Product' : 'Save Product'}
           </button>
           <button
             type="button"
