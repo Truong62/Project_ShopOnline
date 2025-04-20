@@ -18,21 +18,22 @@ const getMenuByRole = (role: string) => {
       path: '/admin/profile',
     },
     {
-      icon: <i className="pi pi-cog" />,
-      name: 'Management',
-      subItems: [
-        {
-          name: 'Order Management',
-          path: '/admin/order-management',
-          pro: false,
-        },
-        { name: 'User Management', path: '/admin/user-management', pro: false },
-        {
-          name: 'Product Features',
-          path: '/admin/product-features',
-          pro: false,
-        },
-      ],
+      icon: <i className="pi pi-shopping-cart" />,
+      name: 'Order Management',
+      path: '/admin/order-management',
+      pro: false,
+    },
+    {
+      icon: <i className="pi pi-users" />,
+      name: 'User Management',
+      path: '/admin/user-management',
+      pro: false,
+    },
+    {
+      icon: <i className="pi pi-box" />,
+      name: 'Product Features',
+      path: '/admin/product-features',
+      pro: false,
     },
   ];
 
