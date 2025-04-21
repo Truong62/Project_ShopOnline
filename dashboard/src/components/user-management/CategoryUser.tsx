@@ -24,7 +24,7 @@ const CategoryFilters: React.FC<CategoryUserProps> = ({ onFilterChange }) => {
           name="role"
           value={filters.role}
           onChange={handleFilterChange}
-          className="h-10 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+          className="h-10 rounded-lg border border-gray-200 bg-[#E6F2F5] px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
         >
           <option value="">Category: All</option>
           <option value="admin">Admin</option>
@@ -37,7 +37,7 @@ const CategoryFilters: React.FC<CategoryUserProps> = ({ onFilterChange }) => {
           name="status"
           value={filters.status}
           onChange={handleFilterChange}
-          className="h-10 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+          className="h-10 rounded-lg border border-gray-200 bg-[#E6F2F5] px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
         >
           <option value="">Status: All</option>
           <option value="Active">Active</option>

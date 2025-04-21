@@ -71,13 +71,17 @@ const ProductList = ({
               key={index}
               nameProduct={product.productName}
               description={truncateDescription(
-                product.productDescription || '',
+                product.productDescription || product.description || '',
                 14
               )}
-              price={formatCurrency(product.variants[0].price)}
-              brand={product.brandName}
-              imageUrl={product.variants[0].images[0]}
-              onClick={() => onProductClick(product.productName)}
+              price={formatCurrency(product.price)}
+              brand={product.brandName || product.brand}
+              imageUrl={
+                product.variants?.[0]?.images?.[0] ||
+                product.images?.[0] ||
+                'default-image.jpg'
+              }
+              onClick={() => onProductClick(product.productName || product.id)}
             />
           ))}
         </div>

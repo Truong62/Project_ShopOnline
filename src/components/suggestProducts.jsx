@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import CardProduct from './Card/Card.jsx';
 import { formatCurrency } from '../utils/formatCurrency.js';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,15 +8,29 @@ import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import PropTypes from 'prop-types';
-import React from 'react';
 
-const SuggestProducts = ({ products }) => {
+const SuggestProducts = () => {
+  const { link } = useParams(); // lấy link từ URL
+  const [suggestedProducts, setSuggestedProducts] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('https://dummyjson.com/products')
+      .then((res) => res.json())
+      .then((data) => {
+        // Lọc ra những sản phẩm không phải là sản phẩm hiện tại
+        const suggestions = data.products.filter(
+          (p) =>
+            p.title.toLowerCase() !== link.toLowerCase() &&
+            String(p.id) !== link
+        );
+        setSuggestedProducts(suggestions.slice(0, 8)); // lấy 8 sản phẩm gợi ý
+      });
+  }, [link]);
 
   const handleProductClick = (productName) => {
     navigate(`/products/${productName}`);
     window.scrollTo(0, 0);
-    window.location.href = `/product/${productName}`;
     window.location.reload();
   };
 
@@ -38,20 +53,20 @@ const SuggestProducts = ({ products }) => {
           1024: { slidesPerView: 4, spaceBetween: 20 },
         }}
       >
-        {products.map((item, index) => (
+        {suggestedProducts.map((item, index) => (
           <SwiperSlide
             key={index}
             className="flex items-stretch justify-center pb-4"
           >
             <div className="w-full h-auto flex flex-col justify-between">
               <CardProduct
-                nameProduct={item.nameProduct}
-                description={truncateDescription(item.productDescription, 30)}
-                price={formatCurrency(item.variants[0].price)}
-                brand={item.brandName}
-                nameTag={item.nameTag}
-                imageUrl={item.variants[0].images[0]}
-                onClick={() => handleProductClick(item.productName)}
+                nameProduct={item.title}
+                description={truncateDescription(item.description, 30)}
+                price={formatCurrency(item.price)}
+                brand={item.brand}
+                nameTag={item.category}
+                imageUrl={item.thumbnail}
+                onClick={() => handleProductClick(item.title)}
               />
             </div>
           </SwiperSlide>
@@ -61,8 +76,8 @@ const SuggestProducts = ({ products }) => {
   );
 };
 
-export default SuggestProducts;
-
 SuggestProducts.propTypes = {
   products: PropTypes.array.isRequired,
 };
+
+export default SuggestProducts;

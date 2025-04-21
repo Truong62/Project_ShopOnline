@@ -4,7 +4,7 @@ import { useSidebar } from '../context/SidebarContext';
 import React from 'react';
 
 const getMenuByRole = (role: string) => {
-  console.log('Role in getMenuByRole:', role);  
+  console.log('Role in getMenuByRole:', role);
 
   const fullMenu = [
     {
@@ -13,37 +13,27 @@ const getMenuByRole = (role: string) => {
       path: '/admin',
     },
     {
-      icon: <i className="pi pi-calendar" />,
-      name: 'Calendar',
-      path: '/admin/calendar',
-    },
-    {
       icon: <i className="pi pi-user" />,
       name: 'User Profile',
       path: '/admin/profile',
     },
     {
-      icon: <i className="pi pi-cog" />,
-      name: 'Management',
-      subItems: [
-        { name: 'Form Elements', path: '/admin/form-elements', pro: false },
-        { name: 'Order Management', path: '/admin/order-management', pro: false },
-        { name: 'User Management', path: '/admin/user-management', pro: false },
-        { name: 'Product Features', path: '/admin/product-features', pro: false },
-      ],
+      icon: <i className="pi pi-shopping-cart" />,
+      name: 'Order Management',
+      path: '/admin/order-management',
+      pro: false,
     },
     {
-      icon: <i className="pi pi-table" />,
-      name: 'Tables',
-      subItems: [{ name: 'Basic Tables', path: '/admin/basic-tables', pro: false }],
+      icon: <i className="pi pi-users" />,
+      name: 'User Management',
+      path: '/admin/user-management',
+      pro: false,
     },
     {
-      icon: <i className="pi pi-file" />,
-      name: 'Pages',
-      subItems: [
-        { name: 'Blank Page', path: '/admin/blank', pro: false },
-        { name: '404 Error', path: '/admin/error-404', pro: false },
-      ],
+      icon: <i className="pi pi-box" />,
+      name: 'Product Features',
+      path: '/admin/product-features',
+      pro: false,
     },
   ];
 
@@ -87,7 +77,7 @@ const getMenuByRole = (role: string) => {
         },
       ];
     default:
-      console.warn('Unknown role:', role); 
+      console.warn('Unknown role:', role);
       return [];
   }
 };
@@ -97,7 +87,7 @@ const AppSidebar = () => {
   const location = useLocation();
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  console.log('Current user in AppSidebar:', user); 
+  console.log('Current user in AppSidebar:', user);
   const menuItems = getMenuByRole(user.role || '');
 
   const isActive = useCallback(
@@ -107,8 +97,10 @@ const AppSidebar = () => {
 
   const renderMenuItems = (items) => {
     if (!items.length) {
-      console.warn('No menu items to render'); 
-      return <div className="text-gray-500 p-4">No menu available for this role</div>;
+      console.warn('No menu items to render');
+      return (
+        <div className="text-gray-500 p-4">No menu available for this role</div>
+      );
     }
     return (
       <ul className="flex flex-col gap-4">
@@ -119,19 +111,25 @@ const AppSidebar = () => {
                 <li key={subItem.name}>
                   <Link
                     to={subItem.path}
-                    className={`menu-item group ${isActive(subItem.path) ? 'menu-item-active' : 'menu-item-inactive'
-                      }`}
+                    className={`menu-item group flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-300 ${
+                      isActive(subItem.path)
+                        ? 'bg-[#A8DCE7] text-gray-800 dark:bg-[#A8DCE7] dark:text-gray-800'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-[#E6F2F5] dark:hover:bg-[#E6F2F5] hover:text-gray-800 dark:hover:text-gray-800'
+                    }`}
                   >
                     <span
-                      className={`menu-item-icon-size ${isActive(subItem.path)
-                        ? 'menu-item-icon-active'
-                        : 'menu-item-icon-inactive'
-                        }`}
+                      className={`menu-item-icon-size text-lg ${
+                        isActive(subItem.path)
+                          ? 'text-gray-800 dark:text-gray-800'
+                          : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-800'
+                      }`}
                     >
                       {nav.icon || <i className="pi pi-circle" />}
                     </span>
                     {(isExpanded || isHovered || isMobileOpen) && (
-                      <span className="menu-item-text">{subItem.name}</span>
+                      <span className="menu-item-text text-sm font-medium">
+                        {subItem.name}
+                      </span>
                     )}
                   </Link>
                 </li>
@@ -140,19 +138,25 @@ const AppSidebar = () => {
               <li>
                 <Link
                   to={nav.path}
-                  className={`menu-item group ${isActive(nav.path) ? 'menu-item-active' : 'menu-item-inactive'
-                    }`}
+                  className={`menu-item group flex items-center gap-4 px-4 py-2 rounded-lg transition-all duration-300 ${
+                    isActive(nav.path)
+                      ? 'bg-[#A8DCE7] text-gray-800 dark:bg-[#A8DCE7] dark:text-gray-800'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-[#E6F2F5] dark:hover:bg-[#E6F2F5] hover:text-gray-800 dark:hover:text-gray-800'
+                  }`}
                 >
                   <span
-                    className={`menu-item-icon-size ${isActive(nav.path)
-                      ? 'menu-item-icon-active'
-                      : 'menu-item-icon-inactive'
-                      }`}
+                    className={`menu-item-icon-size text-lg ${
+                      isActive(nav.path)
+                        ? 'text-gray-800 dark:text-gray-800'
+                        : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-800'
+                    }`}
                   >
                     {nav.icon || <i className="pi pi-circle" />}
                   </span>
                   {(isExpanded || isHovered || isMobileOpen) && (
-                    <span className="menu-item-text">{nav.name}</span>
+                    <span className="menu-item-text text-sm font-medium">
+                      {nav.name}
+                    </span>
                   )}
                 </Link>
               </li>
@@ -166,11 +170,12 @@ const AppSidebar = () => {
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
-        ${isExpanded || isMobileOpen
-          ? 'w-[290px]'
-          : isHovered
+        ${
+          isExpanded || isMobileOpen
             ? 'w-[290px]'
-            : 'w-[90px]'
+            : isHovered
+              ? 'w-[290px]'
+              : 'w-[90px]'
         }
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0`}
@@ -178,8 +183,9 @@ const AppSidebar = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex ${!isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'
-          }`}
+        className={`py-8 flex ${
+          !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'
+        }`}
       >
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
@@ -214,10 +220,11 @@ const AppSidebar = () => {
           <div className="flex flex-col gap-4">
             <div>
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? 'lg:justify-center'
-                  : 'justify-start'
-                  }`}
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                  !isExpanded && !isHovered
+                    ? 'lg:justify-center'
+                    : 'justify-start'
+                }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
                   'Menu'

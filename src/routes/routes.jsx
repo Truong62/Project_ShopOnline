@@ -70,17 +70,17 @@ const LineChart = React.lazy(
 const BarChart = React.lazy(
   () => import('../../dashboard/src/pages/Charts/BarChart')
 );
-const Calendar = React.lazy(() => import('../../dashboard/src/pages/Calendar'));
+// const Calendar = React.lazy(() => import('../../dashboard/src/pages/'));
 const BasicTables = React.lazy(
   () => import('../../dashboard/src/pages/Tables/BasicTables')
 );
-const FormElements = React.lazy(
-  () => import('../../dashboard/src/pages/Forms/FormElements')
-);
+// const FormElements = React.lazy(
+//   () => import('../../dashboard/src/pages/Forms/FormElements')
+// );
 const OrderManagement = React.lazy(
   () => import('../../dashboard/src/pages/Forms/OrderManagement')
 );
-const Blank = React.lazy(() => import('../../dashboard/src/pages/Blank'));
+// const Blank = React.lazy(() => import('../../dashboard/src/pages/Blank'));
 const DashboardHome = React.lazy(
   () => import('../../dashboard/src/pages/Dashboard/Home')
 );
@@ -151,19 +151,19 @@ const AppRoutes = () => {
               />
             }
           />
-          <Route
+          {/* <Route
             path="calendar"
             element={
               <ProtectedRoute element={<Calendar />} allowedRoles={['admin']} />
             }
-          />
-          <Route
+          /> */}
+          {/* <Route
             path="blank"
             element={
               <ProtectedRoute element={<Blank />} allowedRoles={['admin']} />
             }
-          />
-          <Route
+          /> */}
+          {/* <Route
             path="form-elements"
             element={
               <ProtectedRoute
@@ -171,7 +171,7 @@ const AppRoutes = () => {
                 allowedRoles={['admin']}
               />
             }
-          />
+          /> */}
           <Route
             path="order-management"
             element={

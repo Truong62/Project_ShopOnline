@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import { FiFilter } from 'react-icons/fi';
 
 interface CategoryFiltersProps {
   onFilterChange: (filters: {
@@ -8,7 +9,7 @@ interface CategoryFiltersProps {
     store: string;
     role: string;
   }) => void;
-  className?: string; // Add className as an optional prop
+  className?: string;
 }
 
 const CategoryFilters: React.FC<CategoryFiltersProps> = ({
@@ -31,13 +32,14 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
   };
 
   return (
-    <div className={`flex gap-3 mb-6 ${className}`}>
-      <div>
+    <div className={`flex flex-wrap items-center gap-3 ${className}`}>
+      <div className="flex items-center gap-2">
+        <FiFilter className="text-[#A8DCE7]" />
         <select
           name="category"
           value={filters.category}
           onChange={handleFilterChange}
-          className="h-10 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+          className="h-12 rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] transition-all duration-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
         >
           <option value="">Category: All</option>
           <option value="Jackets">Jackets (132)</option>
@@ -45,24 +47,26 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
           <option value="Pants">Pants (30)</option>
         </select>
       </div>
-      <div>
+      <div className="flex items-center gap-2">
+        <FiFilter className="text-[#A8DCE7]" />
         <select
           name="status"
           value={filters.status}
           onChange={handleFilterChange}
-          className="h-10 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+          className="h-12 rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] transition-all duration-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
         >
           <option value="">Status: All</option>
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
         </select>
       </div>
-      <div>
+      <div className="flex items-center gap-2">
+        <FiFilter className="text-[#A8DCE7]" />
         <select
           name="priceRange"
           value={filters.priceRange}
           onChange={handleFilterChange}
-          className="h-10 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+          className="h-12 rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] transition-all duration-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
         >
           <option value="">Price: All</option>
           <option value="50000-100000">50.000 - 100.000 VND</option>
@@ -70,12 +74,13 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
           <option value="500000-1000000">500.000 - 1.000.000 VND</option>
         </select>
       </div>
-      <div>
+      <div className="flex items-center gap-2">
+        <FiFilter className="text-[#A8DCE7]" />
         <select
           name="store"
           value={filters.store}
           onChange={handleFilterChange}
-          className="h-10 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+          className="h-12 rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] transition-all duration-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
         >
           <option value="">Store: All</option>
           <option value="Store1">Store 1</option>
