@@ -94,6 +94,7 @@ const YourOrder = lazy(() => import('../pages/YourOrder'));
 const CartPage = lazy(() => import('../pages/Cart'));
 const CheckoutPage = lazy(() => import('../pages/Checkout'));
 const LoginForm = lazy(() => import('../pages/Login'));
+const EmailConfirmForm = lazy(() => import('../pages/Otp-input'));
 const SignUpForm = lazy(() => import('../pages/Signup'));
 const ForgotPassword = lazy(
   () => import('../pages/ResetPassword/Forgot-password')
@@ -130,6 +131,7 @@ const AppRoutes = () => {
         <Route path="/account" element={<YourProfile />} />
         <Route path="/register" element={<SignUpForm />} />
         <Route path="/login" element={<LoginForm />} />
+        <Route path="/email-confirm" element={<EmailConfirmForm />} />
 
         {/* Dashboard Routes */}
         <Route path="/admin" element={<AppLayout />}>

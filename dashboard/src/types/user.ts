@@ -1,4 +1,8 @@
 export interface User {
+  address: string;
+  phoneNumber: string;
+  address: string;
+  phoneNumber: string;
   id: number;
   Description?: string | null;
   name: string;

@@ -20,55 +20,8 @@ interface User {
   createdAt: string;
 }
 
-const initialUsers: User[] = [
-  {
-    id: 1,
-    name: 'Admin User',
-    email: 'admin@example.com',
-    password: 'admin123',
-    role: 'admin',
-    status: 'Active',
-    createdAt: new Date('2025-04-01').toISOString(),
-    Description: 'Senior Administrator',
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    password: 'jane123',
-    role: 'product_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-02').toISOString(),
-    Description: 'Product Management Specialist',
-  },
-  {
-    id: 3,
-    name: 'Bob Johnson',
-    email: 'bob.johnson@example.com',
-    password: 'bob123',
-    role: 'sale_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-03').toISOString(),
-    Description: 'Sales Team Lead',
-  },
-];
-
 const UserFeatures: React.FC = () => {
-  const [users, setUsers] = useState<User[]>(() => {
-    try {
-      const savedUsers = localStorage.getItem('users');
-      if (!savedUsers) {
-        console.log('Initializing users in UserFeatures:', initialUsers);
-        localStorage.setItem('users', JSON.stringify(initialUsers));
-        return initialUsers;
-      }
-      return JSON.parse(savedUsers);
-    } catch (error) {
-      console.error('Error parsing users from localStorage:', error);
-      localStorage.setItem('users', JSON.stringify(initialUsers));
-      return initialUsers;
-    }
-  });
+  const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -89,6 +42,37 @@ const UserFeatures: React.FC = () => {
     title: '',
     message: '',
   });
+
+  // Fetch users from dummyjson
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('https://dummyjson.com/users');
+        const data = await response.json();
+        const fetchedUsers = data.users.map((user: any) => {
+          const createdAt = new Date(user.createdAt);
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role || 'product_manager', // Default to 'product_manager' if role is missing
+            status: user.status || 'Active', // Default to 'Active' if status is missing
+            createdAt:
+              createdAt instanceof Date && !isNaN(createdAt.getTime())
+                ? createdAt.toISOString()
+                : new Date().toISOString(),
+            Description: user.Description || null,
+          };
+        });
+        setUsers(fetchedUsers);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        showAlert('error', 'Error', 'Failed to fetch users.');
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     try {
