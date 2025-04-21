@@ -7,38 +7,34 @@ import CategoryFilters from '../components/product-features/CategoryFilters';
 import ProductTable from '../components/product-features/ProductTable';
 import Pagination from '../components/product-features/Pagination';
 import ProductFormModal from '../components/product-features/ProductFormModal';
+import ColorModal from '../components/product-features/ColorModal';
 import Alert from '../components/ui/alert/Alert';
 import { Product } from '../types';
 
-const initialProducts: Product[] = [
-  {
-    id: 1,
-    name: 'Gabriela Cashmere Blazer',
-    sku: 'TI4116',
-    mainImage: '/images/products/gabriela-cashmere-blazer.jpg',
-    subImages: [],
-    color: 'Red',
-    sizes: [
-      { size: '38', quantity: 50 },
-      { size: '39', quantity: 40 },
-    ],
-    brand: 'GABRIELA',
-    description: 'A luxurious cashmere blazer for all seasons.',
-    price: '113990',
-    purchaseUnit: 113,
-    stock: 14012,
-    status: 'Released',
-    createdAt: new Date('2025-04-01').toISOString(),
-  },
-];
+interface Brand {
+  id: number;
+  name: string;
+  createdAt: string;
+}
+
+interface Color {
+  name: string;
+  code?: string;
+}
 
 const ProductFeatures: React.FC = () => {
+  const initialProducts: Product[] = []; // Define initialProducts as an empty array or with default products
   const [products, setProducts] = useState<Product[]>(() => {
     const savedProducts = localStorage.getItem('products');
     return savedProducts ? JSON.parse(savedProducts) : initialProducts;
   });
+  const [colors, setColors] = useState<Color[]>(() => {
+    const savedColors = localStorage.getItem('colors');
+    return savedColors ? JSON.parse(savedColors) : [];
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const productsPerPage = 7;
@@ -62,18 +58,49 @@ const ProductFeatures: React.FC = () => {
     message: '',
   });
 
-  useEffect(() => {
-    const savedProducts = localStorage.getItem('products');
-    if (savedProducts) {
-      const products: Product[] = JSON.parse(savedProducts);
-      const brands = [...new Set(products.map((p) => p.brand).filter(Boolean))];
-      setBrandSuggestions(brands);
+  const loadBrandSuggestions = () => {
+    const savedBrands = localStorage.getItem('brands');
+    if (savedBrands) {
+      const parsedBrands: Brand[] = JSON.parse(savedBrands);
+      const brandNames = parsedBrands.map((brand) => brand.name);
+      setBrandSuggestions(brandNames);
+    } else {
+      setBrandSuggestions([]);
     }
+  };
+
+  useEffect(() => {
+    loadBrandSuggestions();
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'brands') {
+        loadBrandSuggestions();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
-  }, [products]);
+    localStorage.setItem('colors', JSON.stringify(colors));
+  }, [products, colors]);
+
+  useEffect(() => {
+    if (isModalOpen || isColorModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isModalOpen, isColorModalOpen]);
 
   const showAlert = (
     variant: 'success' | 'error' | 'warning' | 'info',
@@ -111,9 +138,9 @@ const ProductFeatures: React.FC = () => {
     if (sortOption) {
       filteredProducts.sort((a, b) => {
         if (sortOption === 'price-asc') {
-          return parseFloat(a.price) - parseFloat(b.price);
+          return parseFloat(a.price || '0') - parseFloat(b.price || '0');
         } else if (sortOption === 'price-desc') {
-          return parseFloat(b.price) - parseFloat(a.price);
+          return parseFloat(b.price || '0') - parseFloat(a.price || '0');
         } else if (sortOption === 'name-asc') {
           return a.name.localeCompare(b.name);
         } else if (sortOption === 'name-desc') {
@@ -132,6 +159,11 @@ const ProductFeatures: React.FC = () => {
     }
 
     return filteredProducts;
+  };
+
+  const handleAddColor = (colorName: string) => {
+    setColors([...colors, { name: colorName }]);
+    showAlert('success', 'Color Added', 'New color added successfully!');
   };
 
   const filteredAndSortedProducts = getFilteredAndSortedProducts();
@@ -159,15 +191,26 @@ const ProductFeatures: React.FC = () => {
   };
 
   const handleAddProduct = () => {
+    loadBrandSuggestions();
     setIsEditing(false);
     setProductToEdit(null);
     setIsModalOpen(true);
   };
 
   const handleEditProduct = (product: Product) => {
+    loadBrandSuggestions();
     setIsEditing(true);
     setProductToEdit(product);
     setIsModalOpen(true);
+  };
+
+  const handleUpdateProducts = (updatedProducts: Product[]) => {
+    setProducts(updatedProducts);
+    showAlert(
+      'success',
+      'Status Updated',
+      'Product status updated successfully!'
+    );
   };
 
   const handleSaveProduct = (newProduct: Product) => {
@@ -255,17 +298,16 @@ const ProductFeatures: React.FC = () => {
         title="Product Features | TailAdmin - React.js Admin Dashboard Template"
         description="Manage products in TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <div className="p-4 sm:p-6 md:p-8 bg-[#F1F9FB] dark:bg-gray-800 min-h-screen transition-colors duration-300">
+      <div className="p-4 sm:p-6 md:p-8 bg-[#F1F9FB] dark:bg-gray-800 min-h-screen transition-colors duration-300 relative">
         <Toast ref={toast} />
         <Header className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8" />
-
         <FilterBar
           onAddProduct={handleAddProduct}
           onSearch={handleSearch}
           onSort={handleSort}
+          onAddColor={() => setIsColorModalOpen(true)}
           className="flex flex-wrap items-center gap-3 mb-6"
         />
-
         {alert.show && (
           <div className="mb-6">
             <Alert
@@ -276,44 +318,51 @@ const ProductFeatures: React.FC = () => {
             />
           </div>
         )}
-
-        {isModalOpen ? (
-          <div className="flex justify-center mb-6">
-            <ProductFormModal
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
-              onSave={handleSaveProduct}
-              brandSuggestions={brandSuggestions}
-              productToEdit={productToEdit}
-            />
-          </div>
-        ) : (
-          <>
-            <CategoryFilters
-              onFilterChange={handleFilterChange}
-              className="flex flex-wrap items-center gap-3 mb-6"
-            />
-
-            <div className="overflow-x-auto rounded-xl shadow-sm">
-              <ProductTable
-                products={currentProducts.map((product) => ({
-                  ...product,
-                  price: formatPrice(product.price),
-                }))}
-                onDelete={handleDelete}
-                onEdit={handleEditProduct}
-              />
-            </div>
-
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              className="flex flex-wrap justify-center gap-2 mt-6"
-            />
-          </>
-        )}
+        <CategoryFilters
+          onFilterChange={handleFilterChange}
+          className="flex flex-wrap items-center gap-3 mb-6"
+        />
+        <div className="overflow-x-auto rounded-xl shadow-sm">
+          <ProductTable
+            products={currentProducts.map((product) => ({
+              ...product,
+              price: formatPrice(product.price || '0'),
+            }))}
+            onUpdate={handleUpdateProducts}
+            onEdit={handleEditProduct}
+          />
+        </div>
+        <Pagination
+          className="flex flex-wrap justify-center gap-2 mt-6"
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-[1000]">
+          <ProductFormModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleSaveProduct}
+            brandSuggestions={brandSuggestions}
+            productToEdit={productToEdit}
+            colors={colors}
+          />
+        </div>
+      )}
+
+      {isColorModalOpen && (
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-[1000]">
+          <ColorModal
+            isOpen={isColorModalOpen}
+            onClose={() => setIsColorModalOpen(false)}
+            onSave={handleAddColor}
+            existingColors={colors.map((c) => c.name)}
+          />
+        </div>
+      )}
     </>
   );
 };
