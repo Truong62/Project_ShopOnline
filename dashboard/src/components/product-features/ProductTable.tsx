@@ -14,10 +14,6 @@ const ProductTable: React.FC<ProductTableProps> = ({
   onEdit,
 }) => {
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
-  const [isBulkDropdownOpen, setIsBulkDropdownOpen] = useState(false);
-  const [dropdownOpenForProduct, setDropdownOpenForProduct] = useState<
-    number | null
-  >(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<
     'Released' | 'Unreleased' | null
@@ -44,7 +40,6 @@ const ProductTable: React.FC<ProductTableProps> = ({
 
     setPendingStatus(status);
     setIsConfirmModalOpen(true);
-    setIsBulkDropdownOpen(false);
   };
 
   const confirmBulkStatusChange = () => {
@@ -55,9 +50,12 @@ const ProductTable: React.FC<ProductTableProps> = ({
         selectedProducts.includes(product.id) &&
         product.status !== pendingStatus
       ) {
-        return { ...product, status: pendingStatus };
+        return {
+          ...product,
+          status: pendingStatus as 'Released' | 'Unreleased',
+        };
       }
-      return product;
+      return { ...product };
     });
 
     // Kiểm tra nếu có thay đổi thực sự
@@ -73,17 +71,13 @@ const ProductTable: React.FC<ProductTableProps> = ({
     setPendingStatus(null);
   };
 
-  const handleStatusChange = (
-    product: Product,
-    status: 'Released' | 'Unreleased'
-  ) => {
-    if (product.status === status) return; // Không thay đổi nếu trạng thái đã giống
-
+  const handleStatusChange = (product: Product) => {
+    const newStatus: 'Released' | 'Unreleased' =
+      product.status === 'Released' ? 'Unreleased' : 'Released';
     const updatedProducts = products.map((p) =>
-      p.id === product.id ? { ...p, status } : p
+      p.id === product.id ? { ...p, status: newStatus } : p
     );
     onUpdate(updatedProducts);
-    setDropdownOpenForProduct(null);
   };
 
   return (
@@ -107,42 +101,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                 Product
               </th>
               <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                Price
-              </th>
-              <th className="px-2 sm:px-4 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                <div className="relative flex items-center">
-                  <span>Status</span>
-                  {selectedProducts.length > 0 && (
-                    <div className="ml-2">
-                      <button
-                        onClick={() =>
-                          setIsBulkDropdownOpen(!isBulkDropdownOpen)
-                        }
-                        className="text-gray-600 dark:text-gray-300 hover:text-[#A8DCE7] dark:hover:text-[#A8DCE7] transition-colors duration-300"
-                      >
-                        <i
-                          className={`pi pi-chevron-${isBulkDropdownOpen ? 'up' : 'down'}`}
-                        />
-                      </button>
-                      {isBulkDropdownOpen && (
-                        <div className="absolute top-8 left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-10">
-                          <div
-                            onClick={() => handleBulkStatusChange('Released')}
-                            className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                          >
-                            Released
-                          </div>
-                          <div
-                            onClick={() => handleBulkStatusChange('Unreleased')}
-                            className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                          >
-                            Unreleased
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                Status
               </th>
               <th className="px-2 sm:px-4 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider w-16">
                 Actions
@@ -158,7 +117,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
               return (
                 <tr
                   key={product.id}
-                  className="hover:bg-[#F1F9FB] dark:hover:bg-gray-800 transition-colors duration-200"
+                  className="hover:bg-[#F1F9FB] dark:hover:bg-gray-800 transition-colors duration-300"
                 >
                   <td className="px-2 sm:px-4 py-4 whitespace-nowrap w-12">
                     <input
@@ -189,56 +148,29 @@ const ProductTable: React.FC<ProductTableProps> = ({
                       </div>
                     </div>
                   </td>
-                  <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                    {firstVariant?.price || product.price || 'N/A'}
-                  </td>
                   <td className="px-2 sm:px-4 py-4 whitespace-nowrap">
-                    <div className="relative">
-                      <button
-                        onClick={() =>
-                          setDropdownOpenForProduct(
-                            dropdownOpenForProduct === product.id
-                              ? null
-                              : product.id
-                          )
-                        }
-                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer ${
+                    <div
+                      className="w-36 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center p-1 cursor-pointer"
+                      onClick={() => handleStatusChange(product)}
+                    >
+                      <div
+                        className={`w-1/2 h-full flex items-center justify-center rounded-lg text-xs font-semibold transition-colors duration-300 ${
                           product.status === 'Released'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
-                            : product.status === 'Unreleased'
-                              ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
-                              : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
+                            ? 'bg-[#A8DCE7] text-white'
+                            : 'bg-white text-black'
                         }`}
                       >
-                        {product.status}
-                        <i
-                          className={`ml-2 pi pi-chevron-${
-                            dropdownOpenForProduct === product.id
-                              ? 'up'
-                              : 'down'
-                          }`}
-                        />
-                      </button>
-                      {dropdownOpenForProduct === product.id && (
-                        <div className="absolute top-8 left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-10">
-                          <div
-                            onClick={() =>
-                              handleStatusChange(product, 'Released')
-                            }
-                            className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                          >
-                            Released
-                          </div>
-                          <div
-                            onClick={() =>
-                              handleStatusChange(product, 'Unreleased')
-                            }
-                            className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                          >
-                            Unreleased
-                          </div>
-                        </div>
-                      )}
+                        Released
+                      </div>
+                      <div
+                        className={`w-1/2 h-full flex items-center justify-center rounded-lg text-xs font-semibold transition-colors duration-300 ${
+                          product.status === 'Unreleased'
+                            ? 'bg-[#A8DCE7] text-white'
+                            : 'bg-white text-black'
+                        }`}
+                      >
+                        Unreleased
+                      </div>
                     </div>
                   </td>
                   <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-right text-sm font-medium w-16">
@@ -256,9 +188,34 @@ const ProductTable: React.FC<ProductTableProps> = ({
         </table>
       </div>
 
+      {/* Bulk Status Toggle */}
+      {selectedProducts.length > 0 && (
+        <div className="flex justify-end mt-4">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-600 dark:text-gray-300">
+              Change status for {selectedProducts.length} product(s):
+            </span>
+            <div className="w-36 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center p-1">
+              <div
+                className="w-1/2 h-full flex items-center justify-center rounded-lg text-xs font-semibold bg-white text-black hover:bg-[#A8DCE7] hover:text-white transition-colors duration-300 cursor-pointer"
+                onClick={() => handleBulkStatusChange('Released')}
+              >
+                Released
+              </div>
+              <div
+                className="w-1/2 h-full flex items-center justify-center rounded-lg text-xs font-semibold bg-white text-black hover:bg-[#A8DCE7] hover:text-white transition-colors duration-300 cursor-pointer"
+                onClick={() => handleBulkStatusChange('Unreleased')}
+              >
+                Unreleased
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Confirmation Modal */}
       {isConfirmModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-[1000]">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg max-w-sm w-full p-6 transition-colors duration-300">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">

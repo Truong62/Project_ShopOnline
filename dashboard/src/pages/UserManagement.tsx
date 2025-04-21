@@ -11,11 +11,10 @@ import UserFormModal from '../components/user-management/UserModal';
 
 interface User {
   id: number;
-  Description?: string | null;
   name: string;
   email: string;
   password?: string;
-  role: 'admin' | 'product_manager' | 'sale_manager';
+  role: 'admin' | 'product_manager' | 'sale_manager' | 'user';
   status: 'Active' | 'Inactive';
   createdAt: string;
 }
@@ -29,7 +28,6 @@ const initialUsers: User[] = [
     role: 'admin',
     status: 'Active',
     createdAt: new Date('2025-04-01').toISOString(),
-    Description: 'Senior Administrator',
   },
   {
     id: 2,
@@ -39,7 +37,6 @@ const initialUsers: User[] = [
     role: 'product_manager',
     status: 'Active',
     createdAt: new Date('2025-04-02').toISOString(),
-    Description: 'Product Management Specialist',
   },
   {
     id: 3,
@@ -49,7 +46,33 @@ const initialUsers: User[] = [
     role: 'sale_manager',
     status: 'Active',
     createdAt: new Date('2025-04-03').toISOString(),
-    Description: 'Sales Team Lead',
+  },
+  {
+    id: 4,
+    name: 'Test User 1',
+    email: 'test.user1@example.com',
+    password: 'test123',
+    role: 'user',
+    status: 'Active',
+    createdAt: new Date('2025-04-04').toISOString(),
+  },
+  {
+    id: 5,
+    name: 'Test Staff 1',
+    email: 'test.staff1@example.com',
+    password: 'staff123',
+    role: 'product_manager',
+    status: 'Active',
+    createdAt: new Date('2025-04-05').toISOString(),
+  },
+  {
+    id: 6,
+    name: 'Test Staff 2',
+    email: 'test.staff2@example.com',
+    password: 'staff123',
+    role: 'sale_manager',
+    status: 'Active',
+    createdAt: new Date('2025-04-06').toISOString(),
   },
 ];
 
@@ -62,7 +85,19 @@ const UserFeatures: React.FC = () => {
         localStorage.setItem('users', JSON.stringify(initialUsers));
         return initialUsers;
       }
-      return JSON.parse(savedUsers);
+      const parsedUsers = JSON.parse(savedUsers);
+      // Đảm bảo admin luôn tồn tại
+      const adminExists = parsedUsers.some(
+        (u: User) => u.email === 'admin@example.com'
+      );
+      if (!adminExists) {
+        parsedUsers.push(
+          initialUsers.find((u) => u.email === 'admin@example.com')!
+        );
+        localStorage.setItem('users', JSON.stringify(parsedUsers));
+        console.log('Restored admin user:', parsedUsers);
+      }
+      return parsedUsers;
     } catch (error) {
       console.error('Error parsing users from localStorage:', error);
       localStorage.setItem('users', JSON.stringify(initialUsers));
@@ -93,7 +128,7 @@ const UserFeatures: React.FC = () => {
   useEffect(() => {
     try {
       localStorage.setItem('users', JSON.stringify(users));
-      console.log('Users saved in UserFeatures:', users); // Debug
+      console.log('Users saved in UserFeatures:', users);
     } catch (error) {
       console.error('Error saving users to localStorage:', error);
       showAlert(
@@ -174,6 +209,11 @@ const UserFeatures: React.FC = () => {
   const totalPages = Math.ceil(filteredAndSortedUsers.length / usersPerPage);
 
   const handleDelete = (id: number) => {
+    const userToDelete = users.find((user) => user.id === id);
+    if (userToDelete?.email === 'admin@example.com') {
+      showAlert('error', 'Cannot Delete', 'Admin account cannot be deleted.');
+      return;
+    }
     setUsers(users.filter((user) => user.id !== id));
     showAlert('success', 'User Deleted', 'User was successfully deleted.');
   };
@@ -194,10 +234,26 @@ const UserFeatures: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSaveUser = (newUser: User) => {
+  const handleSaveUser = (
+    newUser: Omit<User, 'status'> & { status?: User['status'] }
+  ) => {
     try {
+      if (newUser.email === 'admin@example.com' && newUser.role !== 'admin') {
+        showAlert(
+          'error',
+          'Cannot Modify',
+          'Admin account role cannot be changed.'
+        );
+        return;
+      }
       if (isEditing && userToEdit) {
-        setUsers(users.map((u) => (u.id === newUser.id ? newUser : u)));
+        setUsers(
+          users.map((u) =>
+            u.id === newUser.id
+              ? { ...newUser, status: newUser.status || 'Active' }
+              : u
+          )
+        );
         showAlert('success', 'User Updated', 'User updated successfully!');
       } else {
         const existingUser = users.find(
@@ -213,7 +269,10 @@ const UserFeatures: React.FC = () => {
           );
           return;
         }
-        setUsers([...users, newUser]);
+        setUsers([
+          ...users,
+          { ...newUser, status: newUser.status || 'Active' },
+        ]);
         showAlert(
           'success',
           'User Added',

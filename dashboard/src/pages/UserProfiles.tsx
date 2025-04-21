@@ -200,121 +200,41 @@ const UserProfile: React.FC = () => {
           <h3 className="text-xl sm:text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-100 flex items-center gap-2">
             <FiInfo className="text-[#A8DCE7]" /> Account Information
           </h3>
-          {isEditing ? (
-            <div>
-              <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <FiUser className="text-[#A8DCE7]" /> Name *
+          <div className="space-y-5">
+            <div className="flex items-center gap-3">
+              <FiUser className="text-[#A8DCE7] text-lg" />
+              <div>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                  Name
                 </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 transition-colors duration-300"
-                  placeholder="Enter your name"
-                />
-              </div>
-              <div className="mb-5">
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <FiInfo className="text-[#A8DCE7]" /> Description
-                </label>
-                <textarea
-                  value={description || ''}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="h-28 w-full rounded-xl border border-gray-200 bg-[#E6F2F5] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 transition-colors duration-300"
-                  placeholder="Enter description"
-                />
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  type="submit"
-                  onClick={handleEditSubmit}
-                  className="h-12 rounded-xl bg-[#A8DCE7] px-6 py-3 text-sm font-medium text-gray-800 hover:bg-[#95C8D2] focus:ring-2 focus:ring-[#A8DCE7] focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 justify-center"
-                >
-                  <FiSave /> Save Changes
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setName(user.name);
-                    setDescription(user.Description || '');
-                  }}
-                  className="h-12 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 justify-center"
-                >
-                  <FiX /> Cancel
-                </button>
+                <p className="text-gray-800 dark:text-gray-200">{user.name}</p>
               </div>
             </div>
-          ) : (
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <FiUser className="text-[#A8DCE7] text-lg" />
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                    Name
-                  </label>
-                  <p className="text-gray-800 dark:text-gray-200">
-                    {user.name}
-                  </p>
-                </div>
+            <div className="flex items-center gap-3">
+              <FiMail className="text-[#A8DCE7] text-lg" />
+              <div>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                  Email
+                </label>
+                <p className="text-gray-800 dark:text-gray-200">{user.email}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <FiMail className="text-[#A8DCE7] text-lg" />
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                    Email
-                  </label>
-                  <p className="text-gray-800 dark:text-gray-200">
-                    {user.email}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <FiInfo className="text-[#A8DCE7] text-lg" />
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                    Description
-                  </label>
-                  <p className="text-gray-800 dark:text-gray-200">
-                    {user.Description || 'No description provided'}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <FiShield className="text-[#A8DCE7] text-lg" />
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                    Role
-                  </label>
-                  <p className="text-gray-800 dark:text-gray-200">
-                    {user.role === 'admin'
-                      ? 'Admin'
-                      : user.role === 'sale_manager'
-                        ? 'Sales Manager'
-                        : 'Product Manager'}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <FiCheckSquare className="text-[#A8DCE7] text-lg" />
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                    Status
-                  </label>
-                  <p className="text-gray-800 dark:text-gray-200">
-                    {user.status}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="h-12 rounded-xl bg-[#A8DCE7] px-6 py-3 text-sm font-medium text-gray-800 hover:bg-[#95C8D2] focus:ring-2 focus:ring-[#A8DCE7] focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 justify-center w-full sm:w-auto"
-              >
-                <FiEdit /> Edit Profile
-              </button>
             </div>
-          )}
+            <div className="flex items-center gap-3">
+              <FiShield className="text-[#A8DCE7] text-lg" />
+              <div>
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                  Role
+                </label>
+                <p className="text-gray-800 dark:text-gray-200">
+                  {user.role === 'admin'
+                    ? 'Admin'
+                    : user.role === 'sale_manager'
+                      ? 'Sales Manager'
+                      : 'Product Manager'}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div>

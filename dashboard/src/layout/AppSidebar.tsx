@@ -1,45 +1,30 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useCallback, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSidebar } from '../context/SidebarContext';
 import React from 'react';
 
 const getMenuByRole = (role: string) => {
   console.log('Role in getMenuByRole:', role);
 
-  const fullMenu = [
-    {
-      icon: <i className="pi pi-th-large" />,
-      name: 'Dashboard',
-      path: '/admin',
-    },
-    {
-      icon: <i className="pi pi-user" />,
-      name: 'User Profile',
-      path: '/admin/profile',
-    },
-    {
-      icon: <i className="pi pi-shopping-cart" />,
-      name: 'Order Management',
-      path: '/admin/order-management',
-      pro: false,
-    },
-    {
-      icon: <i className="pi pi-users" />,
-      name: 'User Management',
-      path: '/admin/user-management',
-      pro: false,
-    },
-    {
-      icon: <i className="pi pi-box" />,
-      name: 'Product Features',
-      path: '/admin/product-features',
-      pro: false,
-    },
-  ];
-
   switch (role) {
     case 'admin':
-      return fullMenu;
+      return [
+        {
+          icon: <i className="pi pi-th-large" />,
+          name: 'Dashboard',
+          path: '/admin',
+        },
+        {
+          icon: <i className="pi pi-user" />,
+          name: 'User Profile',
+          path: '/admin/profile',
+        },
+        {
+          icon: <i className="pi pi-users" />,
+          name: 'User Management',
+          path: '/admin/user-management',
+        },
+      ];
     case 'sale_manager':
       return [
         {
@@ -75,20 +60,41 @@ const getMenuByRole = (role: string) => {
           name: 'Product Features',
           path: '/admin/product-features',
         },
+        {
+          icon: <i className="pi pi-tags" />,
+          name: 'Brand Management',
+          path: '/admin/brand-management',
+        },
       ];
     default:
-      console.warn('Unknown role:', role);
-      return [];
+      console.warn('Unknown role, returning minimal menu:', role);
+      return [
+        {
+          icon: <i className="pi pi-th-large" />,
+          name: 'Dashboard',
+          path: '/admin',
+        },
+      ];
   }
 };
 
 const AppSidebar = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar()!;
   const location = useLocation();
+  const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   console.log('Current user in AppSidebar:', user);
+
+  useEffect(() => {
+    if (!user || !user.role) {
+      console.warn('No valid user, redirecting to Signin');
+      navigate('/Signin');
+    }
+  }, [user, navigate]);
+
   const menuItems = getMenuByRole(user.role || '');
+  console.log('Menu items:', menuItems);
 
   const isActive = useCallback(
     (path) => location.pathname === path,
@@ -99,7 +105,9 @@ const AppSidebar = () => {
     if (!items.length) {
       console.warn('No menu items to render');
       return (
-        <div className="text-gray-500 p-4">No menu available for this role</div>
+        <div className="text-gray-500 p-4">
+          No menu available. Please sign in again.
+        </div>
       );
     }
     return (

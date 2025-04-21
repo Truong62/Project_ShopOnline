@@ -1,30 +1,24 @@
-import React, { useState } from 'react';
-import Alert from '../../components/ui/alert/Alert';
-import { generatePassword } from '../utils/generatePassword';
+import React, { useState, useEffect } from 'react';
+import { Dialog } from 'primereact/dialog';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password?: string;
+  role: 'admin' | 'product_manager' | 'sale_manager' | 'user';
+  createdAt: string;
+}
 
 interface UserFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (user: User) => void;
-  userToEdit?: User | null;
+  userToEdit: User | null;
 }
-
-interface User {
-  id: number;
-  Description?: string | null;
-  name: string;
-  email: string;
-  password?: string;
-  role: 'admin' | 'product_manager' | 'sale_manager';
-  status: 'Active' | 'Inactive';
-  createdAt: string;
-}
-
-const ROLES = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'product_manager', label: 'Product Manager' },
-  { value: 'sale_manager', label: 'Sales Manager' },
-];
 
 const UserFormModal: React.FC<UserFormModalProps> = ({
   isOpen,
@@ -32,232 +26,248 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
   onSave,
   userToEdit,
 }) => {
-  const [name, setName] = useState(userToEdit?.name || '');
-  const [description, setDescription] = useState(userToEdit?.Description || '');
-  const [email, setEmail] = useState(userToEdit?.email || '');
-  const [role, setRole] = useState<
-    'admin' | 'product_manager' | 'sale_manager'
-  >(userToEdit?.role || 'admin');
-  const [status, setStatus] = useState<'Active' | 'Inactive'>(
-    userToEdit?.status || 'Active'
-  );
-  const [alert, setAlert] = useState<{
-    show: boolean;
-    variant: 'success' | 'error' | 'info';
-    title: string;
-    message: string;
-  }>({
-    show: false,
-    variant: 'error',
-    title: '',
-    message: '',
+  const [formData, setFormData] = useState<User>({
+    id: userToEdit?.id || Date.now(),
+    name: userToEdit?.name || '',
+    email: userToEdit?.email || '',
+    password: userToEdit?.password || '',
+    role: userToEdit?.role || 'user',
+    createdAt: userToEdit?.createdAt || new Date().toISOString(),
   });
+  const [searchEmail, setSearchEmail] = useState('');
+  const [searchResult, setSearchResult] = useState<User | null>(null);
+  const [errors, setErrors] = useState({ email: '', name: '', role: '' });
+  const [isEmailDisabled, setIsEmailDisabled] = useState(false);
 
-  const showAlert = (
-    variant: 'success' | 'error' | 'info',
-    title: string,
-    message: string
+  const roles = [
+    { label: 'User', value: 'user' },
+    { label: 'Admin', value: 'admin' },
+    { label: 'Product Manager', value: 'product_manager' },
+    { label: 'Sale Manager', value: 'sale_manager' },
+  ];
+
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleSearchEmail = () => {
+    try {
+      const users: User[] = JSON.parse(localStorage.getItem('users') || '[]');
+      const foundUser = users.find(
+        (u) =>
+          u.email.toLowerCase() === searchEmail.toLowerCase() &&
+          u.role === 'user' // Chỉ tìm tài khoản khách hàng
+      );
+      if (foundUser) {
+        setSearchResult(foundUser);
+        setFormData({
+          ...formData,
+          id: foundUser.id,
+          name: foundUser.name,
+          email: foundUser.email,
+          role: foundUser.role,
+          createdAt: foundUser.createdAt,
+        });
+        setIsEmailDisabled(true); // Vô hiệu hóa trường email
+        setErrors({ email: '', name: '', role: '' });
+      } else {
+        setSearchResult(null);
+        setErrors({ ...errors, email: 'Customer account not found' });
+      }
+    } catch (error) {
+      console.error('Error searching email:', error);
+      setErrors({ ...errors, email: 'Error searching email' });
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement> | { value: string; name: string }
   ) => {
-    setAlert({ show: true, variant, title, message });
-    setTimeout(() => {
-      setAlert({ show: false, variant: 'error', title: '', message: '' });
-    }, 8000);
+    const { name, value } = 'target' in e ? e.target : e;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const validateForm = () => {
-    if (!name.trim()) {
-      showAlert('error', 'Validation Error', 'Name is required.');
-      return false;
-    }
-    if (name.length < 3) {
-      showAlert(
-        'error',
-        'Validation Error',
-        'Name must be at least 3 characters long.'
-      );
-      return false;
-    }
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showAlert('error', 'Validation Error', 'A valid email is required.');
-      return false;
-    }
-    if (email.length < 5) {
-      showAlert(
-        'error',
-        'Validation Error',
-        'Email must be at least 5 characters long.'
-      );
-      return false;
-    }
-    if (!role) {
-      showAlert('error', 'Validation Error', 'Role is required.');
-      return false;
-    }
-    if (!status) {
-      showAlert('error', 'Validation Error', 'Status is required.');
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
+  const handleRevokeRole = () => {
+    if (formData.email === 'admin@example.com') {
+      setErrors({ ...errors, role: 'Cannot revoke admin role' });
       return;
     }
+    setFormData((prev) => ({ ...prev, role: 'user' }));
+  };
 
-    const isNewUser = !userToEdit;
-    const generatedPassword = isNewUser ? generatePassword() : undefined;
+  const handleSubmit = () => {
+    let newErrors = { email: '', name: '', role: '' };
+    let isValid = true;
 
-    const user: User = {
-      id: userToEdit?.id ?? Date.now(),
-      name,
-      email,
-      Description: description || null,
-      role,
-      status,
-      createdAt: userToEdit?.createdAt ?? new Date().toISOString(),
-      password: isNewUser ? generatedPassword : userToEdit?.password,
-    };
-
-    onSave(user);
-
-    if (isNewUser && generatedPassword) {
-      showAlert(
-        'success',
-        'User Added',
-        `User created successfully! The password "${generatedPassword}" has been sent to ${user.email}.`
-      );
-    } else {
-      showAlert('success', 'User Updated', 'User updated successfully!');
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Invalid email format';
+      isValid = false;
     }
 
-    handleClose();
+    if (!formData.name) {
+      newErrors.name = 'Name is required';
+      isValid = false;
+    }
+
+    if (formData.email === 'admin@example.com' && formData.role !== 'admin') {
+      newErrors.role = 'Admin account role cannot be changed';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    if (isValid) {
+      // Loại bỏ password nếu không cần thiết
+      const { password, ...userData } = formData;
+      onSave(userData);
+    }
   };
 
-  const handleClose = () => {
-    onClose();
-    setName('');
-    setDescription('');
-    setEmail('');
-    setRole('admin');
-    setStatus('Active');
-    setAlert({ show: false, variant: 'error', title: '', message: '' });
-  };
-
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        id: Date.now(),
+        name: '',
+        email: '',
+        password: '',
+        role: 'user',
+        createdAt: new Date().toISOString(),
+      });
+      setSearchEmail('');
+      setSearchResult(null);
+      setErrors({ email: '', name: '', role: '' });
+      setIsEmailDisabled(false);
+    }
+  }, [isOpen]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl w-full p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white/90">
-          {userToEdit ? 'Edit User' : 'Add New User'}
-        </h2>
-        <button
-          onClick={handleClose}
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-        >
-          <i className="pi pi-times text-xl" />
-        </button>
+    <Dialog
+      header={userToEdit ? 'Edit User' : 'Manage Customer Account'}
+      visible={isOpen}
+      modal={true}
+      style={{ width: '30rem' }}
+      onHide={onClose}
+      className="bg-white rounded-lg shadow-lg border border-[#A8DCE7]"
+      pt={{
+        root: { className: 'p-0' },
+        content: { className: 'p-4 bg-[#E6F2F5]' },
+        header: { className: 'bg-[#A8DCE7] text-white p-4 rounded-t-lg' },
+        mask: { className: 'bg-black/50' },
+      }}
+    >
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-800">
+            Search Customer Email
+          </label>
+          <div className="flex gap-2">
+            <InputText
+              value={searchEmail}
+              onChange={(e) => setSearchEmail(e.target.value)}
+              placeholder="Enter customer email to search"
+              className="w-full p-2 rounded-md border border-gray-300 bg-white"
+              disabled={isEmailDisabled}
+            />
+            <Button
+              label="Search"
+              onClick={handleSearchEmail}
+              className="bg-[#A8DCE7] text-white p-2 rounded-md hover:bg-[#79c2d2]"
+              disabled={isEmailDisabled}
+            />
+          </div>
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          )}
+          {searchResult && (
+            <div className="mt-2 text-sm text-gray-700 bg-white p-2 rounded-md border border-gray-300">
+              <p>Name: {searchResult.name}</p>
+              <p>Email: {searchResult.email}</p>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-800">
+            Name <span className="text-red-500">*</span>
+          </label>
+          <InputText
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Enter name"
+            className="w-full p-2 rounded-md border border-gray-300 bg-white"
+          />
+          {errors.name && (
+            <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-800">
+            Email <span className="text-red-500">*</span>
+          </label>
+          <InputText
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter email"
+            className="w-full p-2 rounded-md border border-gray-300 bg-white"
+            disabled={isEmailDisabled || !!userToEdit}
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-800">
+            Role <span className="text-red-500">*</span>
+          </label>
+          <Dropdown
+            name="role"
+            value={formData.role}
+            options={roles}
+            onChange={(e) => handleChange({ name: 'role', value: e.value })}
+            placeholder="Select role"
+            className="w-full rounded-md border border-gray-300 bg-white"
+            disabled={formData.email === 'admin@example.com'}
+          />
+          {errors.role && (
+            <p className="text-red-500 text-sm mt-1">{errors.role}</p>
+          )}
+        </div>
+
+        <div className="flex justify-between items-center mt-6">
+          {/* Nút Revoke Role ở góc trái */}
+          {formData.role !== 'user' &&
+            formData.email !== 'admin@example.com' && (
+              <Button
+                label="Revoke Role"
+                className="bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600"
+                severity="warning"
+                onClick={handleRevokeRole}
+              />
+            )}
+
+          {/* Nút Save và Cancel ở góc phải */}
+          <div className="flex gap-2">
+            <Button
+              label="Cancel"
+              onClick={onClose}
+              severity="secondary"
+              className="bg-gray-300 text-gray-800 p-2 rounded-md hover:bg-gray-400"
+            />
+            <Button
+              label="Save"
+              onClick={handleSubmit}
+              className="bg-[#A8DCE7] text-white p-2 rounded-md hover:bg-[#79c2d2]"
+            />
+          </div>
+        </div>
       </div>
-      {alert.show && (
-        <div className="mb-6">
-          <Alert
-            variant={alert.variant}
-            title={alert.title}
-            message={alert.message}
-            showLink={false}
-          />
-        </div>
-      )}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-            <i className="pi pi-user mr-2" /> Name *
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
-            placeholder="Enter user name"
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-            <i className="pi pi-comment mr-2" /> Description
-          </label>
-          <textarea
-            value={description || ''}
-            onChange={(e) => setDescription(e.target.value)}
-            className="h-24 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
-            placeholder="Enter user description"
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-            <i className="pi pi-envelope mr-2" /> Email *
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
-            placeholder="Enter email address"
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-            <i className="pi pi-shield mr-2" /> Role *
-          </label>
-          <select
-            value={role}
-            onChange={(e) =>
-              setRole(
-                e.target.value as 'admin' | 'product_manager' | 'sale_manager'
-              )
-            }
-            className="h-12 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
-          >
-            {ROLES.map((r) => (
-              <option key={r.value} value={r.value}>
-                {r.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
-            <i className="pi pi-info-circle mr-2" /> Status *
-          </label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value as 'Active' | 'Inactive')}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-[#E6F2F5] px-5 py-3 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#A8DCE7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-all duration-300"
-          >
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </div>
-        <div className="flex gap-3">
-          <button
-            type="submit"
-            className="h-12 rounded-lg bg-[#A8DCE7] px-5 py-3 text-sm font-medium text-gray-800 shadow-md hover:bg-[#95C8D2] focus:ring-2 focus:ring-[#A8DCE7] focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
-          >
-            <i className="pi pi-check mr-2" />{' '}
-            {userToEdit ? 'Update User' : 'Save User'}
-          </button>
-          <button
-            type="button"
-            onClick={handleClose}
-            className="h-12 rounded-lg border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-all duration-300"
-          >
-            <i className="pi pi-times mr-2" /> Cancel
-          </button>
-        </div>
-      </form>
-    </div>
+    </Dialog>
   );
 };
 

@@ -11,7 +11,7 @@ interface User {
   name: string;
   email: string;
   password?: string;
-  role: 'admin' | 'product_manager' | 'sale_manager';
+  role: 'admin' | 'product_manager' | 'sale_manager' | 'user';
   status: 'Active' | 'Inactive';
   createdAt: string;
 }
@@ -43,6 +43,33 @@ const initialUsers: User[] = [
     role: 'sale_manager',
     status: 'Active',
     createdAt: new Date('2025-04-03').toISOString(),
+  },
+  {
+    id: 4,
+    name: 'Test User 1',
+    email: 'test.user1@example.com',
+    password: 'test123',
+    role: 'user',
+    status: 'Active',
+    createdAt: new Date('2025-04-04').toISOString(),
+  },
+  {
+    id: 5,
+    name: 'Test Staff 1',
+    email: 'test.staff1@example.com',
+    password: 'staff123',
+    role: 'product_manager',
+    status: 'Active',
+    createdAt: new Date('2025-04-05').toISOString(),
+  },
+  {
+    id: 6,
+    name: 'Test Staff 2',
+    email: 'test.staff2@example.com',
+    password: 'staff123',
+    role: 'sale_manager',
+    status: 'Active',
+    createdAt: new Date('2025-04-06').toISOString(),
   },
 ];
 
@@ -93,9 +120,21 @@ export default function SignInForm() {
     try {
       let users: User[] = JSON.parse(localStorage.getItem('users') || '[]');
 
+      // Đảm bảo initialUsers (bao gồm admin) được lưu nếu users rỗng
       if (!users.length) {
         users = initialUsers;
         localStorage.setItem('users', JSON.stringify(users));
+        console.log('Initialized users:', users);
+      } else {
+        // Đảm bảo tài khoản admin luôn tồn tại
+        const adminExists = users.some((u) => u.email === 'admin@example.com');
+        if (!adminExists) {
+          users.push(
+            initialUsers.find((u) => u.email === 'admin@example.com')!
+          );
+          localStorage.setItem('users', JSON.stringify(users));
+          console.log('Restored admin user:', users);
+        }
       }
 
       const user = users.find(
@@ -113,11 +152,14 @@ export default function SignInForm() {
       }
 
       localStorage.setItem('user', JSON.stringify(user));
+      console.log('Logged in user:', user);
       navigate('/admin');
     } catch (err: any) {
+      console.error('Login error:', err);
       setErrors((prev) => ({ ...prev, global: err.message || 'Login failed' }));
     }
   };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -128,14 +170,8 @@ export default function SignInForm() {
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-[#e6f7fa]">
-      {/* Header */}
       <div className="w-full max-w-md pt-10 mx-auto">
         <motion.div
           initial={{ x: -20, opacity: 0 }}
@@ -151,7 +187,6 @@ export default function SignInForm() {
         </Link>
       </div>
 
-      {/* Form */}
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto px-4">
         <motion.div
           className="bg-white p-8 rounded-2xl shadow-lg border border-[#d4f0f5]"
@@ -171,7 +206,6 @@ export default function SignInForm() {
 
           <form onSubmit={handleSubmit}>
             <div className="space-y-5">
-              {/* Email */}
               <div>
                 <Label htmlFor="email" className="">
                   Email <span className="text-red-500">*</span>
@@ -186,10 +220,8 @@ export default function SignInForm() {
                     placeholder="Enter your email"
                     className="pl-10"
                     error={!!errors.email}
-                    min={0}
-                    max={100}
-                    step={1}
-                    hint={''}
+                    hint=""
+                    autoComplete="username"
                   />
                   <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                     <i className="pi pi-envelope text-[#79c2d2]" />
@@ -200,7 +232,6 @@ export default function SignInForm() {
                 )}
               </div>
 
-              {/* Password */}
               <div>
                 <Label htmlFor="password" className="">
                   Password <span className="text-red-500">*</span>
@@ -215,10 +246,8 @@ export default function SignInForm() {
                     placeholder="Enter your password"
                     className="pl-10"
                     error={!!errors.password}
-                    min={0}
-                    max={100}
-                    step={1}
-                    hint={''}
+                    hint=""
+                    autoComplete="current-password"
                   />
                   <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                     <i className="pi pi-lock text-[#79c2d2]" />
@@ -238,14 +267,12 @@ export default function SignInForm() {
                 )}
               </div>
 
-              {/* Global error */}
               {errors.global && (
                 <p className="text-red-500 text-sm text-center">
                   {errors.global}
                 </p>
               )}
 
-              {/* Remember & Forgot */}
               <div className="flex items-center justify-between">
                 <Checkbox
                   id="keep-logged-in"
@@ -261,7 +288,6 @@ export default function SignInForm() {
                 </Link>
               </div>
 
-              {/* Submit */}
               <div>
                 <motion.button
                   type="submit"
@@ -275,7 +301,6 @@ export default function SignInForm() {
             </div>
           </form>
 
-          {/* Footer */}
           <div className="mt-6 pt-6 border-t border-[#e6f7fa]">
             <p className="text-sm text-center mb-4">
               Don’t have an account?{' '}
@@ -291,7 +316,6 @@ export default function SignInForm() {
         </motion.div>
       </div>
 
-      {/* Copyright */}
       <motion.div
         className="text-center py-4 text-xs text-gray-500"
         initial={{ opacity: 0 }}
