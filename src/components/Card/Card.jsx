@@ -74,7 +74,7 @@ CardProduct.propTypes = {
   description: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
   brand: PropTypes.string,
-  nameTag: PropTypes.arrayOf(PropTypes.string),
+  nameTag: PropTypes.string,
   imageUrl: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
 };

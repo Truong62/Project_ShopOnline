@@ -70,17 +70,18 @@ const LineChart = React.lazy(
 const BarChart = React.lazy(
   () => import('../../dashboard/src/pages/Charts/BarChart')
 );
-// const Calendar = React.lazy(() => import('../../dashboard/src/pages/'));
+
 const BasicTables = React.lazy(
   () => import('../../dashboard/src/pages/Tables/BasicTables')
 );
-// const FormElements = React.lazy(
-//   () => import('../../dashboard/src/pages/Forms/FormElements')
-// );
+
 const OrderManagement = React.lazy(
   () => import('../../dashboard/src/pages/Forms/OrderManagement')
 );
-// const Blank = React.lazy(() => import('../../dashboard/src/pages/Blank'));
+const BrandManagement = React.lazy(
+  () => import('../../dashboard/src/pages/BrandManagement')
+);
+
 const DashboardHome = React.lazy(
   () => import('../../dashboard/src/pages/Dashboard/Home')
 );
@@ -94,6 +95,7 @@ const YourOrder = lazy(() => import('../pages/YourOrder'));
 const CartPage = lazy(() => import('../pages/Cart'));
 const CheckoutPage = lazy(() => import('../pages/Checkout'));
 const LoginForm = lazy(() => import('../pages/Login'));
+const EmailConfirmForm = lazy(() => import('../pages/Otp-input'));
 const SignUpForm = lazy(() => import('../pages/Signup'));
 const ForgotPassword = lazy(
   () => import('../pages/ResetPassword/Forgot-password')
@@ -130,6 +132,7 @@ const AppRoutes = () => {
         <Route path="/account" element={<YourProfile />} />
         <Route path="/register" element={<SignUpForm />} />
         <Route path="/login" element={<LoginForm />} />
+        <Route path="/email-confirm" element={<EmailConfirmForm />} />
 
         {/* Dashboard Routes */}
         <Route path="/admin" element={<AppLayout />}>
@@ -152,26 +155,26 @@ const AppRoutes = () => {
             }
           />
           {/* <Route
-            path="calendar"
-            element={
-              <ProtectedRoute element={<Calendar />} allowedRoles={['admin']} />
-            }
-          /> */}
-          {/* <Route
-            path="blank"
-            element={
-              <ProtectedRoute element={<Blank />} allowedRoles={['admin']} />
-            }
-          /> */}
-          {/* <Route
-            path="form-elements"
-            element={
-              <ProtectedRoute
-                element={<FormElements />}
-                allowedRoles={['admin']}
-              />
-            }
-          /> */}
+              path="calendar"
+              element={
+                <ProtectedRoute element={<Calendar />} allowedRoles={['admin']} />
+              }
+            />
+            <Route
+              path="blank"
+              element={
+                <ProtectedRoute element={<Blank />} allowedRoles={['admin']} />
+              }
+            />
+            <Route
+              path="form-elements"
+              element={
+                <ProtectedRoute
+                  element={<FormElements />}
+                  allowedRoles={['admin']}
+                />
+              }
+            /> */}
           <Route
             path="order-management"
             element={
@@ -186,6 +189,15 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<ProductFeatures />}
+                allowedRoles={['admin', 'product_manager']}
+              />
+            }
+          />
+          <Route
+            path="brand-management"
+            element={
+              <ProtectedRoute
+                element={<BrandManagement />}
                 allowedRoles={['admin', 'product_manager']}
               />
             }

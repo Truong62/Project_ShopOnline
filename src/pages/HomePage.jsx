@@ -67,7 +67,7 @@ const Home = () => {
     data: products,
     loading,
     error,
-  } = useFetchApi('http://localhost:5000/api/product', {
+  } = useFetchApi('https://18.139.41.39:444/api/products/filter', {
     limit: 10,
     page: 1,
     order: 'desc',
@@ -86,9 +86,9 @@ const Home = () => {
   useEffect(() => {
     if (products && products.length > 0) {
       const newFormattedProducts = products.map((product) => ({
-        id: product.productId,
-        name: product.productName,
-        description: product.productDescription,
+        id: product.product__Id,
+        name: product.product__Name,
+        description: product.product__Description,
         brand: product.brandName,
         image: product.imagePath || 'https://placehold.co/300x300',
         tags: product.tag,
