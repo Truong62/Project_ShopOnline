@@ -5,17 +5,7 @@ import CardProduct from '../Card/Card';
 import FilterSummary from '../FilterSummary';
 import PropTypes from 'prop-types';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import React from 'react';
 
-/**
- *
- * @param products{ProductType}
- * @param selectedCategory
- * @param onRemoveCategory
- * @param onProductClick
- * @returns {Element}
- * @constructor
- */
 const ProductList = ({
   products,
   selectedCategory,
@@ -25,16 +15,14 @@ const ProductList = ({
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 6;
 
-  // Handle fetching more data as the user scrolls
   const fetchMoreData = useCallback(() => {
     setCurrentPage((prevPage) => prevPage + 1);
   }, []);
 
-  // Slice the products array based on the current page
   const currentItems = useMemo(() => {
     const start = (currentPage - 1) * productsPerPage;
     const end = start + productsPerPage;
-    return products.slice(0, end); // Display products up to the current page
+    return products.slice(0, end);
   }, [products, currentPage]);
 
   const truncateDescription = useCallback((description, maxWords) => {
@@ -66,24 +54,37 @@ const ProductList = ({
         endMessage={<p className="text-center">You have seen all products</p>}
       >
         <div className="grid gap-2 sm:gap-3 lg:gap-5 mb-10 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-          {currentItems.map((product, index) => (
-            <CardProduct
-              key={index}
-              nameProduct={product.productName}
-              description={truncateDescription(
-                product.productDescription || product.description || '',
-                14
-              )}
-              price={formatCurrency(product.price)}
-              brand={product.brandName || product.brand}
-              imageUrl={
-                product.variants?.[0]?.images?.[0] ||
-                product.images?.[0] ||
-                'default-image.jpg'
-              }
-              onClick={() => onProductClick(product.productName || product.id)}
-            />
-          ))}
+          {currentItems.map((product, index) => {
+            const mainColor = product.productColors?.[0];
+            console.log(
+              'Rendering product:',
+              product.product__Name,
+              product.product__Id
+            ); // Debug
+            return (
+              <CardProduct
+                key={product.product__Id || index}
+                nameProduct={product.product__Name}
+                description={truncateDescription(
+                  mainColor?.productColor__Description || 'No description',
+                  14
+                )}
+                price={formatCurrency(mainColor?.productColor__Price || 0)}
+                brand={product.brand?.brand__Name || 'Unknown Brand'}
+                imageUrl={
+                  mainColor?.images?.[0] || 'https://via.placeholder.com/400'
+                }
+                onClick={() => {
+                  console.log(
+                    'Clicked product:',
+                    product.product__Name,
+                    product.product__Id
+                  ); // Debug
+                  onProductClick(product); // Truyền object product
+                }}
+              />
+            );
+          })}
         </div>
       </InfiniteScroll>
     </div>

@@ -125,6 +125,37 @@ const UserFeatures: React.FC = () => {
     message: '',
   });
 
+  // Fetch users from dummyjson
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('https://dummyjson.com/users');
+        const data = await response.json();
+        const fetchedUsers = data.users.map((user: any) => {
+          const createdAt = new Date(user.createdAt);
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role || 'product_manager', // Default to 'product_manager' if role is missing
+            status: user.status || 'Active', // Default to 'Active' if status is missing
+            createdAt:
+              createdAt instanceof Date && !isNaN(createdAt.getTime())
+                ? createdAt.toISOString()
+                : new Date().toISOString(),
+            Description: user.Description || null,
+          };
+        });
+        setUsers(fetchedUsers);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        showAlert('error', 'Error', 'Failed to fetch users.');
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   useEffect(() => {
     try {
       localStorage.setItem('users', JSON.stringify(users));

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Label from '../../dashboard/src/components/form/Label';
 import Input from '../../dashboard/src/components/form/input/InputField';
 import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
@@ -8,48 +8,45 @@ import { motion } from 'framer-motion';
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
-    fname: '',
-    lname: '',
     email: '',
     password: '',
+    passwordConfirm: '',
   });
 
   const [errors, setErrors] = useState({
-    fname: '',
-    lname: '',
     email: '',
     password: '',
+    passwordUppercase: '', // Thêm lỗi riêng cho chữ cái in hoa
+    passwordSpecialChar: '', // Thêm lỗi riêng cho ký tự đặc biệt
+    passwordConfirm: '',
     terms: '',
+    general: '',
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return re.test(email);
   };
 
   const validateForm = () => {
     let newErrors = {
-      fname: '',
-      lname: '',
       email: '',
       password: '',
+      passwordUppercase: '',
+      passwordSpecialChar: '',
+      passwordConfirm: '',
       terms: '',
+      general: '',
     };
     let isValid = true;
 
-    if (!formData.fname) {
-      newErrors.fname = 'First name is required!';
-      isValid = false;
-    }
-
-    if (!formData.lname) {
-      newErrors.lname = 'Last name is required!';
-      isValid = false;
-    }
-
+    // Validate email
     if (!formData.email) {
       newErrors.email = 'Email is required!';
       isValid = false;
@@ -58,14 +55,41 @@ export default function SignUpForm() {
       isValid = false;
     }
 
+    // Validate password
     if (!formData.password) {
       newErrors.password = 'Password is required!';
       isValid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters!';
+    } else {
+      if (formData.password.length < 8) {
+        newErrors.password = 'Password must be at least 8 characters!';
+        isValid = false;
+      }
+      if (!/[A-Z]/.test(formData.password)) {
+        newErrors.passwordUppercase =
+          'Password must contain at least one uppercase letter!';
+        isValid = false;
+      }
+      if (!/[0-9]/.test(formData.password)) {
+        newErrors.password = 'Password must contain at least one number!';
+        isValid = false;
+      }
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+        newErrors.passwordSpecialChar =
+          'Password must contain at least one special character (e.g., !@#$%^&*)!';
+        isValid = false;
+      }
+    }
+
+    // Validate password confirmation
+    if (!formData.passwordConfirm) {
+      newErrors.passwordConfirm = 'Please confirm your password!';
+      isValid = false;
+    } else if (formData.password !== formData.passwordConfirm) {
+      newErrors.passwordConfirm = 'Passwords do not match!';
       isValid = false;
     }
 
+    // Validate terms checkbox
     if (!isChecked) {
       newErrors.terms = 'You must agree to the terms and conditions!';
       isValid = false;
@@ -86,17 +110,99 @@ export default function SignUpForm() {
     setErrors((prev) => ({
       ...prev,
       [name]: '',
+      passwordUppercase: '',
+      passwordSpecialChar: '',
+      general: '',
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log('Submitting', formData);
+    setIsLoading(true);
+    setErrors((prev) => ({ ...prev, general: '' }));
+
+    if (!validateForm()) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        'https://18.139.41.39:444/api/accounts/register',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            PasswordComfirm: formData.passwordConfirm,
+          }),
+        }
+      );
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', [...response.headers]);
+
+      const contentType = response.headers.get('content-type');
+      if (!response.ok) {
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          console.log('Error response:', errorData);
+
+          if (response.status === 400 && errorData.errors) {
+            const errorMessages = Object.values(errorData.errors)
+              .flat()
+              .join(' ');
+            throw new Error(errorMessages || 'Validation error occurred.');
+          } else if (response.status === 409) {
+            throw new Error(
+              'Email already exists. Please use a different email.'
+            );
+          } else {
+            throw new Error(
+              errorData.message || `HTTP error! Status: ${response.status}`
+            );
+          }
+        } else {
+          const errorText = await response.text();
+          console.log('Error text:', errorText);
+          throw new Error(
+            `HTTP error! Status: ${response.status}, Response: ${errorText || 'No content'}`
+          );
+        }
+      }
+
+      if (response.status === 204) {
+        throw new Error('No content returned from server');
+      }
+
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(
+          `Expected JSON, but received: ${text || 'empty response'}`
+        );
+      }
+
+      const data = await response.json();
+      console.log('Register API response:', data);
+
+      navigate('/email-confirm', {
+        state: { email: formData.email },
+      });
+    } catch (error) {
+      console.error('Register error:', error);
+      setErrors((prev) => ({
+        ...prev,
+        general: error.message || 'Failed to register. Please try again.',
+      }));
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -153,82 +259,6 @@ export default function SignUpForm() {
 
           <form onSubmit={handleSubmit}>
             <motion.div className="space-y-5" variants={containerVariants}>
-              <motion.div
-                variants={itemVariants}
-                className="grid grid-cols-1 gap-5 sm:grid-cols-2"
-              >
-                <div>
-                  <Label htmlFor="fname" className="text-[#2c7d90] font-medium">
-                    First Name <span className="text-red-500">*</span>
-                  </Label>
-                  <div className="relative mt-1">
-                    <Input
-                      type="text"
-                      id="fname"
-                      name="fname"
-                      placeholder="Enter your first name"
-                      value={formData.fname}
-                      onChange={handleChange}
-                      className={`w-full py-3 pl-10 pr-4 rounded-lg border transition-all duration-300 focus:ring-2 focus:ring-[#79c2d2] outline-none ${
-                        errors.fname ? 'border-red-500' : 'border-[#A8DCE7]'
-                      }`}
-                      error={!!errors.fname}
-                      min="0"
-                      max="100"
-                      step="1"
-                      hint=""
-                    />
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <i className="pi pi-user text-[#79c2d2]"></i>
-                    </div>
-                  </div>
-                  {errors.fname && (
-                    <motion.p
-                      className="text-red-500 text-sm mt-1"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      {errors.fname}
-                    </motion.p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="lname" className="text-[#2c7d90] font-medium">
-                    Last Name <span className="text-red-500">*</span>
-                  </Label>
-                  <div className="relative mt-1">
-                    <Input
-                      type="text"
-                      id="lname"
-                      name="lname"
-                      placeholder="Enter your last name"
-                      value={formData.lname}
-                      onChange={handleChange}
-                      className={`w-full py-3 pl-10 pr-4 rounded-lg border transition-all duration-300 focus:ring-2 focus:ring-[#79c2d2] outline-none ${
-                        errors.lname ? 'border-red-500' : 'border-[#A8DCE7]'
-                      }`}
-                      error={!!errors.lname}
-                      min="0"
-                      max="100"
-                      step="1"
-                      hint=""
-                    />
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <i className="pi pi-user text-[#79c2d2]"></i>
-                    </div>
-                  </div>
-                  {errors.lname && (
-                    <motion.p
-                      className="text-red-500 text-sm mt-1"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      {errors.lname}
-                    </motion.p>
-                  )}
-                </div>
-              </motion.div>
-
               <motion.div variants={itemVariants}>
                 <Label htmlFor="email" className="text-[#2c7d90] font-medium">
                   Email <span className="text-red-500">*</span>
@@ -245,10 +275,7 @@ export default function SignUpForm() {
                       errors.email ? 'border-red-500' : 'border-[#A8DCE7]'
                     }`}
                     error={!!errors.email}
-                    min="0"
-                    max="100"
-                    step="1"
-                    hint=""
+                    disabled={isLoading}
                   />
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <i className="pi pi-envelope text-[#79c2d2]"></i>
@@ -281,13 +308,18 @@ export default function SignUpForm() {
                     value={formData.password}
                     onChange={handleChange}
                     className={`w-full py-3 pl-10 pr-10 rounded-lg border transition-all duration-300 focus:ring-2 focus:ring-[#79c2d2] outline-none ${
-                      errors.password ? 'border-red-500' : 'border-[#A8DCE7]'
+                      errors.password ||
+                      errors.passwordUppercase ||
+                      errors.passwordSpecialChar
+                        ? 'border-red-500'
+                        : 'border-[#A8DCE7]'
                     }`}
-                    error={!!errors.password}
-                    min="0"
-                    max="100"
-                    step="1"
-                    hint=""
+                    error={
+                      !!errors.password ||
+                      !!errors.passwordUppercase ||
+                      !!errors.passwordSpecialChar
+                    }
+                    disabled={isLoading}
                   />
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <i className="pi pi-lock text-[#79c2d2]"></i>
@@ -296,6 +328,7 @@ export default function SignUpForm() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-[#79c2d2] hover:text-[#2c7d90] transition-colors"
+                    disabled={isLoading}
                   >
                     {showPassword ? (
                       <i className="pi pi-eye" />
@@ -313,7 +346,85 @@ export default function SignUpForm() {
                     {errors.password}
                   </motion.p>
                 )}
+                {errors.passwordUppercase && (
+                  <motion.p
+                    className="text-red-500 text-sm mt-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    {errors.passwordUppercase}
+                  </motion.p>
+                )}
+                {errors.passwordSpecialChar && (
+                  <motion.p
+                    className="text-red-500 text-sm mt-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    {errors.passwordSpecialChar}
+                  </motion.p>
+                )}
               </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <Label
+                  htmlFor="passwordConfirm"
+                  className="text-[#2c7d90] font-medium"
+                >
+                  Confirm Password <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative mt-1">
+                  <Input
+                    id="passwordConfirm"
+                    name="passwordConfirm"
+                    placeholder="Confirm your password"
+                    type={showPasswordConfirm ? 'text' : 'password'}
+                    value={formData.passwordConfirm}
+                    onChange={handleChange}
+                    className={`w-full py-3 pl-10 pr-10 rounded-lg border transition-all duration-300 focus:ring-2 focus:ring-[#79c2d2] outline-none ${
+                      errors.passwordConfirm
+                        ? 'border-red-500'
+                        : 'border-[#A8DCE7]'
+                    }`}
+                    error={!!errors.passwordConfirm}
+                    disabled={isLoading}
+                  />
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i className="pi pi-lock text-[#79c2d2]"></i>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-[#79c2d2] hover:text-[#2c7d90] transition-colors"
+                    disabled={isLoading}
+                  >
+                    {showPasswordConfirm ? (
+                      <i className="pi pi-eye" />
+                    ) : (
+                      <i className="pi pi-eye-slash" />
+                    )}
+                  </button>
+                </div>
+                {errors.passwordConfirm && (
+                  <motion.p
+                    className="text-red-500 text-sm mt-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    {errors.passwordConfirm}
+                  </motion.p>
+                )}
+              </motion.div>
+
+              {errors.general && (
+                <motion.p
+                  className="text-red-500 text-sm mt-1 text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {errors.general}
+                </motion.p>
+              )}
 
               <motion.div variants={itemVariants} className="mt-4">
                 <div className="flex items-start gap-3 bg-[#f0f9fb] p-3 rounded-lg border border-[#d4f0f5]">
@@ -322,6 +433,7 @@ export default function SignUpForm() {
                       id="terms-checkbox"
                       checked={isChecked}
                       onChange={setIsChecked}
+                      disabled={isLoading}
                     />
                   </div>
                   <p className="text-sm text-gray-600">
@@ -349,11 +461,12 @@ export default function SignUpForm() {
               <motion.div variants={itemVariants} className="mt-4">
                 <motion.button
                   type="submit"
-                  className="w-full py-3 px-4 bg-[#A8DCE7] hover:bg-[#79c2d2] text-white font-medium rounded-lg transition-all duration-300 shadow-md"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-3 px-4 bg-[#A8DCE7] hover:bg-[#79c2d2] text-white font-medium rounded-lg transition-all duration-300 shadow-md disabled:bg-gray-400"
+                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                  disabled={isLoading}
                 >
-                  Sign Up
+                  {isLoading ? 'Signing Up...' : 'Sign Up'}
                 </motion.button>
               </motion.div>
             </motion.div>
@@ -373,7 +486,7 @@ export default function SignUpForm() {
               </Link>
             </p>
             <p className="text-sm text-center text-gray-500 mb-4">or</p>
-            <GoogleSinUpButton />
+            <GoogleSinUpButton disabled={isLoading} />
           </motion.div>
         </motion.div>
       </div>

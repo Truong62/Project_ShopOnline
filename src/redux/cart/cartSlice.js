@@ -59,9 +59,19 @@ const cartSlice = createSlice({
       state.push(action.payload);
       saveState(state);
     },
+    setCartFromStorage: (state, action) => {
+      const newCart = action.payload;
+      saveState(newCart);
+      return newCart;
+    },
   },
 });
 
-export const { addToCart, updateQuantity, removeItem, buyNow } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  updateQuantity,
+  removeItem,
+  buyNow,
+  setCartFromStorage,
+} = cartSlice.actions;
 export default cartSlice.reducer;

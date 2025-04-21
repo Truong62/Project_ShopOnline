@@ -43,15 +43,22 @@ const Product = () => {
     [updateProductFilters]
   );
 
-  const handleProductClick = (productName) => {
-    navigate(`/products/${productName}`);
+  const handleProductClick = (product) => {
+    if (!product || typeof product !== 'object') {
+      console.error('Invalid product:', product);
+      return;
+    }
+    // Chuyển hướng truyền kèm state
+    navigate(`/products/${product.product__Name}`, { state: { product } });
   };
 
   useEffect(() => {
-    fetch('https://dummyjson.com/products')
+    fetch('https://18.139.41.39:444/api/products/filter')
       .then((res) => res.json())
       .then((data) => {
-        setProducts(data.products || []);
+        console.log('Raw API data:', data);
+
+        setProducts(data);
         setLoading(false);
       })
       .catch((error) => {

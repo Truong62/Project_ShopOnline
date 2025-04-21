@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Label from '../../dashboard/src/components/form/Label';
 import Input from '../../dashboard/src/components/form/input/InputField';
 import Checkbox from '../../dashboard/src/components/form/input/Checkbox';
-import { buyNow } from '../redux/cart/cartSlice';
+import { addToCart } from '../redux/cart/cartSlice';
 import GoogleSignInButton from '../../dashboard/src/components/auth/GoogleSignInButton';
 import { motion } from 'framer-motion';
 
@@ -17,23 +17,14 @@ export default function SignInForm() {
   const [errors, setErrors] = useState({
     email: '',
     password: '',
+    general: '',
   });
 
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const dispatch = useDispatch();
-  const [account, setAccount] = useState(null); // State to store account info
-
-  // Fetch user account data from dummyjson API
-  useEffect(() => {
-    fetch('https://dummyjson.com/users')
-      .then((res) => res.json())
-      .then((data) => {
-        // Assuming the first user is the one you're interested in for this demo
-        setAccount(data.users[0]); // Adjust according to your logic (e.g., based on the email or ID)
-      });
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,7 +32,7 @@ export default function SignInForm() {
   };
 
   const validateForm = () => {
-    let newErrors = { email: '', password: '' };
+    let newErrors = { email: '', password: '', general: '' };
     let isValid = true;
 
     if (!formData.email) {
@@ -78,46 +69,106 @@ export default function SignInForm() {
     setErrors((prev) => ({
       ...prev,
       [name]: '',
+      general: '',
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setErrors((prev) => ({ ...prev, general: '' }));
 
-    if (validateForm() && account) {
-      if (
-        formData.email === account.email &&
-        formData.password === account.password
-      ) {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('loggedInUser', JSON.stringify(account));
+    if (!validateForm()) {
+      setIsLoading(false);
+      return;
+    }
 
-        const redirectPath = localStorage.getItem('redirectAfterLogin');
-        const tempProduct = localStorage.getItem('buyNowTempProduct');
+    try {
+      const response = await fetch(
+        'https://18.139.41.39:444/api/accounts/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        }
+      );
 
-        // Trường hợp từ "Buy Now"
-        if (redirectPath === 'checkout' && tempProduct) {
-          const parsedProduct = JSON.parse(tempProduct);
-          dispatch(buyNow(parsedProduct));
-          localStorage.removeItem('buyNowTempProduct');
-          localStorage.removeItem('redirectAfterLogin');
-          navigate('/checkout');
+      console.log('Response status:', response.status); // Debug status code
+      console.log('Response headers:', [...response.headers]); // Debug headers
+
+      // Kiểm tra Content-Type trước khi parse JSON
+      const contentType = response.headers.get('content-type');
+      if (!response.ok) {
+        // Thử parse JSON lỗi nếu có
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.message || `HTTP error! Status: ${response.status}`
+          );
+        } else {
+          // Nếu không phải JSON, lấy text
+          const errorText = await response.text();
+          throw new Error(
+            `HTTP error! Status: ${response.status}, Response: ${errorText || 'No content'}`
+          );
         }
-        // Trường hợp quay lại trang trước
-        else if (redirectPath) {
-          localStorage.removeItem('redirectAfterLogin');
-          navigate(redirectPath);
-        }
-        // Trường hợp không có gì
-        else {
-          navigate('/');
-        }
-      } else {
-        setErrors((prev) => ({
-          ...prev,
-          password: 'Invalid email or password',
-        }));
       }
+
+      // Kiểm tra response có nội dung không
+      if (response.status === 204) {
+        throw new Error('No content returned from server');
+      }
+
+      // Kiểm tra Content-Type
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(
+          `Expected JSON, but received: ${text || 'empty response'}`
+        );
+      }
+
+      const data = await response.json();
+      console.log('Login API response:', data); // Debug dữ liệu
+
+      // Xử lý dữ liệu user
+      const account = data.user || data.account || data;
+      // if (!account || !account.email) {
+      //   throw new Error('Invalid account data from API');
+      // }
+
+      // Lưu thông tin đăng nhập
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('loggedInUser', JSON.stringify(account));
+
+      // Xử lý redirect
+      const redirectPath = localStorage.getItem('redirectAfterLogin');
+      const tempProduct = localStorage.getItem('buyNowTempProduct');
+
+      if (redirectPath === 'checkout' && tempProduct) {
+        const parsedProduct = JSON.parse(tempProduct);
+        dispatch(addToCart(parsedProduct));
+        localStorage.removeItem('buyNowTempProduct');
+        localStorage.removeItem('redirectAfterLogin');
+        navigate('/checkout');
+      } else if (redirectPath) {
+        localStorage.removeItem('redirectAfterLogin');
+        navigate(redirectPath);
+      } else {
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setErrors((prev) => ({
+        ...prev,
+        general: error.message || 'Failed to sign in. Please try again.',
+      }));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -136,10 +187,6 @@ export default function SignInForm() {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   };
-
-  if (!account) {
-    return <div>Loading...</div>; // Loading while account data is being fetched
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-[#e6f7fa]">
@@ -169,7 +216,7 @@ export default function SignInForm() {
           <motion.div variants={itemVariants}>
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 bg-[#A8DCE7] rounded-full flex items-center justify-center">
-                <i className="pi pi-user text-white text-3xl"></i>
+                <i className="pi pi-user-plus text-white text-3xl"></i>
               </div>
             </div>
             <h1 className="mb-2 font-bold text-center text-gray-800 text-2xl">
@@ -198,6 +245,7 @@ export default function SignInForm() {
                       errors.email ? 'border-red-500' : 'border-[#A8DCE7]'
                     }`}
                     error={!!errors.email}
+                    disabled={isLoading}
                   />
                 </div>
                 {errors.email && (
@@ -229,11 +277,13 @@ export default function SignInForm() {
                     className={`w-full py-3 pl-10 pr-10 rounded-lg border transition-all duration-300 focus:ring-2 focus:ring-[#79c2d2] outline-none ${
                       errors.password ? 'border-red-500' : 'border-[#A8DCE7]'
                     }`}
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-[#79c2d2] hover:text-[#2c7d90] transition-colors"
+                    disabled={isLoading}
                   >
                     {showPassword ? (
                       <i className="pi pi-eye" />
@@ -253,6 +303,16 @@ export default function SignInForm() {
                 )}
               </motion.div>
 
+              {errors.general && (
+                <motion.p
+                  className="text-red-500 text-sm mt-1 text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {errors.general}
+                </motion.p>
+              )}
+
               <motion.div
                 className="flex items-center justify-between"
                 variants={itemVariants}
@@ -262,6 +322,7 @@ export default function SignInForm() {
                   label="Keep me logged in"
                   checked={isChecked}
                   onChange={setIsChecked}
+                  disabled={isLoading}
                 />
                 <Link
                   to="/reset-password"
@@ -274,14 +335,25 @@ export default function SignInForm() {
               <motion.div variants={itemVariants}>
                 <button
                   type="submit"
-                  className="w-full py-3 mt-5 text-white font-medium bg-[#79c2d2] rounded-lg hover:bg-[#2c7d90] transition-colors"
+                  className="w-full py-3 mt-5 text-white font-medium bg-[#79c2d2] rounded-lg hover:bg-[#2c7d90] transition-colors disabled:bg-gray-400"
+                  disabled={isLoading}
                 >
-                  Sign In
+                  {isLoading ? 'Signing In...' : 'Sign In'}
                 </button>
               </motion.div>
 
               <motion.div className="text-center mt-5" variants={itemVariants}>
-                <GoogleSignInButton />
+                <p className="text-sm text-center mb-4">
+                  Dont have account ?{' '}
+                  <Link
+                    to="/register"
+                    className="text-[#2c7d90] hover:text-[#1a4e5a] font-medium transition-colors"
+                  >
+                    Register
+                  </Link>
+                </p>
+                <p className="text-sm text-center text-gray-500 mb-4">or</p>
+                <GoogleSignInButton disabled={isLoading} />
               </motion.div>
             </motion.div>
           </form>

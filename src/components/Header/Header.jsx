@@ -36,6 +36,8 @@ const Header = () => {
     navigate('/login');
   };
 
+  useEffect(() => {});
+
   return (
     <header className="sticky top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 p-2">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
