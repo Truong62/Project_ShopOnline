@@ -5,8 +5,6 @@ import { Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { formatCurrency } from '../utils/formatCurrency';
-import { addToCart, updateQuantity } from '../redux/cart/cartSlice';
-import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from 'primereact/toast';
 import { Panel } from 'primereact/panel';
 import useDeviceType from '../hooks/useDeviceType';
@@ -17,8 +15,6 @@ const ProductDetailsCard = () => {
   const { link } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart);
   const { isMobile } = useDeviceType();
   const toast = useRef(null);
 
@@ -28,12 +24,15 @@ const ProductDetailsCard = () => {
     product?.productColors[0]?.productColor__Name || ''
   );
   const [selectedSize, setSelectedSize] = useState(null);
+  const productColorSizes = product?.product__ProductColorSizes || [];
+
   const currentVariant = product?.productColors.find(
     (variant) => variant.productColor__Name === selectedColor
   );
   const [mainImageIndex, setMainImageIndex] = useState(0);
 
   const [sizes, setSizes] = useState([]);
+  const [quantity] = useState(1);
   const [sizesLoading, setSizesLoading] = useState(false);
   const [sizesError, setSizesError] = useState(null);
 
@@ -42,22 +41,6 @@ const ProductDetailsCard = () => {
       ? currentVariant.images
       : ['https://via.placeholder.com/400'];
 
-  // Đồng bộ localStorage với Redux khi component mount
-  useEffect(() => {
-    const localCartItems = localStorage.getItem('cartItems');
-    if (localCartItems) {
-      const parsedCartItems = JSON.parse(localCartItems);
-      parsedCartItems.forEach((item) => {
-        dispatch(addToCart(item));
-      });
-      console.log(
-        'Đã đồng bộ cartItems từ localStorage vào Redux:',
-        parsedCartItems
-      );
-    }
-  }, [dispatch]);
-
-  // Fetch sizes từ API
   useEffect(() => {
     const fetchSizes = async () => {
       if (!currentVariant?.productColor__Id) return;
@@ -67,23 +50,14 @@ const ProductDetailsCard = () => {
         const response = await fetch(
           `https://18.139.41.39:444/api/sizes/product-color/${currentVariant.productColor__Id}`
         );
-        console.log('Fetch sizes response:', {
-          status: response.status,
-          statusText: response.statusText,
-          headers: Object.fromEntries(response.headers.entries()),
-        });
-
         if (!response.ok) {
           const text = await response.text();
-          console.log('Fetch sizes error response body:', text);
           throw new Error(
             `HTTP error! Status: ${response.status}, Body: ${text}`
           );
         }
 
         const text = await response.text();
-        console.log('Fetch sizes response body:', text);
-
         if (!text) {
           throw new Error('Empty response body');
         }
@@ -92,7 +66,6 @@ const ProductDetailsCard = () => {
         try {
           data = JSON.parse(text);
         } catch (err) {
-          console.error('JSON parse error:', err);
           throw new Error('Invalid JSON response');
         }
 
@@ -104,7 +77,6 @@ const ProductDetailsCard = () => {
         );
       } catch (err) {
         setSizesError(err);
-        console.error('Fetch sizes error:', err);
         showToast(
           'error',
           'Fetch Error',
@@ -118,14 +90,8 @@ const ProductDetailsCard = () => {
     fetchSizes();
   }, [currentVariant]);
 
-  // Kiểm tra product và currentVariant
   useEffect(() => {
-    console.log('Product from state:', product);
-    console.log('Link from params:', link);
-    console.log('Current variant:', currentVariant);
-    console.log('Sizes từ API:', sizes);
     if (!product) {
-      console.error('No product data found for link:', link);
       navigate('/page-not-found');
     }
     if (product && !currentVariant && product.productColors.length > 0) {
@@ -165,120 +131,22 @@ const ProductDetailsCard = () => {
   };
 
   const handleAddToCart = async () => {
-    // Kiểm tra đã chọn màu và size chưa
     if (!selectedColor || !selectedSize) {
-      showToast(
-        'warning',
-        'Thiếu thông tin',
-        'Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng.'
-      );
+      showToast('error', 'Lỗi', 'Vui lòng chọn đầy đủ màu sắc, kích cỡ.');
       return;
     }
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser')); // Parse JSON
+    const accessToken = loggedInUser?.accessToken;
 
-    const sizeInfo = sizes.find((size) => size.sizeValue === selectedSize);
-    if (!sizeInfo) {
-      showToast(
-        'warning',
-        'Kích thước không khả dụng',
-        'Kích thước đã chọn hiện không có sẵn.'
-      );
+    if (!accessToken) {
+      showToast('error', 'Lỗi', 'Bạn cần đăng nhập để thêm vào giỏ hàng.');
+      navigate('/login');
       return;
     }
-
-    // Kiểm tra đăng nhập và lấy token
-    const loggedInUser = localStorage.getItem('loggedInUser');
-    let userData = null;
-    let accessToken = null;
-    let userId = null;
-
     try {
-      if (loggedInUser) {
-        userData = JSON.parse(loggedInUser);
-        accessToken = userData?.accessToken;
-
-        // Decode token để lấy userId
-        const payload = JSON.parse(atob(accessToken.split('.')[1]));
-        userId = Number(payload.sub);
-
-        // Kiểm tra token hết hạn
-        const exp = payload.exp * 1000; // Convert to milliseconds
-        const isTokenExpired = Date.now() >= exp;
-
-        if (isTokenExpired) {
-          showToast(
-            'error',
-            'Phiên hết hạn',
-            'Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.'
-          );
-          navigate('/login', { replace: true });
-          return;
-        }
-      }
-    } catch (err) {
-      console.error('Lỗi xử lý token:', err);
-      showToast(
-        'error',
-        'Lỗi xác thực',
-        'Có lỗi xảy ra khi xác thực. Vui lòng đăng nhập lại.'
-      );
-      navigate('/login', { replace: true });
-      return;
-    }
-
-    // Nếu chưa đăng nhập hoặc không có token
-    if (!accessToken || !userId) {
-      showToast(
-        'info',
-        'Vui lòng đăng nhập',
-        'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.'
-      );
-
-      // Lưu sản phẩm tạm thời
-      localStorage.setItem(
-        'cartTempProduct',
-        JSON.stringify({
-          id: product.product__Id,
-          name: product.product__Name,
-          price: currentVariant.productColor__Price,
-          color: selectedColor,
-          size: selectedSize,
-          quantity: 1,
-          image: images[0],
-        })
-      );
-
-      navigate('/login', { replace: true });
-      return;
-    }
-
-    try {
-      // Lấy ProductColorSizeId
-      const currentColorVariant = product.productColors.find(
-        (variant) => variant.productColor__Name === selectedColor
-      );
-
-      if (!currentColorVariant) {
-        throw new Error('Không tìm thấy thông tin màu sắc');
-      }
-
-      // Gọi API để lấy productColorSizeId
-      const productColorSizeResponse = await fetch(
-        `https://18.139.41.39:444/api/product-colors-sizes/by-color-and-size?productColorId=${currentColorVariant.productColor__Id}&sizeId=${sizeInfo.sizeId}`
-      );
-
-      const productColorSizeData = await productColorSizeResponse.json();
-      const productColorSizeId = productColorSizeData.productColorSize__Id;
-
-      // Chuẩn bị dữ liệu gửi lên API
-      const requestBody = {
-        productId: Number(product.product__Id),
-        productColorSizeId: productColorSizeId,
-        quantity: 1,
-        userId: userId,
-      };
-
-      // Gọi API thêm vào giỏ hàng
-      const response = await fetch(
+      const loggedInUser = localStorage.getItem('loggedInUser');
+      const accessToken = loggedInUser?.accessToken;
+      const addRes = await fetch(
         'https://18.139.41.39:444/api/cart-items/add',
         {
           method: 'POST',
@@ -286,119 +154,107 @@ const ProductDetailsCard = () => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify({
+            cartItem__Quantity: quantity,
+            ProductColor__Id:
+              selectedProductColorSize?.productColorSize__ProductColorId,
+            Size__Id: selectedProductColorSize?.productColorSize__SizeId,
+          }),
         }
       );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        if (response.status === 401) {
-          showToast(
-            'error',
-            'Xác thực thất bại',
-            'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.'
-          );
-          navigate('/login', { replace: true });
-          return;
-        }
-        throw new Error(`Lỗi API: ${errorText}`);
+      const resData = await addRes.json();
+
+      if (addRes.ok) {
+        showToast(
+          'success',
+          'Thành công',
+          'Sản phẩm đã được thêm vào giỏ hàng.'
+        );
+      } else {
+        const message = resData?.message || 'Không thể thêm vào giỏ hàng.';
+        showToast('error', 'Lỗi', message);
       }
-
-      // Cập nhật Redux store và localStorage
-      const cartItem = {
-        id: product.product__Id,
-        name: product.product__Name,
-        price: currentVariant.productColor__Price,
-        color: selectedColor,
-        size: selectedSize,
-        quantity: 1,
-        image: images[0],
-      };
-
-      dispatch(addToCart(cartItem));
-
-      // Lưu giỏ hàng vào localStorage riêng cho accessToken
-      const cartKey = `cartItems_${accessToken}`;
-      const currentCartItems = JSON.parse(
-        localStorage.getItem(cartKey) || '[]'
-      );
-      currentCartItems.push(cartItem);
-      localStorage.setItem(cartKey, JSON.stringify(currentCartItems));
-
-      showToast('success', 'Thành công', 'Sản phẩm đã được thêm vào giỏ hàng.');
     } catch (error) {
-      console.error('Lỗi thêm vào giỏ hàng:', error);
-      showToast(
-        'error',
-        'Lỗi',
-        'Không thể thêm sản phẩm vào giỏ hàng: ' + error.message
+      showToast('error', 'Lỗi', 'Đã xảy ra lỗi khi thêm vào giỏ hàng.');
+      console.error(error);
+    }
+
+    productColorSizes.forEach((item) => {
+      console.log(
+        'color:',
+        item.productColorSize__Color,
+        'size:',
+        item.productColorSize__Size
       );
+    });
+    console.log('selectedColor:', selectedColor, 'selectedSize:', selectedSize);
+
+    const selectedProductColorSize = productColorSizes.find(
+      (option) =>
+        option.productColorSize__Color === selectedColor &&
+        option.productColorSize__Size === selectedSize
+    );
+    console.log(
+      'selectedProductColorSize',
+      selectedProductColorSize,
+      'productColorSizes',
+      productColorSizes
+    );
+    if (!selectedProductColorSize) {
+      showToast('error', 'Lỗi', 'Kết hợp màu sắc và kích cỡ không khả dụng.');
+      return;
     }
   };
 
-  // Cập nhật useEffect để kiểm tra loggedInUser và đồng bộ cartItems
   useEffect(() => {
     const redirectPath = localStorage.getItem('redirectAfterLogin');
     const tempProduct = localStorage.getItem('buyNowTempProduct');
     const cartTempProduct = localStorage.getItem('cartTempProduct');
-    const loggedInUser = localStorage.getItem('loggedInUser');
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-    let userData = null;
-    try {
-      userData = loggedInUser ? JSON.parse(loggedInUser) : null;
-    } catch (err) {
-      console.error('Lỗi parse loggedInUser trong useEffect:', err);
-    }
+    if (isLoggedIn && (tempProduct || cartTempProduct)) {
+      let currentCartItems = JSON.parse(
+        localStorage.getItem('cartItems') || '[]'
+      );
 
-    if (isLoggedIn && userData) {
       if (redirectPath === 'checkout' && tempProduct) {
         const parsedProduct = JSON.parse(tempProduct);
-        console.log(
-          `✅ Logged with account: ${userData.email || userData.username}`
-        );
-        console.log('🛒 Product to buy:', parsedProduct);
-
-        dispatch(addToCart(parsedProduct));
-        localStorage.setItem(
-          'cartItems',
-          JSON.stringify([...cartItems, parsedProduct])
-        );
-
-        localStorage.removeItem('cartTempProduct');
-        localStorage.removeItem('buyNowTempProduct');
-        localStorage.removeItem('redirectAfterLogin');
-
-        navigate('/checkout', { replace: true });
-      } else if (redirectPath === 'cart' && cartTempProduct) {
-        const parsedProduct = JSON.parse(cartTempProduct);
-        console.log(
-          `✅ Logged with account: ${userData.email || userData.username}`
-        );
-        console.log('🛒 Product to add to cart:', parsedProduct);
-
-        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng (Redux) chưa
-        const existingItem = cartItems.find(
+        const existingItemIndex = currentCartItems.findIndex(
           (item) =>
             item.id === parsedProduct.id &&
             item.color === parsedProduct.color &&
             item.size === parsedProduct.size
         );
 
-        if (existingItem) {
-          dispatch(
-            updateQuantity({
-              id: parsedProduct.id,
-              color: parsedProduct.color,
-              size: parsedProduct.size,
-              quantity: existingItem.quantity + parsedProduct.quantity,
-            })
-          );
+        if (existingItemIndex >= 0) {
+          currentCartItems[existingItemIndex].quantity +=
+            parsedProduct.quantity;
         } else {
-          dispatch(addToCart(parsedProduct));
+          currentCartItems.push(parsedProduct);
         }
 
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        localStorage.setItem('cartItems', JSON.stringify(currentCartItems));
+        localStorage.removeItem('buyNowTempProduct');
+        localStorage.removeItem('redirectAfterLogin');
+        navigate('/checkout', { replace: true });
+      } else if (redirectPath === 'cart' && cartTempProduct) {
+        const parsedProduct = JSON.parse(cartTempProduct);
+        const existingItemIndex = currentCartItems.findIndex(
+          (item) =>
+            item.id === parsedProduct.id &&
+            item.color === parsedProduct.color &&
+            item.size === parsedProduct.size
+        );
+
+        if (existingItemIndex >= 0) {
+          currentCartItems[existingItemIndex].quantity +=
+            parsedProduct.quantity;
+        } else {
+          currentCartItems.push(parsedProduct);
+        }
+
+        localStorage.setItem('cartItems', JSON.stringify(currentCartItems));
         localStorage.removeItem('cartTempProduct');
         localStorage.removeItem('redirectAfterLogin');
 
@@ -408,8 +264,6 @@ const ProductDetailsCard = () => {
           'Sản phẩm đã được thêm vào giỏ hàng thành công.'
         );
       }
-    } else {
-      console.log('Chưa đăng nhập, không xử lý redirect.');
     }
 
     const handleBeforeUnload = () => {
@@ -423,7 +277,7 @@ const ProductDetailsCard = () => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [dispatch, navigate, cartItems]);
+  }, [navigate]);
 
   const handleBuyNow = async () => {
     if (!selectedColor || !selectedSize) {
@@ -436,12 +290,23 @@ const ProductDetailsCard = () => {
     }
 
     const sizeInfo = sizes.find((size) => size.sizeValue === selectedSize);
-
     if (!sizeInfo) {
       showToast(
         'warning',
         'Kích thước không khả dụng',
-        'Kích thước đã chọn hiện không có sẵn.'
+        'Kích thước đã chọn không tồn tại cho màu này.'
+      );
+      return;
+    }
+
+    const currentColorVariant = product.productColors.find(
+      (variant) => variant.productColor__Name === selectedColor
+    );
+    if (!currentColorVariant) {
+      showToast(
+        'warning',
+        'Màu sắc không khả dụng',
+        'Màu sắc đã chọn không tồn tại.'
       );
       return;
     }
@@ -454,12 +319,12 @@ const ProductDetailsCard = () => {
       size: selectedSize,
       quantity: 1,
       image: images[0],
+      productColorId: currentColorVariant.productColor__Id,
+      sizeId: sizeInfo.sizeId,
     };
 
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const loggedInUser = localStorage.getItem('loggedInUser');
-
-    if (!isLoggedIn || !loggedInUser) {
+    if (!isLoggedIn) {
       showToast(
         'info',
         'Vui lòng đăng nhập',
@@ -471,33 +336,28 @@ const ProductDetailsCard = () => {
         JSON.stringify(productToCheckout)
       );
       localStorage.setItem('redirectAfterLogin', 'checkout');
-
       navigate('/login', { replace: true });
       return;
     }
 
-    // Thêm sản phẩm vào giỏ hàng (Redux) trước khi chuyển hướng đến checkout
-    const existingItem = cartItems.find(
+    let currentCartItems = JSON.parse(
+      localStorage.getItem('cartItems') || '[]'
+    );
+    const existingItemIndex = currentCartItems.findIndex(
       (item) =>
         item.id === productToCheckout.id &&
         item.color === productToCheckout.color &&
         item.size === productToCheckout.size
     );
 
-    if (existingItem) {
-      dispatch(
-        updateQuantity({
-          id: productToCheckout.id,
-          color: productToCheckout.color,
-          size: productToCheckout.size,
-          quantity: existingItem.quantity + productToCheckout.quantity,
-        })
-      );
+    if (existingItemIndex >= 0) {
+      currentCartItems[existingItemIndex].quantity +=
+        productToCheckout.quantity;
     } else {
-      dispatch(addToCart(productToCheckout));
+      currentCartItems.push(productToCheckout);
     }
 
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    localStorage.setItem('cartItems', JSON.stringify(currentCartItems));
     navigate('/checkout', { replace: true });
   };
 

@@ -23,7 +23,7 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     const buyNowItem = localStorage.getItem('buyNowTempProduct');
-    const localCart = localStorage.getItem('cart');
+    const localCart = localStorage.getItem('cartItems');
 
     if (buyNowItem) {
       try {
