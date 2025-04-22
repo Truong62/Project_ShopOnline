@@ -12,7 +12,7 @@ const ProtectedRoute = ({ allowedRoles, element }) => {
   }
 
   if (!allowedRoles.includes(role)) {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to="/Admin" replace />;
   }
 
   return element;
@@ -135,35 +135,43 @@ const AppRoutes = () => {
         <Route path="/email-confirm" element={<EmailConfirmForm />} />
 
         {/* Dashboard Routes */}
+        <Route path="/ad" element={<AppLayout />} />
+
         <Route path="/admin" element={<AppLayout />}>
           <Route
             index
             element={
               <ProtectedRoute
                 element={<DashboardHome />}
-                allowedRoles={['admin', 'product_manager', 'sale_manager']}
+                allowedRoles={[
+                  'Admin',
+                  'ProductManager',
+                  'SaleManager',
+                  'Staff',
+                ]}
               />
             }
           />
-          <Route
+          <Route path="your-profile" element={<YourProfile />} />
+          {/* <Route
             path="profile"
             element={
               <ProtectedRoute
                 element={<UserProfiles />}
-                allowedRoles={['admin', 'product_manager', 'sale_manager']}
+                allowedRoles={['Admin', 'ProductManager', 'SaleManager']}
               />
             }
-          />
+          /> */}
           {/* <Route
               path="calendar"
               element={
-                <ProtectedRoute element={<Calendar />} allowedRoles={['admin']} />
+                <ProtectedRoute element={<Calendar />} allowedRoles={['Admin']} />
               }
             />
             <Route
               path="blank"
               element={
-                <ProtectedRoute element={<Blank />} allowedRoles={['admin']} />
+                <ProtectedRoute element={<Blank />} allowedRoles={['Admin']} />
               }
             />
             <Route
@@ -171,7 +179,7 @@ const AppRoutes = () => {
               element={
                 <ProtectedRoute
                   element={<FormElements />}
-                  allowedRoles={['admin']}
+                  allowedRoles={['Admin']}
                 />
               }
             /> */}
@@ -180,7 +188,7 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<OrderManagement />}
-                allowedRoles={['admin', 'sale_manager']}
+                allowedRoles={['Admin', 'SaleManager']}
               />
             }
           />
@@ -189,7 +197,7 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<ProductFeatures />}
-                allowedRoles={['admin', 'product_manager']}
+                allowedRoles={['Admin', 'ProductManager']}
               />
             }
           />
@@ -198,7 +206,7 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<BrandManagement />}
-                allowedRoles={['admin', 'product_manager']}
+                allowedRoles={['Admin', 'ProductManager']}
               />
             }
           />
@@ -207,7 +215,7 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<UserManagement />}
-                allowedRoles={['admin']}
+                allowedRoles={['Admin']}
               />
             }
           />
@@ -216,44 +224,44 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<BasicTables />}
-                allowedRoles={['admin']}
+                allowedRoles={['Admin']}
               />
             }
           />
           <Route
             path="alerts"
             element={
-              <ProtectedRoute element={<Alerts />} allowedRoles={['admin']} />
+              <ProtectedRoute element={<Alerts />} allowedRoles={['Admin']} />
             }
           />
           <Route
             path="avatars"
             element={
-              <ProtectedRoute element={<Avatars />} allowedRoles={['admin']} />
+              <ProtectedRoute element={<Avatars />} allowedRoles={['Admin']} />
             }
           />
           <Route
             path="badge"
             element={
-              <ProtectedRoute element={<Badges />} allowedRoles={['admin']} />
+              <ProtectedRoute element={<Badges />} allowedRoles={['Admin']} />
             }
           />
           <Route
             path="buttons"
             element={
-              <ProtectedRoute element={<Buttons />} allowedRoles={['admin']} />
+              <ProtectedRoute element={<Buttons />} allowedRoles={['Admin']} />
             }
           />
           <Route
             path="images"
             element={
-              <ProtectedRoute element={<Images />} allowedRoles={['admin']} />
+              <ProtectedRoute element={<Images />} allowedRoles={['Admin']} />
             }
           />
           <Route
             path="videos"
             element={
-              <ProtectedRoute element={<Videos />} allowedRoles={['admin']} />
+              <ProtectedRoute element={<Videos />} allowedRoles={['Admin']} />
             }
           />
           <Route
@@ -261,14 +269,14 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<LineChart />}
-                allowedRoles={['admin']}
+                allowedRoles={['Admin']}
               />
             }
           />
           <Route
             path="bar-chart"
             element={
-              <ProtectedRoute element={<BarChart />} allowedRoles={['admin']} />
+              <ProtectedRoute element={<BarChart />} allowedRoles={['Admin']} />
             }
           />
         </Route>

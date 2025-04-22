@@ -141,12 +141,24 @@ const UserProfile: React.FC = () => {
     }
 
     try {
-      const users: User[] = JSON.parse(localStorage.getItem('users') || '[]');
-      const updatedUsers = users.map((u) =>
-        u.id === user.id ? { ...u, password: newPassword } : u
-      );
-      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      const response = async () => {
+        await fetch('https://18.139.41.39:443/api/accounts/password-change', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword,
+            confirmPassword,
+          }),
+        });
 
+        const data = await response;
+
+        // giả sử roles là array string: ['user', 'staff']API endpoint
+      };
       showAlert(
         'success',
         'Password Changed',

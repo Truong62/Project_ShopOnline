@@ -1,3 +1,4 @@
+// dashboard/src/pages/ProductFeatures.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
 import PageMeta from '../components/common/PageMeta';
@@ -23,7 +24,7 @@ interface Color {
 }
 
 const ProductFeatures: React.FC = () => {
-  const initialProducts: Product[] = []; // Define initialProducts as an empty array or with default products
+  const initialProducts: Product[] = [];
   const [products, setProducts] = useState<Product[]>(() => {
     const savedProducts = localStorage.getItem('products');
     return savedProducts ? JSON.parse(savedProducts) : initialProducts;
@@ -33,7 +34,7 @@ const ProductFeatures: React.FC = () => {
     return savedColors ? JSON.parse(savedColors) : [];
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFormVisible, setIsFormVisible] = useState(false); // Trạng thái hiển thị form
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
@@ -41,9 +42,7 @@ const ProductFeatures: React.FC = () => {
   const [brandSuggestions, setBrandSuggestions] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('');
-  const [filters, setFilters] = useState({
-    status: '',
-  });
+  const [filters, setFilters] = useState({ status: '' });
   const toast = useRef<Toast>(null);
 
   const [alert, setAlert] = useState<{
@@ -92,7 +91,7 @@ const ProductFeatures: React.FC = () => {
   }, [products, colors]);
 
   useEffect(() => {
-    if (isModalOpen || isColorModalOpen) {
+    if (isColorModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
@@ -100,7 +99,7 @@ const ProductFeatures: React.FC = () => {
     return () => {
       document.body.style.overflow = 'auto';
     };
-  }, [isModalOpen, isColorModalOpen]);
+  }, [isColorModalOpen]);
 
   const showAlert = (
     variant: 'success' | 'error' | 'warning' | 'info',
@@ -194,14 +193,14 @@ const ProductFeatures: React.FC = () => {
     loadBrandSuggestions();
     setIsEditing(false);
     setProductToEdit(null);
-    setIsModalOpen(true);
+    setIsFormVisible(true);
   };
 
   const handleEditProduct = (product: Product) => {
     loadBrandSuggestions();
     setIsEditing(true);
     setProductToEdit(product);
-    setIsModalOpen(true);
+    setIsFormVisible(true);
   };
 
   const handleUpdateProducts = (updatedProducts: Product[]) => {
@@ -219,9 +218,6 @@ const ProductFeatures: React.FC = () => {
         setProducts(
           products.map((p) => (p.id === newProduct.id ? newProduct : p))
         );
-        setIsModalOpen(false);
-        setIsEditing(false);
-        setProductToEdit(null);
         showAlert(
           'success',
           'Product Updated',
@@ -262,11 +258,11 @@ const ProductFeatures: React.FC = () => {
           ...products,
           { ...newProduct, createdAt: new Date().toISOString() },
         ]);
-        setIsModalOpen(false);
-        setIsEditing(false);
-        setProductToEdit(null);
         showAlert('success', 'Product Added', 'Product added successfully!');
       }
+      setIsFormVisible(false);
+      setIsEditing(false);
+      setProductToEdit(null);
     } catch (error: any) {
       console.error('Error saving product:', error);
       showAlert(
@@ -275,6 +271,12 @@ const ProductFeatures: React.FC = () => {
         error.message || 'An error occurred while saving the product.'
       );
     }
+  };
+
+  const handleCancelForm = () => {
+    setIsFormVisible(false);
+    setIsEditing(false);
+    setProductToEdit(null);
   };
 
   const handleSearch = (searchTerm: string) => {
@@ -318,51 +320,54 @@ const ProductFeatures: React.FC = () => {
             />
           </div>
         )}
-        <CategoryFilters
-          onFilterChange={handleFilterChange}
-          className="flex flex-wrap items-center gap-3 mb-6"
-        />
-        <div className="overflow-x-auto rounded-xl shadow-sm">
-          <ProductTable
-            products={currentProducts.map((product) => ({
-              ...product,
-              price: formatPrice(product.price || '0'),
-            }))}
-            onUpdate={handleUpdateProducts}
-            onEdit={handleEditProduct}
-          />
-        </div>
-        <Pagination
-          className="flex flex-wrap justify-center gap-2 mt-6"
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+
+        {isFormVisible ? (
+          <div className="max-w-3xl mx-auto">
+            <ProductFormModal
+              isOpen={true}
+              onClose={handleCancelForm}
+              onSave={handleSaveProduct}
+              brandSuggestions={brandSuggestions}
+              productToEdit={productToEdit}
+              colors={colors}
+            />
+          </div>
+        ) : (
+          <>
+            <CategoryFilters
+              onFilterChange={handleFilterChange}
+              className="flex flex-wrap items-center gap-3 mb-6"
+            />
+            <div className="overflow-x-auto rounded-xl shadow-sm">
+              <ProductTable
+                products={currentProducts.map((product) => ({
+                  ...product,
+                  price: formatPrice(product.price || '0'),
+                }))}
+                onUpdate={handleUpdateProducts}
+                onEdit={handleEditProduct}
+              />
+            </div>
+            <Pagination
+              className="flex flex-wrap justify-center gap-2 mt-6"
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
+
+        {isColorModalOpen && (
+          <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-[1000]">
+            <ColorModal
+              isOpen={isColorModalOpen}
+              onClose={() => setIsColorModalOpen(false)}
+              onSave={handleAddColor}
+              existingColors={colors.map((c) => c.name)}
+            />
+          </div>
+        )}
       </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-[1000]">
-          <ProductFormModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSave={handleSaveProduct}
-            brandSuggestions={brandSuggestions}
-            productToEdit={productToEdit}
-            colors={colors}
-          />
-        </div>
-      )}
-
-      {isColorModalOpen && (
-        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-[1000]">
-          <ColorModal
-            isOpen={isColorModalOpen}
-            onClose={() => setIsColorModalOpen(false)}
-            onSave={handleAddColor}
-            existingColors={colors.map((c) => c.name)}
-          />
-        </div>
-      )}
     </>
   );
 };
