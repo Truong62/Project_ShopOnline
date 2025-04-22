@@ -70,17 +70,18 @@ const LineChart = React.lazy(
 const BarChart = React.lazy(
   () => import('../../dashboard/src/pages/Charts/BarChart')
 );
-// const Calendar = React.lazy(() => import('../../dashboard/src/pages/'));
+
 const BasicTables = React.lazy(
   () => import('../../dashboard/src/pages/Tables/BasicTables')
 );
-// const FormElements = React.lazy(
-//   () => import('../../dashboard/src/pages/Forms/FormElements')
-// );
+
 const OrderManagement = React.lazy(
   () => import('../../dashboard/src/pages/Forms/OrderManagement')
 );
-// const Blank = React.lazy(() => import('../../dashboard/src/pages/Blank'));
+const BrandManagement = React.lazy(
+  () => import('../../dashboard/src/pages/BrandManagement')
+);
+
 const DashboardHome = React.lazy(
   () => import('../../dashboard/src/pages/Dashboard/Home')
 );
@@ -154,26 +155,26 @@ const AppRoutes = () => {
             }
           />
           {/* <Route
-            path="calendar"
-            element={
-              <ProtectedRoute element={<Calendar />} allowedRoles={['admin']} />
-            }
-          /> */}
-          {/* <Route
-            path="blank"
-            element={
-              <ProtectedRoute element={<Blank />} allowedRoles={['admin']} />
-            }
-          /> */}
-          {/* <Route
-            path="form-elements"
-            element={
-              <ProtectedRoute
-                element={<FormElements />}
-                allowedRoles={['admin']}
-              />
-            }
-          /> */}
+              path="calendar"
+              element={
+                <ProtectedRoute element={<Calendar />} allowedRoles={['admin']} />
+              }
+            />
+            <Route
+              path="blank"
+              element={
+                <ProtectedRoute element={<Blank />} allowedRoles={['admin']} />
+              }
+            />
+            <Route
+              path="form-elements"
+              element={
+                <ProtectedRoute
+                  element={<FormElements />}
+                  allowedRoles={['admin']}
+                />
+              }
+            /> */}
           <Route
             path="order-management"
             element={
@@ -188,6 +189,15 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<ProductFeatures />}
+                allowedRoles={['admin', 'product_manager']}
+              />
+            }
+          />
+          <Route
+            path="brand-management"
+            element={
+              <ProtectedRoute
+                element={<BrandManagement />}
                 allowedRoles={['admin', 'product_manager']}
               />
             }
