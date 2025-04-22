@@ -24,7 +24,6 @@ const ProductDetailsCard = () => {
     product?.productColors[0]?.productColor__Name || ''
   );
   const [selectedSize, setSelectedSize] = useState(null);
-  const productColorSizes = product?.product__ProductColorSizes || [];
 
   const currentVariant = product?.productColors.find(
     (variant) => variant.productColor__Name === selectedColor
@@ -135,17 +134,41 @@ const ProductDetailsCard = () => {
       showToast('error', 'Lỗi', 'Vui lòng chọn đầy đủ màu sắc, kích cỡ.');
       return;
     }
-    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser')); // Parse JSON
-    const accessToken = loggedInUser?.accessToken;
 
-    if (!accessToken) {
+    // Tìm thông tin màu sắc và kích thước đã chọn
+    const currentColorVariant = product.productColors.find(
+      (variant) => variant.productColor__Name === selectedColor
+    );
+
+    const sizeInfo = sizes.find((size) => size.sizeValue === selectedSize);
+
+    if (!currentColorVariant || !sizeInfo) {
+      showToast('error', 'Lỗi', 'Không thể xác định thông tin sản phẩm.');
+      return;
+    }
+
+    // Lấy thông tin người dùng đã đăng nhập
+    const loggedInUserStr = localStorage.getItem('loggedInUser');
+    if (!loggedInUserStr) {
       showToast('error', 'Lỗi', 'Bạn cần đăng nhập để thêm vào giỏ hàng.');
       navigate('/login');
       return;
     }
+
     try {
-      const loggedInUser = localStorage.getItem('loggedInUser');
+      const loggedInUser = JSON.parse(loggedInUserStr);
       const accessToken = loggedInUser?.accessToken;
+
+      if (!accessToken) {
+        showToast(
+          'error',
+          'Lỗi',
+          'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.'
+        );
+        navigate('/login');
+        return;
+      }
+
       const addRes = await fetch(
         'https://18.139.41.39:444/api/cart-items/add',
         {
@@ -156,54 +179,29 @@ const ProductDetailsCard = () => {
           },
           body: JSON.stringify({
             cartItem__Quantity: quantity,
-            ProductColor__Id:
-              selectedProductColorSize?.productColorSize__ProductColorId,
-            Size__Id: selectedProductColorSize?.productColorSize__SizeId,
+            ProductColor__Id: currentColorVariant.productColor__Id,
+            Size__Id: sizeInfo.sizeId,
           }),
         }
       );
 
-      const resData = await addRes.json();
-
-      if (addRes.ok) {
-        showToast(
-          'success',
-          'Thành công',
-          'Sản phẩm đã được thêm vào giỏ hàng.'
-        );
-      } else {
-        const message = resData?.message || 'Không thể thêm vào giỏ hàng.';
-        showToast('error', 'Lỗi', message);
+      if (!addRes.ok) {
+        const text = await addRes.text();
+        let errorMessage;
+        try {
+          const errorData = JSON.parse(text);
+          errorMessage = errorData?.message || 'Không thể thêm vào giỏ hàng.';
+        } catch (e) {
+          errorMessage = 'Không thể thêm vào giỏ hàng.';
+        }
+        showToast('error', 'Lỗi', errorMessage);
+        return;
       }
+
+      showToast('success', 'Thành công', 'Sản phẩm đã được thêm vào giỏ hàng.');
     } catch (error) {
       showToast('error', 'Lỗi', 'Đã xảy ra lỗi khi thêm vào giỏ hàng.');
       console.error(error);
-    }
-
-    productColorSizes.forEach((item) => {
-      console.log(
-        'color:',
-        item.productColorSize__Color,
-        'size:',
-        item.productColorSize__Size
-      );
-    });
-    console.log('selectedColor:', selectedColor, 'selectedSize:', selectedSize);
-
-    const selectedProductColorSize = productColorSizes.find(
-      (option) =>
-        option.productColorSize__Color === selectedColor &&
-        option.productColorSize__Size === selectedSize
-    );
-    console.log(
-      'selectedProductColorSize',
-      selectedProductColorSize,
-      'productColorSizes',
-      productColorSizes
-    );
-    if (!selectedProductColorSize) {
-      showToast('error', 'Lỗi', 'Kết hợp màu sắc và kích cỡ không khả dụng.');
-      return;
     }
   };
 

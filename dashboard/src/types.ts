@@ -34,7 +34,7 @@ export interface User {
   name: string;
   email: string;
   password?: string;
-  role: 'admin' | 'product_manager' | 'sale_manager';
+  role: 'admin' | 'product_Manager' | 'sale_manager';
   status: 'Active' | 'Inactive';
   createdAt: string;
 }

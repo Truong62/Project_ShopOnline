@@ -16,63 +16,6 @@ interface User {
   createdAt: string;
 }
 
-const initialUsers: User[] = [
-  {
-    id: 1,
-    name: 'Admin User',
-    email: 'admin@example.com',
-    password: 'admin123',
-    role: 'admin',
-    status: 'Active',
-    createdAt: new Date('2025-04-01').toISOString(),
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    password: 'jane123',
-    role: 'product_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-02').toISOString(),
-  },
-  {
-    id: 3,
-    name: 'Bob Johnson',
-    email: 'bob.johnson@example.com',
-    password: 'bob123',
-    role: 'sale_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-03').toISOString(),
-  },
-  {
-    id: 4,
-    name: 'Test User 1',
-    email: 'test.user1@example.com',
-    password: 'test123',
-    role: 'user',
-    status: 'Active',
-    createdAt: new Date('2025-04-04').toISOString(),
-  },
-  {
-    id: 5,
-    name: 'Test Staff 1',
-    email: 'test.staff1@example.com',
-    password: 'staff123',
-    role: 'product_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-05').toISOString(),
-  },
-  {
-    id: 6,
-    name: 'Test Staff 2',
-    email: 'test.staff2@example.com',
-    password: 'staff123',
-    role: 'sale_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-06').toISOString(),
-  },
-];
-
 export default function SignInForm() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({ email: '', password: '', global: '' });
@@ -113,39 +56,51 @@ export default function SignInForm() {
     setErrors((prev) => ({ ...prev, [name]: '', global: '' }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     try {
-      let users: User[] = JSON.parse(localStorage.getItem('users') || '[]');
-
-      // Đảm bảo initialUsers (bao gồm admin) được lưu nếu users rỗng
-      if (!users.length) {
-        users = initialUsers;
-        localStorage.setItem('users', JSON.stringify(users));
-        console.log('Initialized users:', users);
-      } else {
-        // Đảm bảo tài khoản admin luôn tồn tại
-        const adminExists = users.some((u) => u.email === 'admin@example.com');
-        if (!adminExists) {
-          users.push(
-            initialUsers.find((u) => u.email === 'admin@example.com')!
-          );
-          localStorage.setItem('users', JSON.stringify(users));
-          console.log('Restored admin user:', users);
+      const response = await fetch(
+        'https://18.139.41.39:443/api/accounts/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            role: 'admin',
+          }),
         }
-      }
-
-      const user = users.find(
-        (u) =>
-          u.email.toLowerCase() === formData.email.toLowerCase() &&
-          u.password === formData.password
       );
 
-      if (!user) {
-        throw new Error('Invalid email or password');
+      // Log the raw response text for debugging
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+
+      // Attempt to parse as JSON
+      let userData;
+      try {
+        userData = JSON.parse(responseText);
+      } catch (jsonError) {
+        throw new Error('Response is not valid JSON: ' + responseText);
       }
+
+      if (!response.ok) {
+        throw new Error(userData.message || 'Invalid email or password');
+      }
+
+      // Map response to User interface
+      const user: User = {
+        id: userData.id || 0,
+        name: userData.name || '',
+        email: userData.email || formData.email,
+        role: userData.role || 'user',
+        status: userData.status || 'Active',
+        createdAt: userData.createdAt || new Date().toISOString(),
+      };
 
       if (user.status !== 'Active') {
         throw new Error('Account is inactive');

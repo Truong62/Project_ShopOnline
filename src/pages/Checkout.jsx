@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-// import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { formatCurrency } from '../utils/formatCurrency';
@@ -15,8 +14,6 @@ import { motion } from 'framer-motion';
 const CheckoutPage = () => {
   const reduxCartItems = useSelector((state) => state.cart.items);
   const [cartItems, setCartItems] = useState([]);
-
-  // const navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -49,7 +46,7 @@ const CheckoutPage = () => {
         setCartItems([]);
       }
     } else {
-      setCartItems(reduxCartItems); // fallback cuối cùng nếu localStorage trống
+      setCartItems(reduxCartItems);
     }
   }, [reduxCartItems]);
 
@@ -112,7 +109,7 @@ const CheckoutPage = () => {
   );
 
   const handleCheckout = useCallback(
-    (values) => {
+    async (values) => {
       const selectedProvince =
         provinces.find((p) => p.code === values.selectedProvince)?.name || '';
       const selectedDistrict =
@@ -120,6 +117,36 @@ const CheckoutPage = () => {
       const selectedWard =
         wards.find((w) => w.code === values.selectedWard)?.name || '';
 
+      // Prepare the cartItemIds array from cartItems
+      const cartItemIds = cartItems.map((item) => item.id);
+
+      // Prepare the payload for the API
+      const payload = {
+        accountId: 0, // Adjust this based on your app's authentication logic
+        orderPayment: 0, // Adjust based on payment logic if needed
+        cartItemIds: cartItemIds,
+        addressId: 0, // Adjust based on how you manage addresses
+      };
+
+      try {
+        const response = await axios.post(
+          'https://18.139.41.39:444/api/orders/checkout',
+          payload,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        console.log('Checkout successful:', response.data);
+        // Optionally redirect or show success message
+        // navigate('/success'); // Uncomment if using useNavigate
+      } catch (error) {
+        console.error('Error during checkout:', error);
+        // Optionally show error message to user
+      }
+
+      // Log order information for debugging
       const orderData = {
         ...values,
         selectedProvince,
@@ -127,14 +154,11 @@ const CheckoutPage = () => {
         selectedWard,
         cartItems,
       };
-
       console.log('Order Information:', orderData);
-      // axios.post('/api/checkout', orderData).then(...).catch(...);
     },
     [cartItems, provinces, districts, wards]
   );
 
-  // Animation variants
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },

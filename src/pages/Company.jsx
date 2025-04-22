@@ -123,11 +123,10 @@ const Company = () => {
       ].map((feature, index) => (
         <motion.div
           key={index}
-          variants={textFadeIn}
+          variants={(textFadeIn, featureCardHover)}
           initial="rest"
           whileHover="hover"
           animate="rest"
-          variants={featureCardHover}
           className={`w-full md:w-[30%] px-8 py-8 rounded-xl border border-[#A8DCE7] 
           flex flex-col items-center text-center ${feature.bgStyle || 'bg-white'} 
           overflow-hidden relative`}
