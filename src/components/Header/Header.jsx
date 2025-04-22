@@ -1,28 +1,92 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import CartModal from '../Cart/CartModal.jsx';
 import SidebarContainer from './Sidebar';
 import useDeviceType from '../../hooks/useDeviceType';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { PrimeIcons } from 'primereact/api';
 import { truncateDescription } from '../../utils/truncateDescription.js';
+
+// ✅ Thêm hàm decode JWT không dùng thư viện
+function decodeJWT(token) {
+  try {
+    const payload = token.split('.')[1];
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const decodedPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join('')
+    );
+    return JSON.parse(decodedPayload);
+  } catch (error) {
+    console.error('Lỗi khi decode JWT:', error);
+    return null;
+  }
+}
+
 const Header = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleRight, setVisibleRight] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const cartItems = useSelector((state) => state.cart || []);
+  const [cartItems, setCartItems] = useState([]);
   const uniqueItemsCount = cartItems.length;
   const { isMobile } = useDeviceType();
   const navigate = useNavigate();
+  const [activeLink, setActiveLink] = useState('/');
+  const [accountEmail, setAccountEmail] = useState('User');
 
   const isLoggedIn = !!localStorage.getItem('loggedInUser');
-  const user = JSON.parse(localStorage.getItem('loggedInUser'));
-  const accountEmail = user?.email || 'User';
-  const handleCloseModal = () => setIsModalOpen(false);
-  const [activeLink, setActiveLink] = useState('/');
 
+  // Lấy email từ token
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+    const token = storedUser?.accessToken;
+    if (token) {
+      const decoded = decodeJWT(token);
+      if (decoded?.email) {
+        setAccountEmail(decoded.email);
+      }
+    }
+  }, []);
+
+  // Đọc cartItems từ localStorage khi component mount
+  useEffect(() => {
+    const storedCartItems = JSON.parse(
+      localStorage.getItem('cartItems') || '[]'
+    );
+    setCartItems(storedCartItems);
+  }, []);
+
+  // Theo dõi thay đổi localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedCartItems = JSON.parse(
+        localStorage.getItem('cartItems') || '[]'
+      );
+      setCartItems(storedCartItems);
+      console.log(localStorage.getItem('loggedInUser'));
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = function (key) {
+      originalSetItem.apply(this, arguments);
+      if (key === 'cartItems') {
+        const event = new Event('storage');
+        window.dispatchEvent(event);
+      }
+    };
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      localStorage.setItem = originalSetItem;
+    };
+  }, []);
+
+  // Cập nhật activeLink dựa trên URL
   useEffect(() => {
     const path = window.location.pathname.split('/');
     setActiveLink(path.length > 1 ? `/${path[1]}` : '/');
@@ -31,16 +95,15 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('cart');
+    localStorage.removeItem('cartItems');
     setIsAccountOpen(false);
     navigate('/login');
   };
 
-  useEffect(() => {});
-
   return (
     <header className="sticky top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 p-2">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
+        {/* Logo & Search */}
         <div className="flex items-center space-x-4">
           <Link to="/">
             <img
@@ -67,6 +130,7 @@ const Header = () => {
           )}
         </div>
 
+        {/* Menu */}
         <nav className="hidden md:flex space-x-6">
           {['Products', 'Orders', 'Blogs', 'Company'].map((text) => (
             <Link
@@ -83,6 +147,7 @@ const Header = () => {
           ))}
         </nav>
 
+        {/* Right Section */}
         <div className="flex items-center space-x-4">
           <Link to="/cart" className="relative">
             <span className="cursor-pointer">
@@ -148,7 +213,6 @@ const Header = () => {
       {isMobile && (
         <SidebarContainer {...{ visibleRight, setVisibleRight, activeLink }} />
       )}
-      <CartModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </header>
   );
 };

@@ -9,9 +9,34 @@ declare global {
 const CustomGoogleLoginButton: React.FC = () => {
   const handleGoogleLogin = () => {
     if (window.google) {
-      window.google.accounts.id.prompt(); // Mở popup chọn tài khoản
+      window.google.accounts.id.prompt((response: any) => {
+        if (response.credential) {
+          // Send the token to your backend for verification
+          const token = response.credential;
+          fetch('https://18.139.41.39/api/accounts/google-signin', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              // Handle the response from your backend
+              if (data.success) {
+                console.log('Login successful', data);
+                // Proceed with user login, redirection, etc.
+              } else {
+                console.error('Login failed', data);
+              }
+            })
+            .catch((err) => {
+              console.error('Error during Google login', err);
+            });
+        }
+      });
     } else {
-      console.error('Google SDK chưa sẵn sàng');
+      console.error('Google SDK is not loaded');
     }
   };
 
