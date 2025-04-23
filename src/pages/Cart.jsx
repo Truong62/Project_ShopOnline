@@ -232,12 +232,12 @@ const CartPage = () => {
       );
       // Only set if no data from API yet
       if (cartItems.length === 0) {
-      setCartItems(storedCartItems);
+        setCartItems(storedCartItems);
       }
     } catch (err) {
       console.error('Error parsing cartItems from localStorage:', err);
       if (cartItems.length === 0) {
-      setCartItems([]);
+        setCartItems([]);
       }
     }
   }, [loading, cartItems.length]);
@@ -331,22 +331,22 @@ const CartPage = () => {
             console.error('Error adding temp item to cart via API:', apiErr);
 
             // Fallback to localStorage
-          const storedCartItems = JSON.parse(
-            localStorage.getItem('cartItems') || '[]'
-          );
-          const exists = storedCartItems.some(
-            (item) =>
-              item.id === parsedItem.id &&
-              item.color === parsedItem.color &&
-              item.size === parsedItem.size
-          );
-          if (!exists) {
-            storedCartItems.push(parsedItem);
+            const storedCartItems = JSON.parse(
+              localStorage.getItem('cartItems') || '[]'
+            );
+            const exists = storedCartItems.some(
+              (item) =>
+                item.id === parsedItem.id &&
+                item.color === parsedItem.color &&
+                item.size === parsedItem.size
+            );
+            if (!exists) {
+              storedCartItems.push(parsedItem);
               localStorage.setItem(
                 'cartItems',
                 JSON.stringify(storedCartItems)
               );
-            setCartItems(storedCartItems);
+              setCartItems(storedCartItems);
             }
           }
 

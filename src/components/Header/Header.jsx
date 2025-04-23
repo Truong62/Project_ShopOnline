@@ -6,8 +6,9 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { PrimeIcons } from 'primereact/api';
 import { truncateDescription } from '../../utils/truncateDescription.js';
+import axios from 'axios';
 
-// ✅ Thêm hàm decode JWT không dùng thư viện
+// ✅ JWT decode function without using libraries
 function decodeJWT(token) {
   try {
     const payload = token.split('.')[1];
@@ -22,7 +23,7 @@ function decodeJWT(token) {
     );
     return JSON.parse(decodedPayload);
   } catch (error) {
-    console.error('Lỗi khi decode JWT:', error);
+    console.error('Error decoding JWT:', error);
     return null;
   }
 }
@@ -36,10 +37,14 @@ const Header = () => {
   const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState('/');
   const [accountEmail, setAccountEmail] = useState('User');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const isLoggedIn = !!localStorage.getItem('loggedInUser');
 
-  // Lấy email từ token
+  // Get email from token
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
     const token = storedUser?.accessToken;
@@ -51,7 +56,7 @@ const Header = () => {
     }
   }, []);
 
-  // Đọc cartItems từ localStorage khi component mount
+  // Read cartItems from localStorage when component mounts
   useEffect(() => {
     const storedCartItems = JSON.parse(
       localStorage.getItem('cartItems') || '[]'
@@ -59,7 +64,7 @@ const Header = () => {
     setCartItems(storedCartItems);
   }, []);
 
-  // Theo dõi thay đổi localStorage
+  // Track localStorage changes
   useEffect(() => {
     const handleStorageChange = () => {
       const storedCartItems = JSON.parse(
@@ -86,10 +91,83 @@ const Header = () => {
     };
   }, []);
 
-  // Cập nhật activeLink dựa trên URL
+  // Update activeLink based on URL
   useEffect(() => {
     const path = window.location.pathname.split('/');
     setActiveLink(path.length > 1 ? `/${path[1]}` : '/');
+  }, []);
+
+  // API URL - ideally this would be in an environment variable
+  const API_URL = 'https://api.example.com/api'; // Replace with your actual API URL
+
+  // Fetch products from API based on search term
+  const fetchProducts = async (term) => {
+    if (!term.trim()) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      // You can modify the endpoint and parameters based on your API structure
+      const response = await axios.get(`${API_URL}/products/search`, {
+        params: { query: term },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Assuming the API returns an array of products
+      setSearchResults(response.data.slice(0, 5)); // Limit to 5 results
+      setShowResults(true);
+    } catch (error) {
+      console.error('Error searching products:', error);
+      // Fallback to empty results
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Debounce search to prevent too many API calls
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchTerm) {
+        fetchProducts(searchTerm);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
+
+  // Product search function
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+
+    if (!term.trim()) {
+      setSearchResults([]);
+      setShowResults(false);
+    }
+  };
+
+  // Handle product selection from search results
+  const handleSelectProduct = (productName) => {
+    setShowResults(false);
+    setSearchTerm('');
+    navigate(`/products/${productName.toLowerCase().replace(/\s+/g, '-')}`);
+  };
+
+  // Handle click outside dropdown
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowResults(false);
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -117,7 +195,42 @@ const Header = () => {
             <InputText
               className="ml-2 outline-none border-none w-64"
               placeholder="Search ..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (searchResults.length > 0) setShowResults(true);
+              }}
             />
+            {isSearching && (
+              <i className="pi pi-spin pi-spinner ml-2 text-gray-500"></i>
+            )}
+            {showResults && searchResults.length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-white shadow-lg rounded-lg z-50 max-h-80 overflow-y-auto">
+                {searchResults.map((product, index) => (
+                  <div
+                    key={index}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectProduct(product.productName);
+                    }}
+                  >
+                    <img
+                      src={product.variants[0].images[0]}
+                      alt={product.productName}
+                      className="w-10 h-10 object-cover rounded-md mr-3"
+                    />
+                    <div>
+                      <div className="font-medium">{product.productName}</div>
+                      <div className="text-sm text-gray-500">
+                        {product.brandName}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           {isMobile && (
             <div className="relative flex items-center border border-gray-300 rounded-full px-2 py-1 w-60">
@@ -125,7 +238,42 @@ const Header = () => {
               <InputText
                 className="ml-2 outline-none border-none w-full text-xl"
                 placeholder="Search ..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (searchResults.length > 0) setShowResults(true);
+                }}
               />
+              {isSearching && (
+                <i className="pi pi-spin pi-spinner ml-2 text-gray-500"></i>
+              )}
+              {showResults && searchResults.length > 0 && (
+                <div className="absolute left-0 right-0 top-full mt-2 bg-white shadow-lg rounded-lg z-50 max-h-80 overflow-y-auto">
+                  {searchResults.map((product, index) => (
+                    <div
+                      key={index}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelectProduct(product.productName);
+                      }}
+                    >
+                      <img
+                        src={product.variants[0].images[0]}
+                        alt={product.productName}
+                        className="w-10 h-10 object-cover rounded-md mr-3"
+                      />
+                      <div>
+                        <div className="font-medium">{product.productName}</div>
+                        <div className="text-sm text-gray-500">
+                          {product.brandName}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
