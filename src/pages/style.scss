@@ -17,3 +17,237 @@
     height: fit-content;
   }
 }
+
+/* Màu chủ đạo và thiết lập cơ bản */
+:root {
+  --primary-color: #a8dce7;
+  --primary-color-dark: #86c5d3;
+  --primary-color-light: #c9ebf2;
+  --primary-text-color: #1a7d8e;
+  --primary-accent: #41b3c7;
+  --primary-gradient: linear-gradient(135deg, #41b3c7, #1a7d8e);
+}
+
+/* Hỗ trợ background color với tên lớp */
+.bg-a8dce7 {
+  background-color: var(--primary-color);
+}
+
+/* Định nghĩa các màu tương phản cho Tailwind */
+.from-primary-accent {
+  --tw-gradient-from: var(--primary-accent);
+  --tw-gradient-stops:
+    var(--tw-gradient-from), var(--tw-gradient-to, rgba(65, 179, 199, 0));
+}
+
+.to-primary-text-color {
+  --tw-gradient-to: var(--primary-text-color);
+}
+
+.text-primary-text-color {
+  color: var(--primary-text-color);
+}
+
+.text-a8dce7 {
+  color: var(--primary-text-color);
+  font-weight: 600;
+}
+
+/* Thêm class mới cho text nổi bật hơn */
+.text-a8dce7-bold {
+  color: var(--primary-text-color);
+  font-weight: 700;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Text gradient */
+.text-gradient {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+/* Bordered text */
+.text-bordered {
+  -webkit-text-stroke: 1px var(--primary-text-color);
+  text-stroke: 1px var(--primary-text-color);
+  color: transparent;
+  font-weight: 800;
+}
+
+/* Nổi bật hơn cho các phần tử trên nền tối */
+.dark .text-a8dce7 {
+  color: #5acce0;
+  font-weight: 600;
+}
+
+/* Button với gradient */
+.btn-gradient {
+  background: var(--primary-gradient);
+  color: white;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Tag styles */
+.tag {
+  position: relative;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: #f3f4f6;
+  color: var(--primary-text-color);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tag:hover {
+  background: rgba(168, 220, 231, 0.2);
+  transform: translateY(-2px);
+}
+
+.dark .tag {
+  background: #374151;
+  color: #5acce0;
+}
+
+.dark .tag:hover {
+  background: rgba(90, 204, 224, 0.2);
+}
+
+/* Thêm lớp đánh dấu */
+.highlight {
+  position: relative;
+  z-index: 1;
+}
+
+.highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+  background-color: var(--primary-color);
+  opacity: 0.3;
+  z-index: -1;
+  border-radius: 4px;
+}
+
+/* Dark mode settings */
+.dark {
+  --background: #121212;
+  --card-bg: #1e1e1e;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(0.97);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(0.97);
+    opacity: 0.7;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Áp dụng animation cho các phần tử */
+.blog-post-container {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-dark);
+}
+
+/* Hover effects */
+.hover-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+  transform: skewX(-25deg);
+  transition: all 0.75s;
+}
+
+.hover-shine:hover::before {
+  left: 125%;
+}
+
+/* Dark mode text styles */
+.dark .text-gradient {
+  text-shadow: 0 0 8px rgba(90, 204, 224, 0.5);
+}
+
+.dark .highlight::after {
+  background-color: #41b3c7;
+  opacity: 0.2;
+}
+
+/* Button in dark mode */
+.dark .btn-gradient {
+  box-shadow: 0 4px 15px rgba(65, 179, 199, 0.3);
+}
+
+.dark .btn-gradient:hover {
+  box-shadow: 0 6px 20px rgba(65, 179, 199, 0.5);
+}

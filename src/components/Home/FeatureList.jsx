@@ -7,23 +7,23 @@ import { Navigation, Autoplay } from 'swiper/modules';
 const features = [
   {
     icon: 'https://file.hstatic.net/1000366086/file/policies_icon_1__1_.png',
-    title: 'Miễn phí vận chuyển',
-    description: 'Với đơn hàng đầu tiên',
+    title: 'Free Shipping',
+    description: 'For your first order',
   },
   {
     icon: 'https://file.hstatic.net/1000366086/file/policies_icon_2__1_.png',
-    title: 'Ưu đãi hấp dẫn',
-    description: 'Nhiều khuyến mãi',
+    title: 'Attractive Offers',
+    description: 'Multiple promotions',
   },
   {
     icon: 'https://file.hstatic.net/1000366086/file/policies_icon_3__1_.png',
-    title: '100% chính hãng',
-    description: 'Bảo đảm chất lượng',
+    title: '100% Authentic',
+    description: 'Quality guaranteed',
   },
   {
     icon: 'https://file.hstatic.net/1000366086/file/policies_icon_4__1_.png',
     title: 'Hotline: 0971443180',
-    description: 'Gọi ngay để mua hàng nhanh hơn',
+    description: 'Call now for faster purchases',
   },
 ];
 
