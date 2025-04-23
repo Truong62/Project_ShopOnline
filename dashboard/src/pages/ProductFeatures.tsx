@@ -1,4 +1,3 @@
-// dashboard/src/pages/ProductFeatures.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
 import PageMeta from '../components/common/PageMeta';
@@ -34,7 +33,7 @@ const ProductFeatures: React.FC = () => {
     return savedColors ? JSON.parse(savedColors) : [];
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [isFormVisible, setIsFormVisible] = useState(false); // Trạng thái hiển thị form
+  const [isFormVisible, setIsFormVisible] = useState(false);
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
@@ -56,6 +55,43 @@ const ProductFeatures: React.FC = () => {
     title: '',
     message: '',
   });
+
+  // Hàm fetch dữ liệu sản phẩm từ API
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(
+        'https://18.139.41.39:444/api/products/filter',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+
+      const data = await response.json();
+      // Giả sử API trả về mảng sản phẩm trong thuộc tính `products`
+      setProducts(data.products || data); // Điều chỉnh theo cấu trúc dữ liệu API thực tế
+      localStorage.setItem('products', JSON.stringify(data.products || data));
+      showAlert('success', 'Products Loaded', 'Products fetched successfully!');
+    } catch (error: any) {
+      console.error('Error fetching products:', error);
+      showAlert(
+        'error',
+        'Fetch Error',
+        'Failed to fetch products from the server.'
+      );
+    }
+  };
+
+  // Gọi API khi component được mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const loadBrandSuggestions = () => {
     const savedBrands = localStorage.getItem('brands');
