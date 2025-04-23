@@ -15,23 +15,234 @@ const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [alert, setAlert] = useState(null);
   const [subtotal, setSubtotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Đọc cartItems từ localStorage khi component mount
+  // Fetch cart items from API
+  const fetchCartItems = async () => {
+    setLoading(true);
+    try {
+      const loggedInUser = localStorage.getItem('loggedInUser');
+      const token = loggedInUser ? JSON.parse(loggedInUser).accessToken : null;
+
+      console.log(token);
+      if (!token) {
+        setAlert('Please login to view your cart');
+        throw new Error('Authentication token not found');
+      }
+
+      const response = await fetch('/api/cart-items/user-cart', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 401) {
+        // Token expired or invalid
+        setAlert('Your session has expired, please login again');
+        localStorage.removeItem('loggedInUser'); // Remove invalid token
+        setTimeout(() => {
+          navigate('/login', { state: { from: '/cart' } });
+        }, 2000);
+        throw new Error('Invalid or expired token');
+      }
+
+      if (!response.ok) {
+        throw new Error(`Error fetching cart data: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Cart items from API:', data);
+
+      // Transform API response to match the expected structure in the Cart component
+      const transformedData = data.map((item) => ({
+        id: item.product?.product__Id || item.productId,
+        name: item.product?.product__Name || item.name,
+        price: item.productColor?.productColor__Price || item.price,
+        color: item.productColor?.productColor__Name || item.color,
+        size: item.size?.size__Value || item.size,
+        quantity: item.cartItem__Quantity || item.quantity,
+        image:
+          item.productColor?.images?.[0] ||
+          item.image ||
+          'https://via.placeholder.com/150',
+        productColorId: item.productColor?.productColor__Id,
+        sizeId: item.size?.size__Id,
+      }));
+
+      setCartItems(transformedData);
+
+      // Save to localStorage for backward compatibility
+      localStorage.setItem('cartItems', JSON.stringify(transformedData));
+    } catch (err) {
+      console.error('Error fetching cart items:', err);
+      setError(err.message);
+      if (
+        !err.message.includes('Invalid or expired token') &&
+        !err.message.includes('Authentication token not found')
+      ) {
+        setAlert(err.message);
+      }
+
+      // Fallback to localStorage if API fails
+      try {
+        const storedCartItems = JSON.parse(
+          localStorage.getItem('cartItems') || '[]'
+        );
+        setCartItems(storedCartItems);
+      } catch (storageErr) {
+        console.error('Error parsing cartItems from localStorage:', storageErr);
+        setCartItems([]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update cart item via API
+  const updateCartItemApi = async (updatedItem) => {
+    try {
+      const loggedInUser = localStorage.getItem('loggedInUser');
+      const token = loggedInUser ? JSON.parse(loggedInUser).accessToken : null;
+
+      console.log(
+        'Update item - Token being used:',
+        token?.substring(0, 10) + '...'
+      );
+
+      if (!token) {
+        setAlert('Please login to update your cart');
+        throw new Error('Authentication token not found');
+      }
+
+      // Prepare the data for the API according to its expected structure
+      const apiPayload = {
+        cartItem__Quantity: updatedItem.quantity,
+        ProductColor__Id: updatedItem.productColorId,
+        Size__Id: updatedItem.sizeId,
+      };
+
+      const response = await fetch(`/api/cart-items/${updatedItem.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiPayload),
+      });
+
+      console.log('Update API Response status:', response.status);
+
+      if (response.status === 401) {
+        // Token expired or invalid
+        setAlert('Your session has expired, please login again');
+        localStorage.removeItem('loggedInUser'); // Remove invalid token
+        setTimeout(() => {
+          navigate('/login', { state: { from: '/cart' } });
+        }, 2000);
+        throw new Error('Invalid or expired token');
+      }
+
+      if (!response.ok) {
+        throw new Error(`Error updating cart: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (err) {
+      console.error('Error updating cart item:', err);
+      if (
+        !err.message.includes('Invalid or expired token') &&
+        !err.message.includes('Authentication token not found')
+      ) {
+        setAlert(err.message);
+      }
+      throw err;
+    }
+  };
+
+  // Remove cart item from API
+  const removeCartItemApi = async (itemId) => {
+    try {
+      const loggedInUser = localStorage.getItem('loggedInUser');
+      const token = loggedInUser ? JSON.parse(loggedInUser).accessToken : null;
+
+      console.log(
+        'Remove item - Token being used:',
+        token?.substring(0, 10) + '...'
+      );
+
+      if (!token) {
+        setAlert('Please login to remove items from your cart');
+        throw new Error('Authentication token not found');
+      }
+
+      const response = await fetch(`/api/cart-items/${itemId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Delete API Response status:', response.status);
+
+      if (response.status === 401) {
+        // Token expired or invalid
+        setAlert('Your session has expired, please login again');
+        localStorage.removeItem('loggedInUser'); // Remove invalid token
+        setTimeout(() => {
+          navigate('/login', { state: { from: '/cart' } });
+        }, 2000);
+        throw new Error('Invalid or expired token');
+      }
+
+      if (!response.ok) {
+        throw new Error(`Error removing item from cart: ${response.status}`);
+      }
+
+      return true;
+    } catch (err) {
+      console.error('Error removing cart item:', err);
+      if (
+        !err.message.includes('Invalid or expired token') &&
+        !err.message.includes('Authentication token not found')
+      ) {
+        setAlert(err.message);
+      }
+      throw err;
+    }
+  };
+
+  // Fetch cart data when component mounts
   useEffect(() => {
+    fetchCartItems();
+  }, []);
+
+  // Read cartItems from localStorage when component mounts - keep old code as backup
+  useEffect(() => {
+    // If already loaded from API, no need to load from localStorage
+    if (!loading && cartItems.length > 0) return;
+
     try {
       const storedCartItems = JSON.parse(
         localStorage.getItem('cartItems') || '[]'
       );
-      console.log('Initial cartItems:', storedCartItems);
+      // Only set if no data from API yet
+      if (cartItems.length === 0) {
       setCartItems(storedCartItems);
+      }
     } catch (err) {
       console.error('Error parsing cartItems from localStorage:', err);
+      if (cartItems.length === 0) {
       setCartItems([]);
+      }
     }
-  }, []);
+  }, [loading, cartItems.length]);
 
-  // Theo dõi thay đổi của localStorage
+  // Monitor localStorage changes
   useEffect(() => {
     const handleStorageChange = () => {
       try {
@@ -48,40 +259,78 @@ const CartPage = () => {
 
     window.addEventListener('storage', handleStorageChange);
 
-    const originalSetItem = localStorage.setItem;
-    localStorage.setItem = function (key, value) {
-      originalSetItem.apply(this, arguments);
-      if (key === 'cartItems') {
-        console.log('localStorage.setItem called for cartItems:', value);
-        const event = new Event('storage');
-        window.dispatchEvent(event);
-      }
-    };
-
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      localStorage.setItem = originalSetItem;
     };
   }, []);
 
-  // Tính subtotal khi cartItems thay đổi
+  // Calculate subtotal when cartItems change
   useEffect(() => {
     const newSubtotal = cartItems.reduce(
       (total, item) => total + (item.price * item.quantity || 0),
       0
     );
-    console.log('Calculated subtotal:', newSubtotal);
     setSubtotal(newSubtotal);
   }, [cartItems]);
 
-  // Đồng bộ buyNowTempProduct và cartTempProduct vào cartItems
+  // Sync buyNowTempProduct and cartTempProduct to cartItems
   useEffect(() => {
-    const processTempItem = (key) => {
+    const processTempItem = async (key) => {
       const tempItem = localStorage.getItem(key);
       if (tempItem) {
         console.log(`Processing ${key}:`, tempItem);
         try {
           const parsedItem = JSON.parse(tempItem);
+
+          // Add to cart via API
+          try {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            const token = loggedInUser
+              ? JSON.parse(loggedInUser).accessToken
+              : null;
+
+            console.log(
+              'Add temp item - Token being used:',
+              token?.substring(0, 10) + '...'
+            );
+
+            if (token) {
+              // Prepare payload according to the API structure
+              const apiPayload = {
+                cartItem__Quantity: parsedItem.quantity,
+                ProductColor__Id: parsedItem.productColorId,
+                Size__Id: parsedItem.sizeId,
+              };
+
+              const response = await fetch('/api/cart-items/add', {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(apiPayload),
+              });
+
+              console.log(
+                'Add temp item API Response status:',
+                response.status
+              );
+
+              if (response.status === 401) {
+                console.warn('Invalid token when adding temporary item');
+                // Don't show warning to user, just log
+                // Will be handled by fetchCartItems
+              }
+
+              if (response.ok) {
+                // Refresh cart after adding item
+                fetchCartItems();
+              }
+            }
+          } catch (apiErr) {
+            console.error('Error adding temp item to cart via API:', apiErr);
+
+            // Fallback to localStorage
           const storedCartItems = JSON.parse(
             localStorage.getItem('cartItems') || '[]'
           );
@@ -93,9 +342,14 @@ const CartPage = () => {
           );
           if (!exists) {
             storedCartItems.push(parsedItem);
-            localStorage.setItem('cartItems', JSON.stringify(storedCartItems));
+              localStorage.setItem(
+                'cartItems',
+                JSON.stringify(storedCartItems)
+              );
             setCartItems(storedCartItems);
+            }
           }
+
           localStorage.removeItem(key);
         } catch (err) {
           console.error(`Invalid ${key} in localStorage`, err);
@@ -107,7 +361,13 @@ const CartPage = () => {
     processTempItem('cartTempProduct');
   }, []);
 
-  const handleQuantityChange = (id, color, size, quantity, stock = 100) => {
+  const handleQuantityChange = async (
+    id,
+    color,
+    size,
+    quantity,
+    stock = 100
+  ) => {
     if (quantity < 1 || quantity > stock) {
       setAlert(
         quantity < 1
@@ -118,24 +378,74 @@ const CartPage = () => {
       return;
     }
 
+    // Handle case when size is an object or other non-primitive value
+    const compareSize = (itemSize) => {
+      if (typeof size === 'object' && typeof itemSize === 'object') {
+        return JSON.stringify(size) === JSON.stringify(itemSize);
+      }
+      return itemSize === size;
+    };
+
     const updatedCartItems = cartItems.map((item) =>
-      item.id === id && item.color === color && item.size === size
+      item.id === id && item.color === color && compareSize(item.size)
         ? { ...item, quantity }
         : item
     );
 
+    // Save changes to localStorage (backup)
     localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
     setCartItems(updatedCartItems);
+
+    // Update via API
+    try {
+      const itemToUpdate = updatedCartItems.find(
+        (item) =>
+          item.id === id && item.color === color && compareSize(item.size)
+      );
+
+      if (itemToUpdate) {
+        await updateCartItemApi(itemToUpdate);
+      }
+    } catch (err) {
+      console.error('Failed to update cart item quantity:', err);
+      // UI already updated with optimistic data
+    }
   };
 
-  const handleRemoveItem = (id, color, size) => {
-    const updatedCartItems = cartItems.filter(
-      (item) => !(item.id === id && item.color === color && item.size === size)
+  const handleRemoveItem = async (id, color, size) => {
+    // Handle case when size is an object or other non-primitive value
+    const compareSize = (itemSize) => {
+      if (typeof size === 'object' && typeof itemSize === 'object') {
+        return JSON.stringify(size) === JSON.stringify(itemSize);
+      }
+      return itemSize === size;
+    };
+
+    // Save item before deletion to retrieve ID
+    const itemToDelete = cartItems.find(
+      (item) => item.id === id && item.color === color && compareSize(item.size)
     );
 
+    const updatedCartItems = cartItems.filter(
+      (item) =>
+        !(item.id === id && item.color === color && compareSize(item.size))
+    );
+
+    // Save changes to localStorage (backup)
     localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
     setCartItems(updatedCartItems);
     setAlert('Item removed from cart');
+
+    // Delete from API
+    try {
+      if (itemToDelete) {
+        await removeCartItemApi(itemToDelete.id);
+      }
+    } catch (err) {
+      console.error('Failed to remove cart item:', err);
+      // UI already updated with optimistic data
+    }
+
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -148,7 +458,25 @@ const CartPage = () => {
     navigate('/checkout');
   };
 
-  console.log('Rendering cartItems:', cartItems);
+  // Display loading state
+  if (loading) {
+    return (
+      <div>
+        <Header />
+        <div className="bg-gray-50 min-h-screen pb-16">
+          <div
+            className="max-w-6xl mx-auto p-6 flex justify-center items-center"
+            style={{ minHeight: '60vh' }}
+          >
+            <div className="bg-white p-10 rounded-xl shadow-sm text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading cart...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -194,8 +522,13 @@ const CartPage = () => {
                   </div>
                   <div className="divide-y divide-gray-100">
                     {cartItems.map((item, index) => {
-                      console.log('Rendering item:', item, 'Index:', index);
-                      const key = `${item.id}-${item.color}-${item.size}`;
+                      console.log('Rendering item:', item);
+                      // Create a safer key using index as fallback if any property is undefined
+                      const key =
+                        item.id && item.color && item.size
+                          ? `${item.id}-${item.color}-${typeof item.size === 'object' ? JSON.stringify(item.size) : item.size}`
+                          : `item-${index}`;
+
                       return (
                         <div
                           key={key}
@@ -222,7 +555,10 @@ const CartPage = () => {
                                     Color: {item.color || 'N/A'}
                                   </span>
                                   <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                    Size: {item.size || 'N/A'}
+                                    Size:{' '}
+                                    {typeof item.size === 'object'
+                                      ? JSON.stringify(item.size)
+                                      : item.size || 'N/A'}
                                   </span>
                                 </div>
                               </div>

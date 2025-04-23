@@ -168,12 +168,12 @@ const Header = () => {
                 onClick={() => setIsAccountOpen(!isAccountOpen)}
               />
               {isAccountOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 w-[250px] border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 z-50">
                   <Link
                     to="/account"
-                    className="text-sm text-gray-700 dark:text-gray-200 mb-4 truncate w-48 block overflow-hidden whitespace-nowrap"
+                    className="text-sm text-gray-700 w-[250px] dark:text-gray-200 mb-4 truncate w-48 block overflow-hidden whitespace-nowrap"
                   >
-                    Your Account: {truncateDescription(accountEmail)}
+                    Your Account: {truncateDescription(accountEmail, 250)}
                   </Link>
                   <Button
                     label="Logout"
