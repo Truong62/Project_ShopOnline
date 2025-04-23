@@ -424,7 +424,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg max-w-3xl w-full p-6 sm:p-8 transition-colors duration-300 max-h-[90vh] overflow-y-auto">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg max-w-3xl w-full p-6 sm:p-8 transition-colors duration-300">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100">
           {productToEdit ? 'Edit Product' : 'Add New Product'}

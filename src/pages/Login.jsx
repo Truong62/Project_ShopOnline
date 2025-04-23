@@ -98,33 +98,24 @@ export default function SignInForm() {
         }
       );
 
-      console.log('Response status:', response.status); // Debug status code
-      console.log('Response headers:', [...response.headers]); // Debug headers
-
       // Kiểm tra Content-Type trước khi parse JSON
       const contentType = response.headers.get('content-type');
       if (!response.ok) {
         // Thử parse JSON lỗi nếu có
         if (contentType && contentType.includes('application/json')) {
           const errorData = await response.json();
-          throw new Error(
-            errorData.message || `HTTP error! Status: ${response.status}`
-          );
+          throw new Error(errorData.message || `${response.status}`);
         } else {
           // Nếu không phải JSON, lấy text
           const errorText = await response.text();
-          throw new Error(
-            `HTTP error! Status: ${response.status}, Response: ${errorText || 'No content'}`
-          );
+          throw new Error(`${errorText || 'No content'}`);
         }
       }
 
-      // Kiểm tra response có nội dung không
       if (response.status === 204) {
         throw new Error('No content returned from server');
       }
 
-      // Kiểm tra Content-Type
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
         throw new Error(
@@ -137,13 +128,11 @@ export default function SignInForm() {
 
       // Xử lý dữ liệu user
       const account = data.user || data.account || data;
-      // if (!account || !account.email) {
-      //   throw new Error('Invalid account data from API');
-      // }
 
-      // Lưu thông tin đăng nhập
+      // Lưu thông tin đăng nhập, bao gồm cả email
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('loggedInUser', JSON.stringify(account));
+      localStorage.setItem('userEmail', formData.email); // Lưu email vào localStorage
 
       // Xử lý redirect
       const redirectPath = localStorage.getItem('redirectAfterLogin');

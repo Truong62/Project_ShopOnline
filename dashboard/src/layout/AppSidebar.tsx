@@ -24,8 +24,23 @@ const getMenuByRole = (role: string) => {
           name: 'User Management',
           path: '/admin/user-management',
         },
+        {
+          icon: <i className="pi pi-shopping-cart" />,
+          name: 'Order Management',
+          path: '/admin/order-management',
+        },
+        {
+          icon: <i className="pi pi-box" />,
+          name: 'Product Features',
+          path: '/admin/product-features',
+        },
+        {
+          icon: <i className="pi pi-tags" />,
+          name: 'Brand Management',
+          path: '/admin/brand-management',
+        },
       ];
-    case 'sale_manager':
+    case 'SaleManager':
       return [
         {
           icon: <i className="pi pi-th-large" />,
@@ -43,7 +58,25 @@ const getMenuByRole = (role: string) => {
           path: '/admin/order-management',
         },
       ];
-    case 'product_manager':
+    case 'Staff':
+      return [
+        {
+          icon: <i className="pi pi-th-large" />,
+          name: 'Dashboard',
+          path: '/admin',
+        },
+        {
+          icon: <i className="pi pi-user" />,
+          name: 'User Profile',
+          path: '/admin/profile',
+        },
+        {
+          icon: <i className="pi pi-shopping-cart" />,
+          name: 'Order Management',
+          path: '/admin/order-management',
+        },
+      ];
+    case 'ProductManager':
       return [
         {
           icon: <i className="pi pi-th-large" />,

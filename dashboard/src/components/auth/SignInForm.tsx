@@ -1,77 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Label from '../form/Label';
 import Input from '../form/input/InputField';
 import Checkbox from '../form/input/Checkbox';
 import { motion } from 'framer-motion';
 import GoogleSignInButton from './GoogleSignInButton';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  password?: string;
-  role: 'admin' | 'product_manager' | 'sale_manager' | 'user';
-  status: 'Active' | 'Inactive';
-  createdAt: string;
-}
-
-const initialUsers: User[] = [
-  {
-    id: 1,
-    name: 'Admin User',
-    email: 'admin@example.com',
-    password: 'admin123',
-    role: 'admin',
-    status: 'Active',
-    createdAt: new Date('2025-04-01').toISOString(),
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    password: 'jane123',
-    role: 'product_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-02').toISOString(),
-  },
-  {
-    id: 3,
-    name: 'Bob Johnson',
-    email: 'bob.johnson@example.com',
-    password: 'bob123',
-    role: 'sale_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-03').toISOString(),
-  },
-  {
-    id: 4,
-    name: 'Test User 1',
-    email: 'test.user1@example.com',
-    password: 'test123',
-    role: 'user',
-    status: 'Active',
-    createdAt: new Date('2025-04-04').toISOString(),
-  },
-  {
-    id: 5,
-    name: 'Test Staff 1',
-    email: 'test.staff1@example.com',
-    password: 'staff123',
-    role: 'product_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-05').toISOString(),
-  },
-  {
-    id: 6,
-    name: 'Test Staff 2',
-    email: 'test.staff2@example.com',
-    password: 'staff123',
-    role: 'sale_manager',
-    status: 'Active',
-    createdAt: new Date('2025-04-06').toISOString(),
-  },
-];
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -82,6 +15,88 @@ export default function SignInForm() {
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    try {
+      const response = await fetch(
+        'https://18.139.41.39:443/api/accounts/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+
+        // Gọi fetch GET để lấy role sau khi login thành công
+        fetchUserRole();
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          global: data.message || 'Login failed',
+        }));
+      }
+    } catch (error) {
+      console.error('Lỗi khi login:', error);
+      setErrors((prev) => ({
+        ...prev,
+        global: 'Network error. Please try again.',
+      }));
+    }
+  };
+
+  const fetchUserRole = async () => {
+    try {
+      const res = await fetch(
+        'https://18.139.41.39:443/api/accounts/current-user',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        }
+      );
+      const userData = await res.json();
+      console.log('User data:', userData);
+      const roles = userData.roles;
+      console.log(userData.roles); // Kiểm tra dữ liệu người dùng nhận được
+      if (
+        roles.includes('Staff') ||
+        roles.includes('ProductManager') ||
+        roles.includes('SaleManager') ||
+        roles.includes('Admin')
+      ) {
+        console.log('Đây là staff');
+        for (let index = 0; index < roles.length; index++) {
+          localStorage.setItem(roles[index], roles[index]);
+        }
+        navigate('/Signin');
+      } else {
+        navigate('/Signin');
+      }
+
+      if (res.ok) {
+        console.log('User role:', userData.role); // hoặc userData.data.role tuỳ backend
+        localStorage.setItem('role', userData.role);
+        navigate('/'); // hoặc navigate theo role
+      } else {
+        console.error('Không lấy được role:', userData.message);
+      }
+    } catch (err) {
+      console.error('Lỗi khi fetch role:', err);
+    }
+  };
 
   const validateForm = () => {
     let newErrors = { email: '', password: '', global: '' };
@@ -113,52 +128,7 @@ export default function SignInForm() {
     setErrors((prev) => ({ ...prev, [name]: '', global: '' }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    try {
-      let users: User[] = JSON.parse(localStorage.getItem('users') || '[]');
-
-      // Đảm bảo initialUsers (bao gồm admin) được lưu nếu users rỗng
-      if (!users.length) {
-        users = initialUsers;
-        localStorage.setItem('users', JSON.stringify(users));
-        console.log('Initialized users:', users);
-      } else {
-        // Đảm bảo tài khoản admin luôn tồn tại
-        const adminExists = users.some((u) => u.email === 'admin@example.com');
-        if (!adminExists) {
-          users.push(
-            initialUsers.find((u) => u.email === 'admin@example.com')!
-          );
-          localStorage.setItem('users', JSON.stringify(users));
-          console.log('Restored admin user:', users);
-        }
-      }
-
-      const user = users.find(
-        (u) =>
-          u.email.toLowerCase() === formData.email.toLowerCase() &&
-          u.password === formData.password
-      );
-
-      if (!user) {
-        throw new Error('Invalid email or password');
-      }
-
-      if (user.status !== 'Active') {
-        throw new Error('Account is inactive');
-      }
-
-      localStorage.setItem('user', JSON.stringify(user));
-      console.log('Logged in user:', user);
-      navigate('/admin');
-    } catch (err: any) {
-      console.error('Login error:', err);
-      setErrors((prev) => ({ ...prev, global: err.message || 'Login failed' }));
-    }
-  };
+  // Removed duplicate handleSubmit function
 
   const containerVariants = {
     hidden: { opacity: 0 },
