@@ -23,15 +23,8 @@ const Newest = () => {
     );
   }
 
-  console.log(products);
-
-  if (error) {
-    return <div>{error.message}</div>;
-  }
-
-  if (!products || products.length === 0) {
-    return <div>0</div>;
-  }
+  if (error) return <div>{error.message}</div>;
+  if (!products || products.length === 0) return <div>0</div>;
 
   const handleProductClick = (product) => {
     navigate(`/products/${product.product__Name}`, { state: { product } });

@@ -101,14 +101,54 @@ export default function SignInForm() {
       // Kiểm tra Content-Type trước khi parse JSON
       const contentType = response.headers.get('content-type');
       if (!response.ok) {
-        // Thử parse JSON lỗi nếu có
-        if (contentType && contentType.includes('application/json')) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || `${response.status}`);
+        // Check if error is about unverified account or verification code needed
+        if (response.status === 400) {
+          let errorText = '';
+
+          // Try to get the error message
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorText = errorData.message || '';
+
+            // Check if error mentions verification code or email verification
+            if (
+              errorText.toLowerCase().includes('verification code') ||
+              errorText.toLowerCase().includes('check your email') ||
+              errorText.toLowerCase().includes('verify your email')
+            ) {
+              // Redirect to email confirmation page
+              navigate('/email-confirm', { state: { email: formData.email } });
+              return;
+            }
+
+            throw new Error(errorData.message || `${response.status}`);
+          } else {
+            // Try to get the error text
+            errorText = await response.text();
+
+            // Check if error mentions verification code or email verification
+            if (
+              errorText.toLowerCase().includes('verification code') ||
+              errorText.toLowerCase().includes('check your email') ||
+              errorText.toLowerCase().includes('verify your email')
+            ) {
+              // Redirect to email confirmation page
+              navigate('/email-confirm', { state: { email: formData.email } });
+              return;
+            }
+
+            throw new Error(`${errorText || 'No content'}`);
+          }
         } else {
-          // Nếu không phải JSON, lấy text
-          const errorText = await response.text();
-          throw new Error(`${errorText || 'No content'}`);
+          // Handle other error status codes
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `${response.status}`);
+          } else {
+            // Nếu không phải JSON, lấy text
+            const errorText = await response.text();
+            throw new Error(`${errorText || 'No content'}`);
+          }
         }
       }
 

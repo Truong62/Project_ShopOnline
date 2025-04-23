@@ -143,9 +143,6 @@ export default function SignUpForm() {
         }
       );
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', [...response.headers]);
-
       const contentType = response.headers.get('content-type');
       if (!response.ok) {
         if (contentType && contentType.includes('application/json')) {

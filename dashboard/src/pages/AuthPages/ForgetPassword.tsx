@@ -11,7 +11,7 @@ export default function ForgetPassword() {
         description="This is React.js SignIn Tables Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
       {/* <AuthLayout> */}
-        <ResetPasswordForm />
+      <ResetPasswordForm />
       {/* </AuthLayout> */}
     </>
   );
