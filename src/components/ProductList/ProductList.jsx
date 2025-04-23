@@ -56,11 +56,6 @@ const ProductList = ({
         <div className="grid gap-2 sm:gap-3 lg:gap-5 mb-10 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
           {currentItems.map((product, index) => {
             const mainColor = product.productColors?.[0];
-            console.log(
-              'Rendering product:',
-              product.product__Name,
-              product.product__Id
-            ); // Debug
             return (
               <CardProduct
                 key={product.product__Id || index}
@@ -75,11 +70,6 @@ const ProductList = ({
                   mainColor?.images?.[0] || 'https://via.placeholder.com/400'
                 }
                 onClick={() => {
-                  console.log(
-                    'Clicked product:',
-                    product.product__Name,
-                    product.product__Id
-                  ); // Debug
                   onProductClick(product); // Truyền object product
                 }}
               />

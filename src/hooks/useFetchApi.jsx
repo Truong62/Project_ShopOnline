@@ -10,8 +10,14 @@ const useFetchApi = (url, params = {}) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(url, { params });
-        setData(response.data.data);
+        const response = await axios.get(url, {
+          params,
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        setData(response.data);
       } catch (err) {
         setError(err);
       } finally {

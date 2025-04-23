@@ -67,11 +67,7 @@ const Home = () => {
     data: products,
     loading,
     error,
-  } = useFetchApi('https://18.139.41.39:444/api/products/filter', {
-    limit: 10,
-    page: 1,
-    order: 'desc',
-  });
+  } = useFetchApi('https://18.139.41.39:444/api/products/filter');
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -217,7 +213,7 @@ const Home = () => {
                 </video>
               </div>
               <div className="mt-4">
-                {currentProduct.description.length > 150 && (
+                {currentProduct?.description?.length > 150 && (
                   <div className="flex items-center">
                     <Button
                       icon={
@@ -348,16 +344,16 @@ const Home = () => {
                             <span className="uppercase text-xs md:text-sm line-clamp-1">
                               {product.name}
                             </span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {product.tags.map((tag) => (
-                                <span
-                                  key={tag.tagId}
-                                  className="text-[10px] md:text-xs text-gray-500"
-                                >
-                                  #{tag.tagName}
-                                </span>
-                              ))}
-                            </div>
+                            {/*<div className="flex flex-wrap gap-1 mt-1">*/}
+                            {/*  {product?.tags.map((tag) => (*/}
+                            {/*    <span*/}
+                            {/*      key={tag.tagId}*/}
+                            {/*      className="text-[10px] md:text-xs text-gray-500"*/}
+                            {/*    >*/}
+                            {/*      #{tag.tagName}*/}
+                            {/*    </span>*/}
+                            {/*  ))}*/}
+                            {/*</div>*/}
                           </div>
                         </div>
                       </SwiperSlide>

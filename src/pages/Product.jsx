@@ -56,8 +56,6 @@ const Product = () => {
     fetch('https://18.139.41.39:444/api/products/filter')
       .then((res) => res.json())
       .then((data) => {
-        console.log('Raw API data:', data);
-
         setProducts(data);
         setLoading(false);
       })

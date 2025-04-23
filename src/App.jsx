@@ -1,6 +1,7 @@
 import AppRoutes from './routes/routes';
 import 'primeicons/primeicons.css';
 import React from 'react';
+import ScrollToTop from './components/ScrollToTop';
 
 /**
  *
@@ -10,6 +11,7 @@ import React from 'react';
 function App() {
   return (
     <div>
+      <ScrollToTop />
       <AppRoutes />
     </div>
   );
