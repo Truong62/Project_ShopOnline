@@ -19,6 +19,7 @@ import BrandHome from '../components/Home/BrandHome';
 import FeatureList from '../components/Home/FeatureList';
 import Layout from '../components/Layout';
 import HeroSection from '../components/UI/HeroSection';
+import { motion } from 'framer-motion';
 
 const categories = [
   {
@@ -183,182 +184,248 @@ const Home = () => {
           <div className="my-12">
             <FeatureList />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 px-4 md:px-6">
-            <div className="col-span-1 md:col-span-6">
-              <div className="aspect-square overflow-hidden group">
-                <video
-                  className="aspect-square object-cover w-full h-full"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                >
-                  <source src={introVideo2} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 px-4 md:px-8 mb-16">
+            <motion.div
+              className="col-span-1 md:col-span-6"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              viewport={{ once: true }}
+            >
+              <div className="h-full flex flex-col">
+                <div className="aspect-square overflow-hidden group rounded-2xl shadow-lg relative mb-4">
+                  <video
+                    className="aspect-square object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  >
+                    <source src={introVideo2} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(65,179,199,0.3)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                <div className="mt-auto">
+                  {currentProduct?.description?.length > 150 && (
+                    <div className="flex items-center">
+                      <Button
+                        icon={
+                          expanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'
+                        }
+                        onClick={() => setExpanded(!expanded)}
+                        className="p-button-text text-[rgb(65,179,199)] hover:text-[rgba(65,179,199,0.8)]"
+                        label={expanded ? 'Show Less' : 'See More'}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="mt-4">
-                {currentProduct?.description?.length > 150 && (
-                  <div className="flex items-center">
+            </motion.div>
+
+            <motion.div
+              className="col-span-1 md:col-span-6"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <div className="bg-white p-6 rounded-2xl h-full flex flex-col">
+                <motion.p
+                  className="text-base mb-6 text-center md:text-left leading-relaxed text-gray-700 font-light"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  viewport={{ once: true }}
+                >
+                  WE BELIEVE THAT FASHION IS NOT JUST ABOUT WHAT YOU WEAR, IT'S
+                  A POWERFUL MEANS OF SELF-EXPRESSION AND TRANSFORMATION.
+                </motion.p>
+
+                <div className="flex gap-3 md:gap-5 mb-6">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleNavigation('prev')}
+                    className="slider-prev border-2 border-[rgb(65,179,199)] w-full md:w-[300px] px-4 md:px-8 py-3 hover:bg-[rgba(65,179,199,0.1)] rounded-lg text-[rgb(65,179,199)] font-medium transition-all duration-300"
+                  >
+                    ← Previous
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleNavigation('next')}
+                    className="slider-next bg-[rgb(65,179,199)] w-full md:w-[300px] text-white px-4 md:px-8 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:bg-[rgba(65,179,199,0.9)]"
+                  >
+                    Next →
+                  </motion.button>
+                </div>
+
+                <div className="flex-grow mb-6 overflow-hidden">
+                  <div className="relative">
+                    <Swiper
+                      ref={swiperRef}
+                      modules={[Navigation, Autoplay]}
+                      autoplay={{
+                        delay: 3000,
+                        disableOnInteraction: false,
+                      }}
+                      spaceBetween={15}
+                      slidesPerView={1}
+                      breakpoints={{
+                        640: {
+                          slidesPerView: 1.5,
+                          spaceBetween: 15,
+                        },
+                        768: {
+                          slidesPerView: 2,
+                          spaceBetween: 20,
+                        },
+                      }}
+                      loop={false}
+                      navigation={false}
+                      className="product-swiper !overflow-hidden "
+                      style={{ padding: '5px 0' }}
+                    >
+                      {loading ? (
+                        Array.from({ length: 4 }).map((_, index) => (
+                          <SwiperSlide key={`skeleton-${index}`}>
+                            <div className="bg-gray-50 p-4 h-full rounded-xl">
+                              <div className="mb-4">
+                                <SkeletonProduct shape="square" size="10rem" />
+                              </div>
+
+                              <div className="mb-2">
+                                <SkeletonProduct width="80%" height="1rem" />
+                              </div>
+
+                              <div className="mb-2">
+                                <SkeletonProduct width="50%" height="1rem" />
+                              </div>
+
+                              <div className="flex flex-wrap gap-2">
+                                {Array.from({ length: 3 }).map(
+                                  (_, tagIndex) => (
+                                    <SkeletonProduct
+                                      key={`tag-skeleton-${tagIndex}`}
+                                      width="4rem"
+                                      height="0.8rem"
+                                    />
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          </SwiperSlide>
+                        ))
+                      ) : products && products.length > 0 ? (
+                        products.map((product, index) => {
+                          const mainVariant = product.productColors?.[0] || {};
+                          const mainImage =
+                            mainVariant.images?.[0] ||
+                            'https://placehold.co/300x300';
+
+                          return (
+                            <SwiperSlide
+                              key={product.product__Id || index}
+                              onClick={() => setCurrentProduct(product)}
+                            >
+                              <div
+                                className={`cursor-pointer group relative h-full rounded-xl overflow-hidden shadow-md transition-all duration-300 ${
+                                  currentProduct?.product__Id ===
+                                  product.product__Id
+                                    ? 'ring-2 ring-[rgb(65,179,199)] shadow-lg'
+                                    : 'hover:shadow-lg'
+                                }`}
+                              >
+                                <div className="relative w-full h-[220px]">
+                                  <img
+                                    src={mainImage}
+                                    alt={product.product__Name}
+                                    className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                                    onError={(e) =>
+                                      (e.currentTarget.src =
+                                        'https://placehold.co/300x300')
+                                    }
+                                  />
+                                  <div className="absolute bottom-0 left-0 bg-gradient-to-r from-[rgb(65,179,199)] to-[rgba(65,179,199,0.8)] px-3 py-2 text-white font-medium rounded-tr-lg">
+                                    {formatCurrency(
+                                      mainVariant.productColor__Price || 0
+                                    )}
+                                  </div>
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-end p-4">
+                                    <motion.button
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      className="bg-[rgb(65,179,199)] text-white px-6 py-2 rounded-full text-sm mb-4 shadow-md transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 opacity-0 group-hover:opacity-100"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleProductClick(product);
+                                      }}
+                                    >
+                                      View Details
+                                    </motion.button>
+                                  </div>
+                                </div>
+                                <div className="p-3 md:p-4 bg-white">
+                                  <span className="font-medium text-sm md:text-base line-clamp-1 text-gray-800">
+                                    {product.product__Name}
+                                  </span>
+                                </div>
+                              </div>
+                            </SwiperSlide>
+                          );
+                        })
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          No products available
+                        </div>
+                      )}
+                    </Swiper>
+                  </div>
+                </div>
+
+                {!loading && errorMessage && (
+                  <div className="flex flex-col items-center justify-center mb-6 max-w-4xl mx-auto p-4 border border-red-300 rounded-lg bg-red-50">
+                    <Message
+                      severity=""
+                      text={errorMessage}
+                      className="w-full text-center"
+                    />
                     <Button
-                      icon={
-                        expanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'
-                      }
-                      onClick={() => setExpanded(!expanded)}
-                      className="p-button-text text-[#5AA1E3] hover:text-[#4890d2]"
-                      label={expanded ? 'Show Less' : 'See More'}
+                      label="Reload"
+                      onClick={() => window.location.reload()}
+                      className="mt-3 p-button-danger p-button-outlined p-2 rounded border border-red-300 bg-red-300 rounded-lg opacity-90 hover:opacity-100 transition duration-300"
                     />
                   </div>
                 )}
-              </div>
-            </div>
 
-            <div className="col-span-1 md:col-span-6">
-              <p className="text-sm mb-6 text-center md:text-left">
-                WE BELIEVE THAT FASHION IS NOT JUST ABOUT WHAT YOU WEAR, ITS A
-                POWERFUL MEANS OF SELF-EXPRESSION AND TRANSFORMATION.
-              </p>
-
-              <div className="flex gap-2 md:gap-4 mb-10">
-                <button
-                  onClick={() => handleNavigation('prev')}
-                  className="slider-prev border border-gray-300 w-full md:w-[300px] px-4 md:px-8 py-2 hover:border-black"
-                >
-                  ←
-                </button>
-                <button
-                  onClick={() => handleNavigation('next')}
-                  className="slider-next bg-[#5AA1E3] w-full md:w-[300px] text-white px-4 md:px-8 py-2"
-                >
-                  →
-                </button>
-              </div>
-
-              <Swiper
-                ref={swiperRef}
-                modules={[Navigation, Autoplay]}
-                autoplay={{
-                  delay: 2500,
-                  disableOnInteraction: false,
-                }}
-                spaceBetween={10}
-                slidesPerView="auto"
-                loop={false}
-                navigation={false}
-                freeMode={true}
-              >
-                {loading
-                  ? Array.from({ length: 10 }).map((_, index) => (
-                      <SwiperSlide
-                        key={`skeleton-${index}`}
-                        className="!w-[300px] md:!w-[350px]"
-                      >
-                        <div className="bg-gray-50 p-4 h-full">
-                          <div className="mb-4">
-                            <SkeletonProduct shape="square" size="10rem" />
-                          </div>
-
-                          <div className="mb-2">
-                            <SkeletonProduct width="80%" height="1rem" />
-                          </div>
-
-                          <div className="mb-2">
-                            <SkeletonProduct width="50%" height="1rem" />
-                          </div>
-
-                          <div className="flex flex-wrap gap-2">
-                            {Array.from({ length: 3 }).map((_, tagIndex) => (
-                              <SkeletonProduct
-                                key={`tag-skeleton-${tagIndex}`}
-                                width="4rem"
-                                height="0.8rem"
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                    ))
-                  : products.map((product, index) => {
-                      const mainVariant = product.productColors?.[0] || {};
-                      const mainImage =
-                        mainVariant.images?.[0] ||
-                        'https://placehold.co/300x300';
-
-                      return (
-                        <SwiperSlide
-                          key={product.product__Id || index}
-                          className="!w-[300px] md:!w-[350px]"
-                          onClick={() => setCurrentProduct(product)}
-                        >
-                          <div
-                            className={`bg-gray-50 cursor-pointer group relative h-full ${
-                              currentProduct?.product__Id ===
-                              product.product__Id
-                                ? 'bg-gray-200'
-                                : ''
-                            }`}
-                          >
-                            <div className="relative w-full h-[350px]">
-                              <img
-                                src={mainImage}
-                                alt={product.product__Name}
-                                className="w-full h-full object-cover object-center"
-                                onError={(e) =>
-                                  (e.currentTarget.src =
-                                    'https://placehold.co/300x300')
-                                }
-                              />
-                              <p className="absolute bottom-0 left-0 bg-white/80 px-2 py-1 text-xs md:text-base font-bold">
-                                {formatCurrency(
-                                  mainVariant.productColor__Price || 0
-                                )}
-                              </p>
-                              <div className="absolute inset-0 bg-gray-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <button
-                                  className="bg-[#5AA1E3] text-white px-4 py-1 text-xs md:text-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleProductClick(product);
-                                  }}
-                                >
-                                  View Detail
-                                </button>
-                              </div>
-                            </div>
-                            <div className="p-2 md:p-4">
-                              <span className="uppercase text-xs md:text-sm line-clamp-1">
-                                {product.product__Name}
-                              </span>
-                            </div>
-                          </div>
-                        </SwiperSlide>
-                      );
-                    })}
-              </Swiper>
-              {!loading && errorMessage && (
-                <div className="flex flex-col items-center justify-center mb-6 max-w-4xl mx-auto p-4 border border-red-300 rounded-lg bg-red-50">
-                  <Message
-                    severity=""
-                    text={errorMessage}
-                    className="w-full text-center"
-                  />
-                  <Button
-                    label="Reload"
-                    onClick={() => window.location.reload()}
-                    className="mt-3 p-button-danger p-button-outlined p-2 rounded border border-red-300 bg-red-300  rounded-lg opacity-90 hover:opacity-100 transition duration-300"
-                  />
+                <div className="text-center mt-auto">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => navigate('/products')}
+                    className="inline-flex items-center justify-center w-full md:w-auto bg-[rgb(65,179,199)] text-white px-8 md:px-16 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:bg-[rgba(65,179,199,0.9)]"
+                  >
+                    <span>SEE MORE PRODUCTS</span>
+                    <svg
+                      className="w-5 h-5 ml-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      ></path>
+                    </svg>
+                  </motion.button>
                 </div>
-              )}
-
-              <div className="text-center mt-8">
-                <button
-                  onClick={() => navigate('/products')}
-                  className="w-full md:w-auto bg-[#5AA1E3] text-white px-8 md:px-16 py-2"
-                >
-                  SEE MORE PRODUCTS
-                </button>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 

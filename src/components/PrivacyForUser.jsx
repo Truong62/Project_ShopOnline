@@ -3,11 +3,20 @@ import React from 'react';
 const policies = [
   {
     icon: (
-      <img
-        src="https://bizweb.dktcdn.net/thumb/icon/100/413/756/themes/837736/assets/privacy_1_image.png?1739987708879"
-        alt="Chính hãng"
-        className="w-10 h-10"
-      />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="rgb(65,179,199)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
     ),
     title: 'Chính hãng 100%',
     description: 'Giày nhập từ Adidas, Nike US, Converse, ...',
@@ -16,21 +25,20 @@ const policies = [
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="40"
-        height="40"
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="currentColor"
+        stroke="rgb(65,179,199)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="text-gray-700"
       >
-        <g>
-          <path d="M11.029 2.54a2 2 0 0 1 1.942 0l7.515 4.174a1 1 0 0 1 .514.874v8.235a2 2 0 0 1-1.029 1.748l-7 3.89a2 2 0 0 1-1.942 0l-7-3.89A2 2 0 0 1 3 15.824V7.588a1 1 0 0 1 .514-.874L11.03 2.54Z" />
-          <path d="m3 7l9 5m0 0l9-5m-9 5v9.5" />
-          <path d="m7.5 9.5l9-5M6 12.328L9 14" />
-        </g>
+        <rect x="1" y="3" width="22" height="5" rx="2"></rect>
+        <rect x="1" y="16" width="22" height="5" rx="2"></rect>
+        <path d="M12 6v13"></path>
+        <path d="M16 7v11"></path>
+        <path d="M8 7v11"></path>
       </svg>
     ),
     title: 'Miễn phí vận chuyển',
@@ -40,14 +48,16 @@ const policies = [
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="40"
-        height="40"
-        viewBox="0 0 2048 2048"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="rgb(65,179,199)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        <path
-          fill="currentColor"
-          d="m1344 2l704 352v785l-128-64V497l-512 256v258l-128 64V753L768 497v227l-128-64V354L1344 2zm0 640l177-89l-463-265l-211 106l497 248zm315-157l182-91l-497-249l-149 75l464 265zm-507 654l-128 64v-1l-384 192v455l384-193v144l-448 224L0 1735v-676l576-288l576 288v80zm-640 710v-455l-384-192v454l384 193zm64-566l369-184l-369-185l-369 185l369 184zm576-1l448-224l448 224v527l-448 224l-448-224v-527zm384 576v-305l-256-128v305l256 128zm384-128v-305l-256 128v305l256-128zm-320-288l241-121l-241-120l-241 120l241 121z"
-        />
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
       </svg>
     ),
     title: 'Kho giày cực khủng',
@@ -57,16 +67,16 @@ const policies = [
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="40"
-        height="40"
-        viewBox="0 0 14 14"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="rgb(65,179,199)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        <path
-          fill="currentColor"
-          fillRule="evenodd"
-          d="M1.536 2.582c0-.045.036-.082.081-.082H7.44c.046 0 .082.037.082.082v9.149a.082.082 0 0 1-.082.081H1.617a.082.082 0 0 1-.081-.081V2.58ZM1.617 1C.744 1 .036 1.708.036 2.582v9.149c0 .873.708 1.581 1.581 1.581H7.44c.874 0 1.582-.708 1.582-1.581V2.58A1.583 1.583 0 0 0 7.44 1zm2.495 8.733a.75.75 0 1 0 0 1.5h.832a.75.75 0 0 0 0-1.5zm7.638-.223c1.134-1.292 1.134-3.416 0-4.707a.625.625 0 0 1 .94-.825c1.547 1.764 1.547 4.593 0 6.356a.625.625 0 1 1-.94-.824M9.864 5.75c.249.362.392.868.392 1.405s-.143 1.044-.392 1.405a.625.625 0 0 0 1.028.71c.421-.61.614-1.378.614-2.115c0-.737-.193-1.504-.614-2.115a.625.625 0 0 0-1.028.71"
-          clipRule="evenodd"
-        />
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
       </svg>
     ),
     title: 'Đặt hàng online: 0971443180',
@@ -76,16 +86,18 @@ const policies = [
 
 const PolicyComponent = () => {
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-4">
+    <div className="w-full max-w-2xl mx-auto bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-lg shadow-sm p-4 transition-all duration-300 hover:shadow-md">
       {policies.map((policy, index) => (
         <div
           key={index}
-          className="flex items-center p-3 border-b last:border-0"
+          className="flex items-center p-3 border-b last:border-0 transition-all duration-200 hover:bg-[rgba(65,179,199,0.05)] rounded-md"
         >
-          <div className="w-10 h-10 mr-3 flex-shrink-0">{policy.icon}</div>
+          <div className="w-10 h-10 mr-3 flex-shrink-0 flex items-center justify-center rounded-full bg-[rgba(65,179,199,0.1)]">
+            {policy.icon}
+          </div>
           <div>
             <h3 className="font-semibold text-gray-800">{policy.title}</h3>
-            <p className="text-gray-500 text-sm">{policy.description}</p>
+            <p className="text-gray-600 text-sm">{policy.description}</p>
           </div>
         </div>
       ))}

@@ -14,7 +14,6 @@ const Blogs = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    // Kiểm tra nếu người dùng đã chọn chế độ tối trước đó
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       setDarkMode(true);
@@ -109,7 +108,7 @@ const Blogs = () => {
           </div>
 
           <div className="relative mb-16">
-            <h1 className="text-4xl font-bold text-center text-gray-800 dark:text-white relative z-10 highlight">
+            <h1 className="text-4xl font-bold text-center text-gray-800 dark:text-white relative z-10">
               <span className="relative inline-block mb-2">
                 Sneaker <span className="text-gradient">Blog</span>
                 <span className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-primary-accent to-primary-text-color rounded-full"></span>

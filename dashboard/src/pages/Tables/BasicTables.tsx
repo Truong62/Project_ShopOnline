@@ -1,8 +1,7 @@
-import PageBreadcrumb from '../../components/common/PageBreadcrumb';
 import ComponentCard from '../../components/common/ComponentCard';
 import PageMeta from '../../components/common/PageMeta';
 import BasicTableOne from '../../components/tables/BasicTables/BasicTableOne';
-import React from 'react';
+import PageBreadcrumb from '../../components/common/PageBreadCrumb';
 
 export default function BasicTables() {
   return (

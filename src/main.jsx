@@ -5,7 +5,8 @@ import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import App from './App';
 import './index.css';
-import { ThemeProvider } from '../dashboard/src/context/ThemeContext';
+import './pages/style.scss';
+import { ThemeProvider } from './context/ThemeContext';
 // import DashboardMain from '../dashboard/src/main';
 import { HelmetProvider } from 'react-helmet-async';
 
