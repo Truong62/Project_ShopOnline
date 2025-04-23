@@ -78,18 +78,20 @@ export default function SignInForm() {
         roles.includes('Admin')
       ) {
         console.log('Đây là staff');
-        for (let index = 0; index < roles.length; index++) {
-          localStorage.setItem(roles[index], roles[index]);
-        }
-        navigate('/Signin');
+        localStorage.setItem('role', roles[0]); // lưu role đầu tiên
+
+        navigate('/admin');
       } else {
         navigate('/Signin');
       }
 
       if (res.ok) {
-        console.log('User role:', userData.role); // hoặc userData.data.role tuỳ backend
-        localStorage.setItem('role', userData.role);
-        navigate('/'); // hoặc navigate theo role
+        console.log('User role:', userData.roles); // hoặc userData.data.role tuỳ backend
+        localStorage.setItem(
+          'user',
+          JSON.stringify({ ...userData, role: userData.roles[0] })
+        );
+        navigate('/admin'); // hoặc navigate theo role
       } else {
         console.error('Không lấy được role:', userData.message);
       }

@@ -3,10 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSidebar } from '../context/SidebarContext';
 import React from 'react';
 
-const getMenuByRole = (role: string) => {
-  console.log('Role in getMenuByRole:', role);
+const getMenuByRole = (roles: string) => {
+  localStorage.getItem('role');
+  const role = localStorage.getItem('role');
+  console.log('Role từ localStorage:', role);
 
-  switch (role) {
+  switch (roles) {
     case 'admin':
       return [
         {
@@ -100,7 +102,7 @@ const getMenuByRole = (role: string) => {
         },
       ];
     default:
-      console.warn('Unknown role, returning minimal menu:', role);
+      console.warn('Unknown role, returning minimal menu:', roles);
       return [
         {
           icon: <i className="pi pi-th-large" />,
@@ -115,6 +117,7 @@ const AppSidebar = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar()!;
   const location = useLocation();
   const navigate = useNavigate();
+  const role = localStorage.getItem('role') || ''; // ví dụ: "Admin"
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   console.log('Current user in AppSidebar:', user);
@@ -122,11 +125,11 @@ const AppSidebar = () => {
   useEffect(() => {
     if (!user || !user.role) {
       console.warn('No valid user, redirecting to Signin');
-      navigate('/Signin');
+      navigate('/admin');
     }
   }, [user, navigate]);
 
-  const menuItems = getMenuByRole(user.role || '');
+  const menuItems = getMenuByRole(role);
   console.log('Menu items:', menuItems);
 
   const isActive = useCallback(

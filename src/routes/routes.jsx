@@ -152,16 +152,21 @@ const AppRoutes = () => {
               />
             }
           />
-          <Route path="your-profile" element={<YourProfile />} />
-          {/* <Route
+          {/* <Route path="your-profile" element={<YourProfile />} /> */}
+          <Route
             path="profile"
             element={
               <ProtectedRoute
                 element={<UserProfiles />}
-                allowedRoles={['Admin', 'ProductManager', 'SaleManager']}
+                allowedRoles={[
+                  'Admin',
+                  'ProductManager',
+                  'SaleManager',
+                  'Staff',
+                ]}
               />
             }
-          /> */}
+          />
           {/* <Route
               path="calendar"
               element={
@@ -188,7 +193,7 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<OrderManagement />}
-                allowedRoles={['Admin', 'SaleManager']}
+                allowedRoles={['Admin', 'SaleManager', 'Staff']}
               />
             }
           />
@@ -197,7 +202,7 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<ProductFeatures />}
-                allowedRoles={['Admin', 'ProductManager']}
+                allowedRoles={['Admin', 'ProductManager', 'Staff']}
               />
             }
           />
@@ -206,7 +211,7 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<BrandManagement />}
-                allowedRoles={['Admin', 'ProductManager']}
+                allowedRoles={['Admin', 'ProductManager', 'Staff']}
               />
             }
           />
@@ -215,7 +220,7 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute
                 element={<UserManagement />}
-                allowedRoles={['Admin']}
+                allowedRoles={['Admin', 'Staff']}
               />
             }
           />
