@@ -52,16 +52,7 @@ const categories = [
 const Home = () => {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState({
-    id: '',
-    name: '',
-    description: '',
-    brand: '',
-    image: '',
-    tags: [],
-    price: 0,
-  });
-  const [formattedProducts, setFormattedProducts] = useState([]);
+  const [currentProduct, setCurrentProduct] = useState(null);
   const swiperRef = useRef(null);
   const {
     data: products,
@@ -81,38 +72,32 @@ const Home = () => {
 
   useEffect(() => {
     if (products && products.length > 0) {
-      const newFormattedProducts = products.map((product) => ({
-        id: product.product__Id,
-        name: product.product__Name,
-        description: product.product__Description,
-        brand: product.brandName,
-        image: product.imagePath || 'https://placehold.co/300x300',
-        tags: product.tag,
-        price: product.price,
-      }));
-      setFormattedProducts(newFormattedProducts);
-      setCurrentProduct(newFormattedProducts[0]);
+      setCurrentProduct(products[0]);
     }
   }, [products]);
 
   const handleNavigation = (direction) => {
     if (swiperRef.current && swiperRef.current.swiper) {
       const swiper = swiperRef.current.swiper;
-      const currentIndex = formattedProducts.findIndex(
-        (p) => p.id === currentProduct.id
+      const currentIndex = products.findIndex(
+        (p) => p.product__Id === currentProduct?.product__Id
       );
       if (direction === 'next') {
-        if (currentIndex < formattedProducts.length - 1) {
-          setCurrentProduct(formattedProducts[currentIndex + 1]);
+        if (currentIndex < products.length - 1) {
+          setCurrentProduct(products[currentIndex + 1]);
           swiper.slideNext();
         }
       } else if (direction === 'prev') {
         if (currentIndex > 0) {
-          setCurrentProduct(formattedProducts[currentIndex - 1]);
+          setCurrentProduct(products[currentIndex - 1]);
           swiper.slidePrev();
         }
       }
     }
+  };
+
+  const handleProductClick = (product) => {
+    navigate(`/products/${product.product__Name}`, { state: { product } });
   };
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -293,71 +278,62 @@ const Home = () => {
                         </div>
                       </SwiperSlide>
                     ))
-                  : formattedProducts.map((product) => (
-                      <SwiperSlide
-                        key={product.id}
-                        className="!w-[300px] md:!w-[350px]"
-                        onClick={() =>
-                          setCurrentProduct({
-                            id: product.id,
-                            name: product.name,
-                            description: product.description,
-                            brand: product.brand,
-                            image: product.image,
-                            tags: product.tags,
-                            price: product.price,
-                          })
-                        }
-                      >
-                        <div
-                          className={`bg-gray-50 cursor-pointer group relative h-full ${
-                            currentProduct.id === product.id
-                              ? 'bg-gray-200'
-                              : ''
-                          }`}
+                  : products.map((product, index) => {
+                      const mainVariant = product.productColors?.[0] || {};
+                      const mainImage =
+                        mainVariant.images?.[0] ||
+                        'https://placehold.co/300x300';
+
+                      return (
+                        <SwiperSlide
+                          key={product.product__Id || index}
+                          className="!w-[300px] md:!w-[350px]"
+                          onClick={() => setCurrentProduct(product)}
                         >
-                          <div className="relative w-full h-[350px]">
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="w-full h-full object-cover object-center"
-                              onError={(e) =>
-                                (e.currentTarget.src =
-                                  'https://placehold.co/300x300')
-                              }
-                            />
-                            <p className="absolute bottom-0 left-0 bg-white/80 px-2 py-1 text-xs md:text-base font-bold">
-                              {formatCurrency(product.price)}
-                            </p>
-                            <div className="absolute inset-0 bg-gray-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                              <button
-                                className="bg-[#5AA1E3] text-white px-4 py-1 text-xs md:text-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
-                                onClick={() =>
-                                  navigate(`/productDetail/${product.id}`)
+                          <div
+                            className={`bg-gray-50 cursor-pointer group relative h-full ${
+                              currentProduct?.product__Id ===
+                              product.product__Id
+                                ? 'bg-gray-200'
+                                : ''
+                            }`}
+                          >
+                            <div className="relative w-full h-[350px]">
+                              <img
+                                src={mainImage}
+                                alt={product.product__Name}
+                                className="w-full h-full object-cover object-center"
+                                onError={(e) =>
+                                  (e.currentTarget.src =
+                                    'https://placehold.co/300x300')
                                 }
-                              >
-                                View Detail
-                              </button>
+                              />
+                              <p className="absolute bottom-0 left-0 bg-white/80 px-2 py-1 text-xs md:text-base font-bold">
+                                {formatCurrency(
+                                  mainVariant.productColor__Price || 0
+                                )}
+                              </p>
+                              <div className="absolute inset-0 bg-gray-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <button
+                                  className="bg-[#5AA1E3] text-white px-4 py-1 text-xs md:text-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleProductClick(product);
+                                  }}
+                                >
+                                  View Detail
+                                </button>
+                              </div>
+                            </div>
+                            <div className="p-2 md:p-4">
+                              <span className="uppercase text-xs md:text-sm line-clamp-1">
+                                {product.product__Name}
+                              </span>
                             </div>
                           </div>
-                          <div className="p-2 md:p-4">
-                            <span className="uppercase text-xs md:text-sm line-clamp-1">
-                              {product.name}
-                            </span>
-                            {/*<div className="flex flex-wrap gap-1 mt-1">*/}
-                            {/*  {product?.tags.map((tag) => (*/}
-                            {/*    <span*/}
-                            {/*      key={tag.tagId}*/}
-                            {/*      className="text-[10px] md:text-xs text-gray-500"*/}
-                            {/*    >*/}
-                            {/*      #{tag.tagName}*/}
-                            {/*    </span>*/}
-                            {/*  ))}*/}
-                            {/*</div>*/}
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                    ))}
+                        </SwiperSlide>
+                      );
+                    })}
               </Swiper>
               {!loading && errorMessage && (
                 <div className="flex flex-col items-center justify-center mb-6 max-w-4xl mx-auto p-4 border border-red-300 rounded-lg bg-red-50">

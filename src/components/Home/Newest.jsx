@@ -43,8 +43,6 @@ const Newest = () => {
         const mainVariant = product.productColors?.[0] || {};
         const mainImage =
           mainVariant.images?.[0] || 'https://placehold.co/300x300';
-
-        console.log(product);
         return (
           <CardProduct
             key={product.product__Id || index}
